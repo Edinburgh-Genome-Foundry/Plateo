@@ -47,7 +47,8 @@ class PickList:
         with open(filename, "w+") as f:
             f.write(self.to_plain_string())
 
-    def to_TECAN_picklist_file(self, filename):
+    def to_TECAN_picklist_file(self, filename,
+                               change_tips_between_dispenses=True):
         columns = [
             "Action", "RackLabel", "RackID", "RackType",
             "Position", "TubeID", "Volume", "LiquidClass",
@@ -61,18 +62,22 @@ class PickList:
                 "Action": "A",
                 "RackLabel": transfer.source_name,
                 "Position": wellname_to_index(transfer.source_well,
-                                              self.source_plate.num_wells),
+                                              self.source_plate.num_wells,
+                                              direction="column"),
                 "Volume": volume
             }
             dispense = {
                 "Action": "D",
                 "RackLabel": transfer.destination_name,
                 "Position": wellname_to_index(transfer.destination_well,
-                                              self.destination_plate.num_wells),
+                                              self.destination_plate.num_wells,
+                                              direction="column"),
                 "Volume":  volume
             }
-            change_tips = {"Action": "W"}
-            rows += [absorb, dispense, change_tips]
+            row = [absorb, dispense]
+            if change_tips_between_dispenses:
+                row += [{"Action": "W"}]
+            rows += row
 
         df = pandas.DataFrame.from_records(rows, columns=columns)
         df.to_csv(filename, sep=";", header=False, index=False)

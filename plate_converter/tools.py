@@ -37,7 +37,7 @@ def coordinates_to_wellname(coords):
 
 def wellname_to_index(wellname, num_wells, direction="row"):
     """ Convert e.g. A1..H12 into 1..96
-
+    direction is either row for A1 A2 A3... or column for A1 B1 C1 D1 etc.
     """
     n_rows, n_columns = compute_rows_columns(num_wells)
     row, column = wellname_to_coordinates(wellname)
