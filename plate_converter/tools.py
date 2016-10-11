@@ -25,7 +25,7 @@ def number_to_rowname(number):
 
 
 def wellname_to_coordinates(wellname):
-    """Convert A1->(1,1), H12->(12, 12), etc."""
+    """Convert A1->(1,1), H11->(8, 11), etc."""
     rowname, colname = re.match("([a-zA-Z]+)([0-9]+)", wellname).groups()
     return rowname_to_number(rowname), int(colname)
 
@@ -59,12 +59,17 @@ def index_to_row_column(index, num_wells, direction="row"):
     return row, column
 
 def index_to_wellname(index, num_wells, direction="row"):
-    """ Convert e.g. 1..96 into A1..H12
-
-    """
+    """ Convert e.g. 1..96 into A1..H12"""
     row, column = index_to_row_column(index, num_wells, direction)
     return coordinates_to_wellname((row, column))
 
+def shift_wellname(wellname, row_shift=0, column_shift=0):
+    letter, number = wellname[0], wellname[1:]
+    letter_rownum = rowname_to_number(letter)
+    new_letter_rownum = letter_rownum + row_shift
+    new_letter = number_to_rowname(new_letter_rownum)
+    new_number = str(int(number) + column_shift)
+    return new_letter + new_number
 
 def dicts_to_columns(dicts):
 

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.models import (
     FixedTicker, Range1d, TapTool, Rect, CustomJS, HoverTool, OpenURL
@@ -11,19 +13,33 @@ from ..tools import (
 import numpy as np
 
 
-def bokeh_plot_plate(num_wells, wells, hover_fields=()):
-    wells = [
-        {
-            k: v
-            for k, v in well.items()
-            if not isinstance(v, dict)
-        }
-        for well in wells
-    ]
+def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
+                        well_color_function=None):
+    wells = deepcopy(plate.wells)
 
-    n_rows, n_columns = compute_rows_columns(num_wells)
-    p = figure(plot_width=600, plot_height=400, tools="box_zoom,reset,tap",
-               x_range=Range1d(0, n_columns + 2), y_range=Range1d(0, n_rows + 2),
+    if well_color_function is None:
+        well_color_function = lambda well: "#aaa"
+
+    if hover_metadata != ():
+        well_to_html = lambda well: "\n".join(
+            [well.name] + ["%s: %s" % (field, well.metadata[field])
+                           for field in hover_metadata]
+        )
+    elif well_to_html is None:
+        well_to_html = lambda well: well.name
+
+    for name, well in wells.items():
+        well.metadata = {
+            field: info
+            for field, info in well.metadata.items()
+            if not isinstance(info, dict)
+        }
+
+    n_rows, n_columns = plate.num_rows, plate.num_columns
+    p = figure(plot_width=600, plot_height=400,
+               tools="box_zoom,reset,tap,save",
+               x_range=Range1d(0, n_columns + 2),
+               y_range=Range1d(0, n_rows + 2),
                responsive=True)
 
     placeholder_wells = p.circle(
@@ -40,14 +56,15 @@ def bokeh_plot_plate(num_wells, wells, hover_fields=()):
     )
 
     dicts = []
-    for well in wells:
-        row, column = wellname_to_coordinates(well["well_name"])
+    for name, well in wells.items():
+        row, column = wellname_to_coordinates(name)
         well_infos = {
-            "display_color": "gray",
+            "display_color": well_color_function(well),
             "bokeh_x": column + 1,
-            "bokeh_y": n_rows + 1 - row
+            "bokeh_y": n_rows + 1 - row,
+            "html_content": well_to_html(well)
         }
-        well_infos.update(well)
+        #well_infos.update(well.metadata)
         dicts.append(well_infos)
 
     actual_wells = p.circle(
@@ -59,7 +76,7 @@ def bokeh_plot_plate(num_wells, wells, hover_fields=()):
     text = p.text(
         x="x", y="y", text="text", text_baseline="middle",
         text_align="center", text_font_size="%dpx" % (
-          0.8 * 144 / int(np.round(np.sqrt(num_wells / 6)))),
+          0.8 * 144 / int(np.round(np.sqrt(plate.num_wells / 6)))),
         source=ColumnDataSource(dicts_to_columns([
             {
                 "text": number_to_rowname(i + 1),
@@ -76,12 +93,13 @@ def bokeh_plot_plate(num_wells, wells, hover_fields=()):
             for i in range(n_columns)
         ]))
     )
-
-    hover = HoverTool(
-        names=["well"],
-        tooltips="<u><b>@well_name</b></u><br/>" + " ".join(
-            ["@%s" % field for field in hover_fields])
-    )
+    if well_to_html is not None:
+        tooltips = "@html_content"
+    else:
+        tooltips = "<u><b>@well_name</b></u><br/>" + " ".join(
+            ["@%s" % field for field in hover_metadata]
+        )
+    hover = HoverTool(names=["well"], tooltips=tooltips)
     p.add_tools(hover)
 
     if any(("url" in well) for well in wells):
@@ -89,8 +107,8 @@ def bokeh_plot_plate(num_wells, wells, hover_fields=()):
         taptool.callback = OpenURL(url="@url")
 
     p.logo = None
-    p.yaxis.visible = None
-    p.xaxis.visible = None
+    p.yaxis.visible = False
+    p.xaxis.visible = False
     p.xgrid.grid_line_color = None
     p.ygrid.grid_line_color = None
     return p
