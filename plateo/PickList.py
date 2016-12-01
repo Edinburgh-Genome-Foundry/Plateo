@@ -12,8 +12,7 @@ from .tools import compute_rows_columns, wellname_to_index, index_to_wellname
 
 class Transfer:
 
-    def __init__(self, source_well, destination_well, volume,
-                 source_plate=None, destination_plate=None, metadata=None):
+    def __init__(self, source_well, destination_well, volume, metadata=None):
         """A tranfer from a source to a destination
 
         Parameters
@@ -35,17 +34,27 @@ class Transfer:
         )
 
     def change_volume(self, new_volume):
-        new = deepcopy(self)
-        new.volume = new_volume
-        return new
+        return Transfer(source_well=self.source_well,
+                        destination_well=self.destination_well,
+                        volume=new_volume,
+                        metadata=self.metadata)
 
 
 class PickList:
 
-    def __init__(self, transfers_list, metadata=None):
+    def __init__(self, transfers_list=(), metadata=None):
 
-        self.transfers_list = transfers_list
+        self.transfers_list = list(transfers_list)
         self.metadata = {} if metadata is None else metadata
+
+    def add_transfer(self, source_well=None, destination_well=None,
+                     volume=None,  metadata=None, transfer=None):
+        if transfer is None:
+            transfer = Transfer(source_well=source_well,
+                                destination_well=destination_well,
+                                volume=volume,
+                                metadata=metadata)
+        self.transfers_list.append(transfer)
 
     def to_plain_string(self):
         return "\n".join(
@@ -64,7 +73,8 @@ class PickList:
             "metadata": self.metadata
         }
 
-    def execute(self, content_field="content", inplace=True):
+    def execute(self, content_field="content", inplace=True,
+                callback_function=None):
 
         if not inplace:
             all_plates = set(
@@ -93,7 +103,8 @@ class PickList:
                 ))
 
             new_picklist = PickList(transfers_list=new_transfer_list)
-            new_picklist.execute(inplace=True)
+            new_picklist.execute(content_field=content_field, inplace=True,
+                                 callback_function=callback_function)
             return new_plates
 
         else:
@@ -101,87 +112,54 @@ class PickList:
                 transfer.source_well.transfer_to_other_well(
                     destination_well=transfer.destination_well,
                     transfer_volume=transfer.volume)
+                if callback_function is not None:
+                    callback_function(self, transfer)
 
-    # def to_TECAN_picklist_file(self, filename,
-    #                            change_tips_between_dispenses=True):
-    #     columns = [
-    #         "Action", "RackLabel", "RackID", "RackType",
-    #         "Position", "TubeID", "Volume", "LiquidClass",
-    #         "TipType", "TipMask"
-    #     ]
-    #
-    #     rows = []
-    #     for transfer in self.transfers_list:
-    #         volume = "%.01f" % (transfer.volume / 1e-6)
-    #         absorb = {
-    #             "Action": "A",
-    #             "RackLabel": transfer.source_plate.name,
-    #             "Position": wellname_to_index(transfer.source_well,
-    #                                           transfer.source_plate.num_wells,
-    #                                           direction="column"),
-    #             "Volume": volume
-    #         }
-    #         dispense = {
-    #             "Action": "D",
-    #             "RackLabel": transfer.destination_plate.name,
-    #             "Position": wellname_to_index(transfer.destination_well,
-    #                                           self.destination_plate.num_wells,
-    #                                           direction="column"),
-    #             "Volume":  volume
-    #         }
-    #         row = [absorb, dispense]
-    #         if change_tips_between_dispenses:
-    #             row += [{"Action": "W"}]
-    #         rows += row
-    #
-    #     df = pandas.DataFrame.from_records(rows, columns=columns)
-    #     df.to_csv(filename, sep=";", header=False, index=False)
+    def restricted_to(self, transfer_filter=None, source_well=None,
+                      destination_well=None):
+        """Return a version of the picklist restricted to transfers with the
+        right source/destination well"""
+        if transfer_filter is None:
+            def transfer_filter(tr):
+                source_well_is_ok = ((source_well is None) or
+                                     (source_well == tr.source_well))
+                dest_well_is_ok = ((destination_well is None) or
+                                   (destination_well == tr.destination_well))
+                return (source_well_is_ok and dest_well_is_ok)
 
-    # def to_ECHO_picklist_file(self, filename, separator=",",
-    #                           use_well_name=True, max_single_dispense=5e-7):
-    #     """Write a CSV file for cherrypicking in the ECHO"""
-    #     columns = ["Source Well", "Destination Well", "Transfer Volume"]
-    #
-    #     transfers = []
-    #     for trf in self.transfers_list:
-    #         n_additional_dispense = int(trf.volume / max_single_dispense)
-    #         rest = trf.volume - n_additional_dispense * max_single_dispense
-    #         for i in range(n_additional_dispense):
-    #             transfers.append(trf.change_volume(max_single_dispense))
-    #         if rest > 0:
-    #             transfers.append(trf.change_volume(rest))
-    #
-    #     def format_well(well_name, num_wells):
-    #         if use_well_name:
-    #             return well_name
-    #         else:
-    #             return wellname_to_index(
-    #                 well_name,
-    #                 num_wells,
-    #                 direction="column"
-    #             )
-    #     rows = [
-    #         {
-    #             "Source Well": format_well(
-    #                 transfer.source_well.name,
-    #                 transfer.source_well.plate.num_wells
-    #             ),
-    #             "Destination Well": format_well(
-    #                 transfer.destination_well.name,
-    #                 transfer.destination_well.plate.num_wells
-    #             ),
-    #             "Transfer Volume": "%.01f" % (transfer.volume / 1e-9)
-    #         }
-    #         for transfer in transfers
-    #     ]
-    #     df = pandas.DataFrame.from_records(rows, columns=columns)
-    #     df.to_csv(filename, sep=separator, header=True, index=False)
+        transfers = [tr for tr in self.transfers_list if transfer_filter(tr)]
+        return PickList(transfers, metadata={"parent": self})
+
+    def sorted_by(self, sorting_method="source_well"):
+        if not hasattr(sorting_method, "__call__"):
+            def sorting_method(transfer):
+                return transfer.__dict__[sorting_method]
+        return PickList(sorted(self.transfers_list, key=sorting_method),
+                        metadata={"parent": self})
+
+    def split_by(self, prop):
+        if isinstance(prop, str):
+            str_prop = prop
+            def prop(t):
+                return t.__dict__[str_prop]
+        categories = set([prop(tr) for tr in self.transfers_list])
+        return [
+            (category, self.restricted_to(lambda tr: prop(tr) == category))
+            for category in categories
+        ]
+
+    def total_transfered_volume(self):
+        return sum([transfer.volume for transfer in self.transfers_list])
 
     @staticmethod
     def from_plates(source_plate, destination_plate, volume,
                     source_criterion=None,
                     destination_criterion=None, source_direction="row",
                     destination_direction="row"):
+        """Create a PickList object based on plates and conditions.
+
+        BROKEN due to changes in picklists. TODO: Fix.
+        """
 
         if not hasattr(volume, "__call__"):
             constant_volume = volume
@@ -221,3 +199,29 @@ class PickList:
                 )
 
         return PickList(transfers_list)
+
+    def enforce_maximum_dispense_volume(self, max_dispense_volume):
+        """Return a new picklist were every too-large dispense is broken down
+        into smaller dispenses."""
+        transfers = []
+        for trf in self.transfers_list:
+            n_additional_dispense = int(trf.volume / max_dispense_volume)
+            rest = trf.volume - n_additional_dispense * max_dispense_volume
+            for i in range(n_additional_dispense):
+                transfers.append(trf.change_volume(max_dispense_volume))
+            if rest > 0:
+                transfers.append(trf.change_volume(rest))
+        return PickList(transfers_list=transfers)
+
+    def __add__(self, other):
+        return PickList(self.transfers_list + other.transfers_list)
+
+    @staticmethod
+    def merge_picklists(picklists_list):
+        """Merge the list of picklists into a single picklist.
+
+        The transfers in the final picklist are the concatenation of the
+        tranfers in the different picklists, in the order in which they appear
+        in the list.
+        """
+        return sum(picklists_list, PickList([]))

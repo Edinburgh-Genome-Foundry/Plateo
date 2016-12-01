@@ -1,9 +1,20 @@
 from ..tools import wellname_to_index
 import pandas as pd
 
+def optimize_picklist_for_tecan_evo_dispensing(picklist):
+    return picklist.sorted_by(
+        lambda transfer: (transfer.source_well.plate.name,
+                          transfer.source_well.column,
+                          transfer.destination_well.column)
+    )
+
 def picklist_to_tecan_evo_picklist_file(picklist, filename,
                                         change_tips_between_dispenses=True,
+                                        optimize_picklist_order=False,
                                         tecan_plate_names=None):
+
+    if optimize_picklist_order:
+        picklist = optimize_picklist_for_tecan_evo_dispensing(picklist)
 
     tecan_plate_names = {} if tecan_plate_names is None else tecan_plate_names
     def plate_to_tecan_name(plate):
@@ -44,4 +55,5 @@ def picklist_to_tecan_evo_picklist_file(picklist, filename,
         rows += row
 
     df = pd.DataFrame.from_records(rows, columns=columns)
-    df.to_csv(filename, sep=";", header=False, index=False)
+    with open(filename, "w+") as f:
+        f.write(df.to_csv(sep=";", header=False, index=False).strip("\n"))

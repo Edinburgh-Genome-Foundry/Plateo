@@ -5,7 +5,9 @@
 import pandas as pd
 from ..tools import index_to_wellname
 
-def parse_qPCR_file(filename):
+def plate_from_roche_lightcycler_qPCR(filename):
+    """TODO: rewrite completely.
+    """
     dataframe = pd.read_csv(filename, sep="\t", header=3, index_col=False)
     num_wells = dataframe.No.max()
     return {

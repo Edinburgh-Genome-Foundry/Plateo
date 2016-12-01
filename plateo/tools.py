@@ -71,8 +71,22 @@ def shift_wellname(wellname, row_shift=0, column_shift=0):
     new_number = str(int(number) + column_shift)
     return new_letter + new_number
 
-def dicts_to_columns(dicts):
 
+def infer_plate_size_from_wellnames(wellnames):
+    """Return the first of 96, 384, or 1536, to contain all wellnames."""
+    coordinates = [wellname_to_coordinates(name) for name in wellnames]
+    all_rows, all_columns = zip(*coordinates)
+    max_rows, max_columns = max(all_rows), max(all_columns)
+    if (max_rows > 16) or (max_columns > 24):
+        return 1536
+    elif (max_rows > 8) or (max_columns > 12):
+        return 384
+    else:
+        return 96
+
+
+
+def dicts_to_columns(dicts):
     return {
         key: [d[key] for d in dicts]
         for key in dicts[0]

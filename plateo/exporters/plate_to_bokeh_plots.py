@@ -18,13 +18,17 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
     wells = deepcopy(plate.wells)
 
     if well_color_function is None:
-        well_color_function = lambda well: "#aaa"
+        def well_color_function(well):
+            return "#fff" if well.content == {} else "#aaa"
 
     if hover_metadata != ():
-        well_to_html = lambda well: "\n".join(
-            [well.name] + ["%s: %s" % (field, well.metadata[field])
-                           for field in hover_metadata]
-        )
+        def well_to_html(well):
+            return "\n".join(
+                [well.name] + [
+                    "%s: %s" % (field, well.metadata.get(field, ""))
+                    for field in hover_metadata
+                ]
+            )
     elif well_to_html is None:
         well_to_html = lambda well: well.name
 
@@ -106,7 +110,7 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
         taptool = p.select(type=TapTool)
         taptool.callback = OpenURL(url="@url")
 
-    p.logo = None
+    p.toolbar.logo = None
     p.yaxis.visible = False
     p.xaxis.visible = False
     p.xgrid.grid_line_color = None

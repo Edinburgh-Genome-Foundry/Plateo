@@ -3,12 +3,12 @@ ez_setup.use_setuptools()
 
 from setuptools import setup, find_packages
 
-exec(open('plate_converter/version.py').read()) # loads __version__
+exec(open('plateo/version.py').read()) # loads __version__
 
-setup(name='plate_converter',
+setup(name='plateo',
       version=__version__,
       author='Zulko',
-    description='',
+    description='Read/write microplate and picklist data for lab automation',
     long_description=open('README.rst').read(),
     license='see LICENSE.txt',
     keywords="microplate biology parser converter report",

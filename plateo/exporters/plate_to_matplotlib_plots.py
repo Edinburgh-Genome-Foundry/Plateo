@@ -19,7 +19,7 @@ def draw_plate_layout(num_wells, ax):
     ax.axis("off")
     ax.add_patch(patches.Rectangle((0.5, 0.5), n_columns, n_rows, fill=False))
     for i in range(1, n_columns + 1):
-        ax.text(i, 8.6, str(i), horizontalalignment="center")
+        ax.text(i, 1.075 * n_rows, str(i), horizontalalignment="center")
     ax.set_ylim(0, n_rows + 2)
     for i in range(n_rows):
         ax.text(0.3, n_rows - i, number_to_rowname(i + 1),
@@ -47,9 +47,9 @@ def place_inset_ax_in_data_coordinates(ax, bbox):
 class PlatePlotter:
 
     def plot_plate(self, plate, ax=None, well_condition=None,
-                   progress_bar=False):
+                   progress_bar=False, figsize=(10,5)):
         if ax is None:
-            fig, ax = plt.subplots(1, facecolor="white")
+            fig, ax = plt.subplots(1, facecolor="white", figsize=figsize)
         if well_condition is None:
             well_condition = lambda well:  True
 

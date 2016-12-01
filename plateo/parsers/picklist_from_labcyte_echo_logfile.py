@@ -1,11 +1,18 @@
 from ..PickList import PickList, Transfer
-from ..PlateLayout import PlateLayout
+from ..Plate import Plate
 
 import pandas as pd
 import StringIO
 
 def picklist_from_labcyte_echo_logfile(filename=None, filecontent=None,
                                        plates_dict={}):
+    """Return a picklist of what was actually dispensed in the ECHO, based
+    on the log file.
+
+    Picklist.metadata["exceptions"] is a picklist of all transfers that went
+    wrong.
+
+    """
 
     if filename is not None:
         with open(filename) as f:
@@ -37,16 +44,16 @@ def picklist_from_labcyte_echo_logfile(filename=None, filecontent=None,
 
     def add_plates_from_metadata(metadata, plates_dict):
         for role in ("Source", "Destination"):
-            source_plate = transfer.metadata["%s Plate Name" % role]
+            source_plate = metadata["%s Plate Name" % role]
             if source_plate not in plates_dict:
-                plate_type = transfer.metadata["%s Plate Type" % role]
+                plate_type = metadata["%s Plate Type" % role]
                 if "1536" in plate_type:
                     num_wells = 1536
                 elif "384" in plate_type:
                     num_wells = 384
                 else:
                     num_wells = 96
-                plates_dict[source_plate] = PlateLayout(
+                plates_dict[source_plate] = Plate(
                     num_wells=num_wells,
                     name=source_plate,
                     metadata={
