@@ -116,13 +116,17 @@ class Plate:
         return filter(condition, self.wells.values())
 
     def wells_grouped_by(self, metadata_field=None, key=None, sort_keys=False,
-                         ignore_none=False):
+                         ignore_none=False, direction_of_occurence="row"):
         if key is None:
             def key(well):
                 return well.metadata.get(metadata_field, None)
-        dct = defaultdict(lambda *a:[])
-        for well in self:
-            dct[key(well)].append(well)
+        dct = OrderedDict()
+        for well in self.iter_wells(direction=direction_of_occurence):
+            well_key = key(well)
+            if well_key not in dct:
+                dct[well_key] = [well]
+            else:
+                dct[well_key].append(well)
         if ignore_none:
             dct.pop(None, None)
         keys = dct.keys()

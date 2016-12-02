@@ -1,9 +1,12 @@
-import pandas as pd
+import zipfile
+from StringIO import StringIO
+import pandas
+import matplotlib.image as mpimg
+import numpy as np
 from ..containers import Plate96
 
 def plate_from_aati_fragment_analyzer_peaktable(filename):
-    df = pd.read_csv(filename)
-    #  df = df[pd.notnull(df["% (Conc.)"])]
+    df = pandas.read_csv(filename)
     wells = {
         name: {"bands": {
             peak_id: row.to_dict()
@@ -14,9 +17,45 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     }
     return Plate96(wells_metadata=wells)
 
+def plate_from_aati_fa_gel_image(filename):
+    img = mpimg.imread(filename)
+    black_white = img.mean(axis=2)
+    threshold = black_white > 0.9
+    vertical_lines = (threshold.sum(axis=0) < 200).nonzero()[0]
+    xmin, xmax = vertical_lines.min() + 1, vertical_lines.max() - 1
+    horizontal_lines = (threshold.sum(axis=1) < 200).nonzero()[0]
+    ymin, ymax = horizontal_lines.min() + 1, horizontal_lines.max() - 1
+    xx = np.linspace(xmin, xmax, 97).round(0).astype(int)
+    plate = Plate96("Gel Image")
+    wells = plate.iter_wells(direction="column")
+    bands_x = zip(xx, xx[1:])
+    for (x1, x2), well in zip(bands_x, wells):
+        well.metadata["migration_image"] = img[ymin:ymax, x1:x2]
+    return plate
+
+
+def plate_from_aati_fragment_analyzer_zip(filename):
+    ladder = None
+    images_plate = None
+    with zipfile.ZipFile(filename) as f:
+        for name in f.namelist():
+            if name.endswith('Peak Table.csv'):
+                content = StringIO(f.read(name))
+                plate = plate_from_aati_fragment_analyzer_peaktable(content)
+            if name.endswith('Size Calibration.csv'):
+                ladder = pandas.read_csv(StringIO(f.read(name)))
+            if name.endswith('Gel.PNG'):
+                content = StringIO(f.read(name))
+                images_plate = plate_from_aati_fa_gel_image(content)
+    plate.metadata["ladder"] = ladder
+    if images_plate is not None:
+        plate.merge_metadata_from(images_plate)
+    return plate
+
+
 #
 # def parse_fragment_analyzer_peaktable(filename):
-#     # legacy,
+#     # legacy, old format
 #
 #     def _find_fa_output_blocks(filename):
 #         with open(filename, "r") as f:
