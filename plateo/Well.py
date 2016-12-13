@@ -2,6 +2,27 @@
 class TransferError(ValueError):
     pass
 
+class WellContent:
+    """Class to represent the volume and quantities of a well.
+
+    Having the well content represented as a separate object makes it possible
+    to have several wells share the same content, e.g. in throughs.
+    """
+
+    def __init__(self, quantities=None, volume=0):
+        if quantities is None:
+            quantities = {}
+        self.volume = volume
+        self.quantities = quantities
+
+    def to_dict(self):
+        return {
+            "volume": self.volume,
+            "quantities": self.quantities
+        }
+    def components_as_string(self, separator=" "):
+        return separator.join(sorted(self.quantities.keys()))
+
 class Well:
     """Generic class for a well"""
     capacity = None
@@ -13,8 +34,11 @@ class Well:
         self.name = name
         self.metadata = {} if metadata is None else metadata
         self.sources = []
-        self.content = {}
-        self.volume = 0
+        self.content = WellContent()
+
+    @property
+    def volume(self):
+        return self.content.volume
 
     def iterate_sources_tree(self):
         for source in self.sources:
@@ -47,7 +71,7 @@ class Well:
         #  If you arrive here, it means that the transfer is valid, do it.
         quantities_transfered = {
             component: quantity * factor
-            for component, quantity in self.content.items()
+            for component, quantity in self.content.quantities.items()
         }
         destination_well.add_content(quantities_transfered,
                                      volume=transfer_volume)
@@ -58,17 +82,17 @@ class Well:
 
     def add_content(self, components_quantities, volume=None):
         if volume > 0:
-            final_volume = self.volume + volume
+            final_volume = self.content.volume + volume
             if (self.capacity is not None) and (final_volume > self.capacity):
                 raise TransferError(
                     "Transfer of %.2e L to %s brings volume over capacity."
                     % (volume, self)
                 )
-            self.volume = final_volume
+            self.content.volume = final_volume
         for component, quantity in components_quantities.items():
-            if component not in self.content:
-                self.content[component] = 0
-            self.content[component] += quantity
+            if component not in self.content.quantities:
+                self.content.quantities[component] = 0
+            self.content.quantities[component] += quantity
 
 
     def subtract_content(self, components_quantities, volume=0):
@@ -79,9 +103,9 @@ class Well:
                      " Current volume: %.2e L")
                     % (volume, self, self.volume)
                 )
-            self.volume -= volume
+            self.content.volume -= volume
         for component, quantity in components_quantities.items():
-            self.content[component] -= quantity
+            self.content.quantities[component] -= quantity
 
     @property
     def coordinates(self):
@@ -96,10 +120,12 @@ class Well:
         return "(%s-%s)" % (self.plate.name, self.name)
 
     def pretty_summary(self):
-        metadata = "\n    ".join([""] + [("%s: %s" % (key, value))
-                                         for key, value in self.metadata.items()])
-        content = "\n    ".join([""] + [("%s: %s" % (key, value))
-                                        for key, value in self.content.items()])
+        metadata = "\n    ".join([""] + [
+            ("%s: %s" % (key, value))
+            for key, value in self.metadata.items()])
+        content = "\n    ".join([""] + [
+            ("%s: %s" % (key, value))
+            for key, value in self.content.quantities.items()])
         return (
             "{self}\n"
             "  Volume: {self.volume}\n"
@@ -111,8 +137,7 @@ class Well:
         return dict(
             [
                 ["name", self.name],
-                ["content", self.content],
-                ["volume", self.volume],
+                ["content", self.content.to_dict()],
                 ["row", self.row],
                 ["column", self.column],
             ] + list(self.metadata.items())

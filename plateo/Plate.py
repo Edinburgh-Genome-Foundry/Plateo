@@ -61,7 +61,7 @@ class Plate:
     def find_unique_well(self, content_includes=None, condition=None):
         if content_includes is not None:
             def condition(well):
-                return (content_includes in well.content.keys())
+                return (content_includes in well.content.quantities.keys())
         wells = [
             well
             for name, well in self.wells.items()
