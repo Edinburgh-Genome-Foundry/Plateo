@@ -1,4 +1,4 @@
-from ..tools import infer_plate_size_from_wellnames
+from ..tools import infer_plate_size_from_wellnames, number_to_rowname
 import pandas as pd
 from plateo.containers import get_plate_class
 
@@ -53,18 +53,29 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
 
 
 def plate_from_platemap_spreadsheet(filename, metadata_field="info",
-                                    num_wells="infer"):
+                                    num_wells="infer", headers=True):
     """Parse spreadsheets representing a plate map."""
 
+    index_col = 0 if headers else None
     if filename.lower().endswith(".csv"):
-        dataframe = pd.read_csv(filename, index_col=0)
+        dataframe = pd.read_csv(filename, index_col=index_col,
+                                header=index_col)
     else:
-        dataframe = pd.read_excel(filename, index_col=0)
-    wells_metadata = {
-        row + str(column): {metadata_field: content}
-        for column, column_content in dataframe.to_dict().items()
-        for row, content in column_content.items()
-    }
+        dataframe = pd.read_excel(filename, index_col=index_col,
+                                  header=index_col)
+    if headers:
+        wells_metadata = {
+            row_name(row) + str(column): {metadata_field: content}
+            for column, column_content in dataframe.to_dict().items()
+            for row, content in column_content.items()
+        }
+    else:
+        wells_metadata = {
+            number_to_rowname(row + 1) + str(column + 1):
+                {metadata_field: content}
+            for column, column_content in dataframe.to_dict().items()
+            for row, content in column_content.items()
+        }
     if num_wells == "infer":
         num_wells = infer_plate_size_from_wellnames(wells_metadata.keys())
     plate_class = get_plate_class(num_wells=num_wells)

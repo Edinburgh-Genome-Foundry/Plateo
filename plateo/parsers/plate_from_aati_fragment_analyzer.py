@@ -18,6 +18,11 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     return Plate96(wells_metadata=wells)
 
 def plate_from_aati_fa_gel_image(filename):
+    """Creates a Plate96 where each well stores an image of the gel migration
+
+    Each well has a ``well.metadata["migration_image"]`` which is a WxH
+    array, a greyscale version of the image.
+    """
     img = mpimg.imread(filename)
     black_white = img.mean(axis=2)
     threshold = black_white > 0.9

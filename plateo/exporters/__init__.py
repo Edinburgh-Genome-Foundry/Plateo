@@ -10,3 +10,6 @@ from .plate_to_bokeh_plots import plate_to_bokeh_plot
 
 from .plate_to_matplotlib_plots import (PlateGraphsPlotter, PlateTextPlotter,
                                         PlateColorsPlotter)
+
+from .plate_to_tables import (plate_to_pandas_dataframe,
+                              plate_to_platemap_spreadsheet)

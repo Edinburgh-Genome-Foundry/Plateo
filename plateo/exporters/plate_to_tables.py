@@ -2,7 +2,7 @@ from collections import defaultdict
 from ..tools import number_to_rowname
 import pandas
 
-def plate_to_platemap_spreadsheet(plate, filepath, wellinfo_function):
+def plate_to_platemap_spreadsheet(plate, wellinfo_function, filepath=None):
     """Generate a spreadsheet with a map of the plate.
 
     Parameters
@@ -38,15 +38,18 @@ def plate_to_platemap_spreadsheet(plate, filepath, wellinfo_function):
         info = wellinfo_function(well)
         platedict[well.column][number_to_rowname(well.row)] = info
     dataframe = pandas.DataFrame.from_dict(platedict)
-    if filepath.lower().endswith(".csv"):
+    if filepath is None:
+        return dataframe
+    elif filepath.lower().endswith(".csv"):
         dataframe.to_csv(filepath)
     else:
         dataframe.to_excel(filepath)
 
-def plate_to_pandas_dataframe(plate, fields=None):
+def plate_to_pandas_dataframe(plate, fields=None, direction='row'):
     """Return a dataframe with the info on each well"""
     dataframe = pandas.DataFrame.from_records(plate.to_dict()["wells"]).T
-    dataframe = dataframe.sort_values(by=["row", "column"])
+    by = (["row", "column"] if direction == 'row' else ['column', 'row'])
+    dataframe = dataframe.sort_values(by=by)
     if fields is not None:
         dataframe = dataframe[fields]
     return dataframe

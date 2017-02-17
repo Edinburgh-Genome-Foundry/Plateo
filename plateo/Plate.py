@@ -160,14 +160,14 @@ class Plate:
         """Allow to iter through the well dicts using `for well in myplate`"""
         return self.iter_wells()
 
-        def to_dict(self):
-            return {
-                "metadata": self.metadata,
-                "wells": {
-                    well.name: well.to_dict()
-                    for well in self
-                }
+    def to_dict(self):
+        return {
+            "metadata": self.metadata,
+            "wells": {
+                well.name: well.to_dict()
+                for well in self
             }
+        }
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.name)
