@@ -2,12 +2,10 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
-import numpy as np
 from tqdm import tqdm
 
 from ..tools import (
     compute_rows_columns,
-    wellname_to_coordinates,
     number_to_rowname
 )
 
@@ -15,6 +13,7 @@ letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def draw_plate_layout(num_wells, ax):
+    """Draw the plate's border, row letters, column numbers."""
     n_rows, n_columns = compute_rows_columns(num_wells)
     ax.axis("off")
     ax.add_patch(patches.Rectangle((0.5, 0.5), n_columns, n_rows, fill=False))
@@ -45,13 +44,45 @@ def place_inset_ax_in_data_coordinates(ax, bbox):
 
 
 class PlatePlotter:
+    """Base class for all matplotlib-based plate plotters
+    """
 
-    def plot_plate(self, plate, ax=None, well_condition=None,
+    def plot_plate(self, plate, ax=None, well_filter=None,
                    progress_bar=False, figsize=(10,5)):
+        """Plot the plate using Matplotlib.
+
+        Parameters
+        ----------
+
+        plate
+          The plate object to be plotted.
+
+        ax
+          The Matplotlib ax on which to plot. If none is provided, one will
+          be created (and returned at the end)
+
+        well_filter
+          Function f(well)=>true/false. Wells returning false will not be
+          considered.
+
+        progress_bar
+          If true, display a progress bar while plotting.
+
+        figsize
+          Size of the figure, width/height in inches.
+
+
+        Returns
+        -------
+
+        ax, stats
+          The matplotlib ax on which the figure was plotted, and the computed
+          stats in format {wellname: well_stat}, (if relevant)
+        """
         if ax is None:
             fig, ax = plt.subplots(1, facecolor="white", figsize=figsize)
-        if well_condition is None:
-            well_condition = lambda well:  True
+        if well_filter is None:
+            well_filter = lambda well:  True
 
         draw_plate_layout(plate.num_wells, ax)
 
@@ -63,7 +94,7 @@ class PlatePlotter:
             else:
                 return plate
         for well in progress(plate):
-            if not well_condition(well):
+            if not well_filter(well):
                 continue
 
             x, y = well.column, well.row
@@ -79,6 +110,19 @@ class PlatePlotter:
 
 
 class PlateColorsPlotter(PlatePlotter):
+    """Plot a plate's well statistic with wells colored differently.
+
+    Parameters
+    ----------
+
+    stat_function
+      The function to be plotted, with signature (well) => value
+
+    with_colorbar
+      It true a colorbar giving a scale for color values will be plotted
+      alongside the map
+
+    """
 
     def __init__(self, stat_function, with_colorbar=False):
         self.stat_function = stat_function
@@ -96,6 +140,18 @@ class PlateColorsPlotter(PlatePlotter):
 
 
 class PlateTextPlotter(PlatePlotter):
+    """Plot a plate's well statistic as text at the well's positions.
+
+    Parameters
+    ----------
+
+    text_function
+      A function (well) => text
+
+    with_colorbar
+      It true a colorbar giving a scale for color values will be plotted
+      alongside the map
+    """
 
     def __init__(self, text_function, fontdict=None):
 
@@ -116,15 +172,20 @@ class PlateTextPlotter(PlatePlotter):
 
 
 class PlateGraphsPlotter(PlatePlotter):
-    """
+    """Plot a graph (for instance time series) for each well of the plate
+
+    The result has the shape of a plate, with each well replaced by a graph.
 
     Parameters
     ----------
 
-     well_plotter:
+     plot_function
+       A function f(well, well_ax) which plots something on the provided
+       ``well_ax`` depending on the ``well``.
 
-     subplot_size:
-       (width, height) of subplots, between 0 and 1
+     subplot_size
+       (width, height) of subplots, between 0 and 1 (1 meaning the graphs of
+       the different wells will have virtually no margin between them)
 
     """
 

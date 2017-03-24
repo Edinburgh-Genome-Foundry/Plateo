@@ -1,3 +1,4 @@
+"""Classes to represent picklists and liquid transfers in general"""
 from collections import OrderedDict
 from copy import deepcopy
 import json
@@ -11,21 +12,34 @@ from .tools import compute_rows_columns, wellname_to_index, index_to_wellname
 
 
 class Transfer:
+    """A tranfer from a source to a destination
 
+    Parameters
+    ----------
+
+    source_well
+      A Well object representing the plate well from which to transfer
+
+    destination_well
+      A Well object representing the plate well to which to transfer.
+
+    volume
+      Volume to be transfered, expressed in liters.
+
+    metadata
+      A dict containing any useful information on the transfer, this
+      information can be used later e.g. as parameters for the transfer
+      when exporting a picklist.
+    """
     def __init__(self, source_well, destination_well, volume, metadata=None):
-        """A tranfer from a source to a destination
 
-        Parameters
-        ----------
-
-        volume (L)
-        """
         self.volume = volume
         self.source_well = source_well
         self.destination_well = destination_well
         self.metadata = metadata
 
     def to_plain_string(self):
+        """Return "xx L from {source_well} into {dest_well}"."""
         return ("{self.volume:.02E}L from {self.source_well.plate.name} "
                 "{self.source_well.name} into "
                 "{self.destination_well.plate.name} "
@@ -34,6 +48,7 @@ class Transfer:
         )
 
     def change_volume(self, new_volume):
+        """Return a version of the transfer with a new volume."""
         return Transfer(source_well=self.source_well,
                         destination_well=self.destination_well,
                         volume=new_volume,
@@ -41,6 +56,19 @@ class Transfer:
 
 
 class PickList:
+    """Representation of a list of well-to-well transfers.
+
+    Parameters
+    -----------
+
+    transfers_list
+      A list of Transfer objects that will be part of a same dispensing
+      operation, in the order in which they are meant to be executed.
+
+    metadata
+      A dict with some infos on the picklist.
+
+    """
 
     def __init__(self, transfers_list=(), metadata=None):
 
@@ -49,6 +77,13 @@ class PickList:
 
     def add_transfer(self, source_well=None, destination_well=None,
                      volume=None,  metadata=None, transfer=None):
+        """Add a transfer to the picklist's tranfers list.
+
+        You can either provide a ``Transfer`` object with the ``transfer``
+        parameter, or the parameters
+
+
+        """
         if transfer is None:
             transfer = Transfer(source_well=source_well,
                                 destination_well=destination_well,
@@ -57,24 +92,20 @@ class PickList:
         self.transfers_list.append(transfer)
 
     def to_plain_string(self):
+        """Return the list of transfers in human readable format"""
         return "\n".join(
             transfer.to_plain_string()
             for transfer in self.transfers_list
         )
 
     def to_plain_textfile(self, filename):
+        """Write the picklist in a file in a human reable format."""
         with open(filename, "w+") as f:
             f.write(self.to_plain_string())
 
-    def to_json(self):
-        return {
-            "source_plate": self.source_plate.to_json(),
-            "destination_plate": self.destination_plate.to_json(),
-            "metadata": self.metadata
-        }
-
     def execute(self, content_field="content", inplace=True,
                 callback_function=None):
+        """Simulate the execution of the picklist"""
 
         if not inplace:
             all_plates = set(
@@ -118,7 +149,14 @@ class PickList:
     def restricted_to(self, transfer_filter=None, source_well=None,
                       destination_well=None):
         """Return a version of the picklist restricted to transfers with the
-        right source/destination well"""
+        right source/destination well.
+
+        You can provide ``source_well`` and ``destination_well`` or
+        alternatively just a function ``transfer_filter`` with signature
+        (transfer)=>True/False that will be used to filter out transfers
+        (for which it returns false).
+
+        """
         if transfer_filter is None:
             def transfer_filter(tr):
                 source_well_is_ok = ((source_well is None) or
@@ -131,24 +169,39 @@ class PickList:
         return PickList(transfers, metadata={"parent": self})
 
     def sorted_by(self, sorting_method="source_well"):
+        """Return a new version of the picklist sorted by some parameter.
+
+        The ``sorting_method`` is either the name of an attribute of the
+        transfers, such as "source_well", or a function f(transfer) -> value.
+        """
         if not hasattr(sorting_method, "__call__"):
             def sorting_method(transfer):
                 return transfer.__dict__[sorting_method]
         return PickList(sorted(self.transfers_list, key=sorting_method),
                         metadata={"parent": self})
 
-    def split_by(self, prop):
-        if isinstance(prop, str):
-            str_prop = prop
-            def prop(t):
-                return t.__dict__[str_prop]
-        categories = set([prop(tr) for tr in self.transfers_list])
+    def split_by(self, category):
+        """Split the picklist into a list of picklists, per category.
+
+        The returned list if of the form [(cat, subpicklist)] where
+        ``cat`` is the value of the category for all transfers in
+        ``subpicklist``.
+
+        The parameter ``category`` is either the name of a transfer attribute
+        or a function f(transfer)=> value which is used to
+        """
+        if isinstance(category, str):
+            str_category = category
+            def category(t):
+                return t.__dict__[str_category]
+        categories = set([category(tr) for tr in self.transfers_list])
         return [
-            (category, self.restricted_to(lambda tr: prop(tr) == category))
-            for category in categories
+            (cat, self.restricted_to(lambda tr: category(tr) == cat))
+            for cat in sorted(categories)
         ]
 
     def total_transfered_volume(self):
+        """Return the sum of all volumes from all transfers."""
         return sum([transfer.volume for transfer in self.transfers_list])
 
     @staticmethod

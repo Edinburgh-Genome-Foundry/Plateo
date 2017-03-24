@@ -6,6 +6,16 @@ import numpy as np
 from ..containers import Plate96
 
 def plate_from_aati_fragment_analyzer_peaktable(filename):
+    """"Return a Plate96 object with a metadata field for the ``bands``.
+
+    Provided a ``filename`` of an AATI fragment analyzer Peak table
+    (these are generally named ``{DATE} Peak Table.csv``), it generates a
+    Plate96 object where each well has a metadata attribute "bands" of the form
+    ``{peak_id: {attrs}}`` where the ``peak_id`` is a number (>1) and the attrs
+    attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
+    ``ng/ul``, ``RFU``.
+
+    """
     df = pandas.read_csv(filename)
     wells = {
         name: {"bands": {
@@ -18,7 +28,7 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     return Plate96(wells_metadata=wells)
 
 def plate_from_aati_fa_gel_image(filename):
-    """Creates a Plate96 where each well stores an image of the gel migration
+    """Return a Plate96 where each well stores an image of the gel migration
 
     Each well has a ``well.metadata["migration_image"]`` which is a WxH
     array, a greyscale version of the image.

@@ -21,17 +21,19 @@ def plate_to_platemap_spreadsheet(plate, wellinfo_function, filepath=None):
       info can be a string or any other object that can be converted to a
       string
 
-       1  2  3  4  5  6  7  8  9  10 11 12
-    A  .  .  .  .  .  .  .  .  .  .  .  .
-    B  .  .  .  .  .  .  .  .  .  .  .  .
-    C  .  .  .  .  .  .  .  .  .  .  .  .
-    D  .  .  .  .  .  .  .  .  .  .  .  .
-    E  .  .  .  .  .  .  .  .  .  .  .  .
-    F  .  .  .  .  .  .  .  .  .  .  .  .
-    G  .  .  .  .  .  .  .  .  .  .  .  .
-    H  .  .  .  .  .  .  .  .  .  .  .  .
+      .. code:: bash
 
-    """
+             1  2  3  4  5  6  7  8  9  10 11 12
+          A  .  .  .  .  .  .  .  .  .  .  .  .
+          B  .  .  .  .  .  .  .  .  .  .  .  .
+          C  .  .  .  .  .  .  .  .  .  .  .  .
+          D  .  .  .  .  .  .  .  .  .  .  .  .
+          E  .  .  .  .  .  .  .  .  .  .  .  .
+          F  .  .  .  .  .  .  .  .  .  .  .  .
+          G  .  .  .  .  .  .  .  .  .  .  .  .
+          H  .  .  .  .  .  .  .  .  .  .  .  .
+
+        """
 
     platedict = defaultdict(lambda *a: {})
     for well in plate:

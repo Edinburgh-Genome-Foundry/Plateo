@@ -1,14 +1,17 @@
-from collections import OrderedDict, defaultdict
+"""This module implements the Base class for all plates.
+
+See plateo.container for more specific plate subclasses, with
+set number of wells, well format, etc.
+"""
+from collections import OrderedDict
 import json
-import pandas
 from .Well import Well
-#import parsers
-#import exporters
 from .tools import (index_to_wellname, wellname_to_index,
                     coordinates_to_wellname, rowname_to_number)
 
 
 class Plate:
+    """Base class for all wells."""
 
     PlateWell = Well
 

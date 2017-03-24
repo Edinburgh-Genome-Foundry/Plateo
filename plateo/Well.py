@@ -24,7 +24,28 @@ class WellContent:
         return separator.join(sorted(self.quantities.keys()))
 
 class Well:
-    """Generic class for a well"""
+    """Generic class for a well.
+
+    Parameters
+    ----------
+
+    plate
+      The plate on which the well is located
+
+    row
+      The well's row (a number, starting from 0)
+
+    column
+      The well's column (a number, starting from 0)
+
+    name
+      The well's name, for instance "A1"
+
+    metadata
+      A dictionnary storing data on the well, used in algorithms and reports.
+
+
+    """
     capacity = None
 
     def __init__(self, plate, row, column, name, metadata=None):
@@ -105,7 +126,10 @@ class Well:
                 )
             self.content.volume -= volume
         for component, quantity in components_quantities.items():
-            self.content.quantities[component] -= quantity
+            if self.content.quantities[component] == quantity:
+                self.content.quantities.pop(component)
+            else:
+                self.content.quantities[component] -= quantity
 
     @property
     def coordinates(self):

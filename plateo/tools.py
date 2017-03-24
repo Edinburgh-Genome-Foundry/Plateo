@@ -1,4 +1,7 @@
-"""Miscellaneous useful functions."""
+"""Miscellaneous useful functions.
+
+In particulat, methods for converting to and from plate coordinates.
+"""
 
 import numpy as np
 import re

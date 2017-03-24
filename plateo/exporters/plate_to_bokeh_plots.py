@@ -15,6 +15,27 @@ import numpy as np
 
 def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
                         well_color_function=None):
+    """Return an interactive bokeh plot of the plate.
+
+    Hovering the wells displays some data on the wells.
+
+    Parameters
+    ----------
+
+    plate
+      The plate to be converted
+
+    hover_metadata
+      list or tuple of all fields from the well's metadata that should be
+      displayed when hovering a well
+
+    well_to_html
+      Html that sould be displayed when hovering a well (only works if
+      hover_metadata is left empty).
+
+    well_color_function
+      A function well=> #a103ba associating a color to fill each well
+    """
     wells = deepcopy(plate.wells)
 
     if well_color_function is None:

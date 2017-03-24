@@ -1,4 +1,4 @@
-
+"""Exporters to output plates or picklists in various formats."""
 
 from .picklist_to_tecan_evo_picklist_file import \
     picklist_to_tecan_evo_picklist_file
