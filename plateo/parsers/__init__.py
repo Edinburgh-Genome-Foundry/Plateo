@@ -11,7 +11,7 @@ from .picklist_from_labcyte_echo_logfile import \
 from .picklist_from_tecan_evo_picklist_file import \
     picklist_from_tecan_evo_picklist_file
 
-from plate_from_nanodrop_xml_file import plate_from_nanodrop_xml_file
+from .plate_from_nanodrop_xml_file import plate_from_nanodrop_xml_file
 
 from .plate_from_tables import (
     plate_from_platemap_spreadsheet,

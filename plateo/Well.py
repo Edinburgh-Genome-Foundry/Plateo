@@ -16,11 +16,13 @@ class WellContent:
         self.quantities = quantities
 
     def to_dict(self):
+        """Return a dict {volume: 0.0001, quantities: {...:...}}"""
         return {
             "volume": self.volume,
             "quantities": self.quantities
         }
     def components_as_string(self, separator=" "):
+        """Return a string representation of what's in the well mix"""
         return separator.join(sorted(self.quantities.keys()))
 
 class Well:

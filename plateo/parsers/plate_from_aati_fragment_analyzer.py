@@ -1,5 +1,12 @@
 import zipfile
-from StringIO import StringIO
+import sys
+PYTHON3 = (sys.version_info[0] == 3)
+
+if PYTHON3:
+    from io import StringIO
+else:
+    from StringIO import StringIO
+
 import pandas
 import matplotlib.image as mpimg
 import numpy as np
@@ -50,6 +57,20 @@ def plate_from_aati_fa_gel_image(filename):
 
 
 def plate_from_aati_fragment_analyzer_zip(filename):
+    """"Return a Plate96 object with metadata for bands and migration image.
+
+    Provided a zip output of an AATI fragment analyzer, it will find the
+    relevant files and extract band sizes and gel images, and store these in
+    each well's metadata.
+
+    In the final plate, each well has a metadata attribute "bands" of the form
+    ``{peak_id: {attrs}}`` where the ``peak_id`` is a number (>1) and the attrs
+    attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
+    ``ng/ul``, ``RFU``.
+
+    Each well also has a  ``well.metadata["migration_image"]`` which is a WxH
+    array, a greyscale version of the image.
+    """
     ladder = None
     images_plate = None
     with zipfile.ZipFile(filename) as f:

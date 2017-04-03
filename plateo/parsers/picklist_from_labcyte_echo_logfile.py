@@ -2,7 +2,13 @@ from ..PickList import PickList, Transfer
 from ..Plate import Plate
 
 import pandas as pd
-import StringIO
+import sys
+PYTHON3 = (sys.version_info[0] == 3)
+
+if PYTHON3:
+    from io import StringIO
+else:
+    from StringIO import StringIO
 
 def picklist_from_labcyte_echo_logfile(filename=None, filecontent=None,
                                        plates_dict={}):
@@ -34,7 +40,7 @@ def picklist_from_labcyte_echo_logfile(filename=None, filecontent=None,
             dest_well = dest_plate.wells[row.pop("Destination Well")]
             volume = float(row.pop("Actual Volume"))
             transfers.append(Transfer(
-                volume=volume,
+                volume=(1e-9)*volume,
                 source_well=source_well,
                 destination_well=dest_well,
                 metadata=row
@@ -76,6 +82,8 @@ def picklist_from_labcyte_echo_logfile(filename=None, filecontent=None,
 
         if block.startswith("[EXCEPTIONS]"):
             transfers_exceptions_list = block_to_transfers_list(block)
+        else:
+            transfers_exceptions_list = []
 
         if block.startswith("[DETAILS]"):
             transfers_list = block_to_transfers_list(block)
