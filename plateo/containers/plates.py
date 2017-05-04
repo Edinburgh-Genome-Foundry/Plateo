@@ -58,7 +58,7 @@ class Trough8x1(Plate):
     num_rows = 8
     num_columns = 1
 
-    def __init__(self, name, metadata=None):
-        Plate.__init__(self, name=name, metadata=metadata)
+    def __init__(self, name, data=None):
+        Plate.__init__(self, name=name, data=data)
         for well in self:
             well.content = self["A1"].content

@@ -1,3 +1,4 @@
+import addict
 
 class TransferError(ValueError):
     pass
@@ -14,6 +15,9 @@ class WellContent:
             quantities = {}
         self.volume = volume
         self.quantities = quantities
+
+    def concentration(self, component):
+        return 1.0 * self.quantities[component] / self.volume
 
     def to_dict(self):
         """Return a dict {volume: 0.0001, quantities: {...:...}}"""
@@ -43,19 +47,19 @@ class Well:
     name
       The well's name, for instance "A1"
 
-    metadata
+    data
       A dictionnary storing data on the well, used in algorithms and reports.
 
 
     """
     capacity = None
 
-    def __init__(self, plate, row, column, name, metadata=None):
+    def __init__(self, plate, row, column, name, data=None):
         self.plate = plate
         self.row = row
         self.column = column
         self.name = name
-        self.metadata = {} if metadata is None else metadata
+        self.data = addict.Dict({} if data is None else data)
         self.sources = []
         self.content = WellContent()
 
@@ -146,9 +150,9 @@ class Well:
         return "(%s-%s)" % (self.plate.name, self.name)
 
     def pretty_summary(self):
-        metadata = "\n    ".join([""] + [
+        data = "\n    ".join([""] + [
             ("%s: %s" % (key, value))
-            for key, value in self.metadata.items()])
+            for key, value in self.data.items()])
         content = "\n    ".join([""] + [
             ("%s: %s" % (key, value))
             for key, value in self.content.quantities.items()])
@@ -156,8 +160,8 @@ class Well:
             "{self}\n"
             "  Volume: {self.volume}\n"
             "  Content: {content}\n"
-            "  Metadata: {metadata}"
-        ).format(self=self, content=content, metadata=metadata)
+            "  Metadata: {data}"
+        ).format(self=self, content=content, data=data)
 
     def to_dict(self):
         return dict(
@@ -166,5 +170,5 @@ class Well:
                 ["content", self.content.to_dict()],
                 ["row", self.row],
                 ["column", self.column],
-            ] + list(self.metadata.items())
+            ] + list(self.data.items())
         )

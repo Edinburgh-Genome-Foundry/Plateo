@@ -31,7 +31,8 @@ def plate_from_nanodrop_xml_file(xml_file, num_wells=96, direction="row"):
     Returns
     -------
 
-    A Plate where the wells have the following metadata fields.
+    A Plate where the wells have the following data fields:
+    TODO: complete
 
     """
     table = parse_excel_xml(xml_file)[0]

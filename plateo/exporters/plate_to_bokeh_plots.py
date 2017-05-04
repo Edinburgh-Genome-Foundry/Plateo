@@ -2,10 +2,9 @@ from copy import deepcopy
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.models import (
-    FixedTicker, Range1d, TapTool, Rect, CustomJS, HoverTool, OpenURL
+    Range1d, TapTool, HoverTool, OpenURL
 )
 from ..tools import (
-    compute_rows_columns,
     dicts_to_columns,
     wellname_to_coordinates,
     number_to_rowname
@@ -13,7 +12,7 @@ from ..tools import (
 import numpy as np
 
 
-def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
+def plate_to_bokeh_plot(plate, hover_data=(), well_to_html=None,
                         well_color_function=None):
     """Return an interactive bokeh plot of the plate.
 
@@ -25,13 +24,13 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
     plate
       The plate to be converted
 
-    hover_metadata
-      list or tuple of all fields from the well's metadata that should be
+    hover_data
+      list or tuple of all fields from the well's data that should be
       displayed when hovering a well
 
     well_to_html
       Html that sould be displayed when hovering a well (only works if
-      hover_metadata is left empty).
+      hover_data is left empty).
 
     well_color_function
       A function well=> #a103ba associating a color to fill each well
@@ -42,21 +41,21 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
         def well_color_function(well):
             return "#fff" if well.content == {} else "#aaa"
 
-    if hover_metadata != ():
+    if hover_data != ():
         def well_to_html(well):
             return "\n".join(
                 [well.name] + [
-                    "%s: %s" % (field, well.metadata.get(field, ""))
-                    for field in hover_metadata
+                    "%s: %s" % (field, data.get(field, ""))
+                    for field in hover_data
                 ]
             )
     elif well_to_html is None:
         well_to_html = lambda well: well.name
 
     for name, well in wells.items():
-        well.metadata = {
+        data = {
             field: info
-            for field, info in well.metadata.items()
+            for field, info in data.items()
             if not isinstance(info, dict)
         }
 
@@ -89,7 +88,7 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
             "bokeh_y": n_rows + 1 - row,
             "html_content": well_to_html(well)
         }
-        #well_infos.update(well.metadata)
+        #well_infos.update(data)
         dicts.append(well_infos)
 
     actual_wells = p.circle(
@@ -122,7 +121,7 @@ def plate_to_bokeh_plot(plate, hover_metadata=(), well_to_html=None,
         tooltips = "@html_content"
     else:
         tooltips = "<u><b>@well_name</b></u><br/>" + " ".join(
-            ["@%s" % field for field in hover_metadata]
+            ["@%s" % field for field in hover_data]
         )
     hover = HoverTool(names=["well"], tooltips=tooltips)
     p.add_tools(hover)

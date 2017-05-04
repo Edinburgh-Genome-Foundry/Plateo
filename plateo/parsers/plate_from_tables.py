@@ -3,9 +3,9 @@ import pandas as pd
 from plateo.containers import get_plate_class
 
 def plate_from_dataframe(dataframe, wellname_field="wellname",
-                         num_wells="infer", metadata=None):
+                         num_wells="infer", data=None):
     """Create a plate from a Pandas dataframe where each row contains the
-    name of a well and metadata on the well.
+    name of a well and data on the well.
 
     it is assumed that the dataframe's index is given by the well names.
 
@@ -25,21 +25,21 @@ def plate_from_dataframe(dataframe, wellname_field="wellname",
       the size of the plate will be chosen as the smallest format (out of
       96, 384 and 1536 wells) which contains all the well names.
 
-    metadata
+    data
       Metadata information for the plate.
     """
 
     # TODO: infer plate class automatically ?
 
     dataframe = dataframe.set_index(wellname_field)
-    wells_metadata = {
+    wells_data = {
         well: row.to_dict()
         for well, row in dataframe.iterrows()
     }
     if num_wells == "infer":
-        num_wells = infer_plate_size_from_wellnames(wells_metadata.keys())
+        num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(wells_metadata=wells_metadata, metadata=metadata)
+    return plate_class(wells_data=wells_data, data=data)
 
 
 def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
@@ -72,11 +72,12 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
         dataframe = pd.read_csv(filename)
     return plate_from_dataframe(dataframe, wellname_field=wellname_field,
                                 num_wells=num_wells,
-                                metadata={"filename": filename})
+                                data={"filename": filename})
 
 
-def plate_from_platemap_spreadsheet(filename, metadata_field="info",
-                                    num_wells="infer", headers=True):
+def plate_from_platemap_spreadsheet(filename, data_field="info",
+                                    num_wells="infer", headers=True,
+                                    skiprows=None):
     """Parse spreadsheets representing a plate map.
 
     The spreadsheet should be either a 8 rows x 12 columns csv/excel file,
@@ -98,25 +99,25 @@ def plate_from_platemap_spreadsheet(filename, metadata_field="info",
     index_col = 0 if headers else None
     if filename.lower().endswith(".csv"):
         dataframe = pd.read_csv(filename, index_col=index_col,
-                                header=index_col)
+                                header=index_col, skiprows=skiprows)
     else:
         dataframe = pd.read_excel(filename, index_col=index_col,
-                                  header=index_col)
+                                  header=index_col, skiprows=skiprows)
     if headers:
-        wells_metadata = {
-            row + str(column): {metadata_field: content}
+        wells_data = {
+            row + str(column): {data_field: content}
             for column, column_content in dataframe.to_dict().items()
             for row, content in column_content.items()
         }
     else:
-        wells_metadata = {
+        wells_data = {
             number_to_rowname(row + 1) + str(column + 1):
-                {metadata_field: content}
+                {data_field: content}
             for column, column_content in dataframe.to_dict().items()
             for row, content in column_content.items()
         }
     if num_wells == "infer":
-        num_wells = infer_plate_size_from_wellnames(wells_metadata.keys())
+        num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(wells_metadata=wells_metadata,
-                       metadata={"file_source": filename})
+    return plate_class(wells_data=wells_data,
+                       data={"file_source": filename})

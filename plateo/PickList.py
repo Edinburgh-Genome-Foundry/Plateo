@@ -26,17 +26,17 @@ class Transfer:
     volume
       Volume to be transfered, expressed in liters.
 
-    metadata
+    data
       A dict containing any useful information on the transfer, this
       information can be used later e.g. as parameters for the transfer
       when exporting a picklist.
     """
-    def __init__(self, source_well, destination_well, volume, metadata=None):
+    def __init__(self, source_well, destination_well, volume, data=None):
 
         self.volume = volume
         self.source_well = source_well
         self.destination_well = destination_well
-        self.metadata = metadata
+        self.data = data
 
     def to_plain_string(self):
         """Return "xx L from {source_well} into {dest_well}"."""
@@ -52,7 +52,7 @@ class Transfer:
         return Transfer(source_well=self.source_well,
                         destination_well=self.destination_well,
                         volume=new_volume,
-                        metadata=self.metadata)
+                        data=self.data)
 
 
 class PickList:
@@ -65,18 +65,18 @@ class PickList:
       A list of Transfer objects that will be part of a same dispensing
       operation, in the order in which they are meant to be executed.
 
-    metadata
+    data
       A dict with some infos on the picklist.
 
     """
 
-    def __init__(self, transfers_list=(), metadata=None):
+    def __init__(self, transfers_list=(), data=None):
 
         self.transfers_list = list(transfers_list)
-        self.metadata = {} if metadata is None else metadata
+        self.data = {} if data is None else data
 
     def add_transfer(self, source_well=None, destination_well=None,
-                     volume=None,  metadata=None, transfer=None):
+                     volume=None,  data=None, transfer=None):
         """Add a transfer to the picklist's tranfers list.
 
         You can either provide a ``Transfer`` object with the ``transfer``
@@ -88,7 +88,7 @@ class PickList:
             transfer = Transfer(source_well=source_well,
                                 destination_well=destination_well,
                                 volume=volume,
-                                metadata=metadata)
+                                data=data)
         self.transfers_list.append(transfer)
 
     def to_plain_string(self):
@@ -166,7 +166,7 @@ class PickList:
                 return (source_well_is_ok and dest_well_is_ok)
 
         transfers = [tr for tr in self.transfers_list if transfer_filter(tr)]
-        return PickList(transfers, metadata={"parent": self})
+        return PickList(transfers, data={"parent": self})
 
     def sorted_by(self, sorting_method="source_well"):
         """Return a new version of the picklist sorted by some parameter.
@@ -178,7 +178,7 @@ class PickList:
             def sorting_method(transfer):
                 return transfer.__dict__[sorting_method]
         return PickList(sorted(self.transfers_list, key=sorting_method),
-                        metadata={"parent": self})
+                        data={"parent": self})
 
     def split_by(self, category):
         """Split the picklist into a list of picklists, per category.

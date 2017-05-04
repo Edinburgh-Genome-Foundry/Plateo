@@ -13,11 +13,11 @@ import numpy as np
 from ..containers import Plate96
 
 def plate_from_aati_fragment_analyzer_peaktable(filename):
-    """"Return a Plate96 object with a metadata field for the ``bands``.
+    """"Return a Plate96 object with a data field for the ``bands``.
 
     Provided a ``filename`` of an AATI fragment analyzer Peak table
     (these are generally named ``{DATE} Peak Table.csv``), it generates a
-    Plate96 object where each well has a metadata attribute "bands" of the form
+    Plate96 object where each well has a data attribute "bands" of the form
     ``{peak_id: {attrs}}`` where the ``peak_id`` is a number (>1) and the attrs
     attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
     ``ng/ul``, ``RFU``.
@@ -32,12 +32,12 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
         }}
         for name, d in df.groupby(["Well"])
     }
-    return Plate96(wells_metadata=wells)
+    return Plate96(wells_data=wells)
 
 def plate_from_aati_fa_gel_image(filename):
     """Return a Plate96 where each well stores an image of the gel migration
 
-    Each well has a ``well.metadata["migration_image"]`` which is a WxH
+    Each well has a ``data["migration_image"]`` which is a WxH
     array, a greyscale version of the image.
     """
     img = mpimg.imread(filename)
@@ -52,23 +52,23 @@ def plate_from_aati_fa_gel_image(filename):
     wells = plate.iter_wells(direction="column")
     bands_x = zip(xx, xx[1:])
     for (x1, x2), well in zip(bands_x, wells):
-        well.metadata["migration_image"] = img[ymin:ymax, x1:x2]
+        well.data["migration_image"] = img[ymin:ymax, x1:x2]
     return plate
 
 
 def plate_from_aati_fragment_analyzer_zip(filename):
-    """"Return a Plate96 object with metadata for bands and migration image.
+    """"Return a Plate96 object with data for bands and migration image.
 
     Provided a zip output of an AATI fragment analyzer, it will find the
     relevant files and extract band sizes and gel images, and store these in
-    each well's metadata.
+    each well's data.
 
-    In the final plate, each well has a metadata attribute "bands" of the form
+    In the final plate, each well has a data attribute "bands" of the form
     ``{peak_id: {attrs}}`` where the ``peak_id`` is a number (>1) and the attrs
     attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
     ``ng/ul``, ``RFU``.
 
-    Each well also has a  ``well.metadata["migration_image"]`` which is a WxH
+    Each well also has a  ``data["migration_image"]`` which is a WxH
     array, a greyscale version of the image.
     """
     ladder = None
@@ -83,76 +83,7 @@ def plate_from_aati_fragment_analyzer_zip(filename):
             if name.endswith('Gel.PNG'):
                 content = StringIO(f.read(name))
                 images_plate = plate_from_aati_fa_gel_image(content)
-    plate.metadata["ladder"] = ladder
+    plate.data["ladder"] = ladder
     if images_plate is not None:
-        plate.merge_metadata_from(images_plate)
+        plate.merge_data_from(images_plate)
     return plate
-
-
-#
-# def parse_fragment_analyzer_peaktable(filename):
-#     # legacy, old format
-#
-#     def _find_fa_output_blocks(filename):
-#         with open(filename, "r") as f:
-#             lines = [line.strip().split(",") for line in f.readlines()]
-#         blocs_beginnings = [0] + [
-#             i
-#             for i in range(2, len(lines))
-#             if (lines[i - 1][0] == '') and (lines[i][0] != '')
-#         ] + [len(lines)]
-#         blocks = [
-#             lines[a:b]
-#             for a, b in zip(blocs_beginnings, blocs_beginnings[1:])
-#         ]
-#         return blocks
-#
-#
-#     def _treat_fa_output_block(lines):
-#         block = {
-#             "well_name": lines[0][0].strip(":"),
-#             "label": lines[0][1],
-#             "peaks": {},
-#             "attributes": {}
-#         }
-#         labels = ("id", "size", "%concentration", "nmole/L", "ng/ul", "RFU")
-#         for line in lines[2:]:
-#             if line[0] != '':
-#                 peak = dict(zip(labels, line))
-#                 if " " in peak["size"]:
-#                     peak["size"], peak["label"] = peak["size"].split()
-#                 else:
-#                     peak["label"] = ""
-#                 if peak["%concentration"] == '':
-#                     peak["%concentration"] = 0
-#
-#                 types = {
-#                     "id": int,
-#                     "size": int,
-#                     "%concentration": float,
-#                     "nmole/L": float,
-#                     "ng/ul": float,
-#                     "RFU": int
-#                 }
-#                 for field, ftype in types.items():
-#                     peak[field] = ftype(peak[field])
-#                 block["peaks"][peak["id"]] = peak
-#
-#             if line[1].startswith(("TIM", "TIC", "Total Conc.")):
-#                 field, quantity, unit = line[1][:-1], float(line[2]), line[3]
-#                 block["attributes"][field] = {
-#                     "field": field,
-#                     "quantity": quantity,
-#                     "unit": unit
-#                 }
-#         return block
-#
-#     blocks = [
-#         _treat_fa_output_block(block)
-#         for block in _find_fa_output_blocks(filename)
-#     ]
-#
-#     return {
-#         block["well_name"]: block
-#         for block in blocks
-#     }

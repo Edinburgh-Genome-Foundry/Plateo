@@ -13,6 +13,10 @@ from .picklist_from_tecan_evo_picklist_file import \
 
 from .plate_from_nanodrop_xml_file import plate_from_nanodrop_xml_file
 
+from .plate_volumes_from_labcyte_echo_files import (
+    plate_volumes_from_labcyte_echo_logfile,
+    plate_volumes_from_labcyte_echo_survey,
+)
 from .plate_from_tables import (
     plate_from_platemap_spreadsheet,
     plate_from_list_spreadsheet,

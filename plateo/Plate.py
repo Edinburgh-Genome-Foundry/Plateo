@@ -15,28 +15,28 @@ class Plate:
 
     PlateWell = Well
 
-    def __init__(self, name=None, wells_metadata=None,
-                 metadata=None):
+    def __init__(self, name=None, wells_data=None,
+                 data=None):
 
         self.name = name
-        self.metadata = {} if metadata is None else metadata
-        self.wells_metadata = {} if wells_metadata is None else wells_metadata
+        self.data = {} if data is None else data
+        self.wells_data = {} if wells_data is None else wells_data
         self.num_wells = self.num_rows * self.num_columns
         self.wells = OrderedDict([])
 
         for row in range(1, self.num_rows + 1):
             for column in range(1, self.num_columns + 1):
                 wellname = coordinates_to_wellname((row, column))
-                meta = self.wells_metadata.get(wellname, {})
+                data = self.wells_data.get(wellname, {})
                 well = self.PlateWell(plate=self, row=row, column=column,
-                                      name=wellname, metadata=meta)
+                                      name=wellname, data=data)
                 self.wells[wellname] = well
 
     def __getitem__(self, k):
         """Return e.g. well A1's dict when calling `myplate['A1']`."""
         return self.wells[k]
 
-    def merge_metadata_from(self, other_plate, overwrite=True):
+    def merge_data_from(self, other_plate, overwrite=True):
         """Adds a new field `field_name` to the
 
         Note that `fun` can also return nothing and simply transform the wells.
@@ -44,22 +44,22 @@ class Plate:
         for well in self:
             if well.name in other_plate.wells.keys():
                 other_well = other_plate[well.name]
-                other_metadata = other_well.metadata
+                other_data = other_well.data
                 if not overwrite:
-                    other_metadata = {k: v for (k, v) in other_metadata.items()
-                                      if k not in well.metadata}
-                well.metadata.update(other_metadata)
+                    other_data = {k: v for (k, v) in other_data.items()
+                                      if k not in well.data}
+                well.data.update(other_data)
 
     def apply_to_wells(self, fun):
         """Run fun(well) for every `name:well` in `self.wells_dict`"""
         for well in self:
             fun(well)
 
-    def compute_metadata_field(self, field_name, fun, ignore_none=False):
+    def compute_data_field(self, field_name, fun, ignore_none=False):
         for well in self:
             data = fun(well)
             if (data is not None) or (not ignore_none):
-                well.metadata[field_name] = data
+                well.data[field_name] = data
 
     def find_unique_well(self, content_includes=None, condition=None):
         if content_includes is not None:
@@ -79,11 +79,11 @@ class Plate:
     def to_pretty_string(self, well_name, indent=2):
         return json.dumps(self[well_name], indent=indent)
 
-    def list_well_metadata_fields(self):
+    def list_well_data_fields(self):
         return sorted(list(set(
             field
             for well in self
-            for field in well.metadata.keys()
+            for field in well.data.keys()
         )))
 
     def wells_in_column(self, column_number):
@@ -118,11 +118,11 @@ class Plate:
         """
         return filter(condition, self.wells.values())
 
-    def wells_grouped_by(self, metadata_field=None, key=None, sort_keys=False,
+    def wells_grouped_by(self, data_field=None, key=None, sort_keys=False,
                          ignore_none=False, direction_of_occurence="row"):
         if key is None:
             def key(well):
-                return well.metadata.get(metadata_field, None)
+                return well.data.get(data_field, None)
         dct = OrderedDict()
         for well in self.iter_wells(direction=direction_of_occurence):
             well_key = key(well)
@@ -165,7 +165,7 @@ class Plate:
 
     def to_dict(self):
         return {
-            "metadata": self.metadata,
+            "data": self.data,
             "wells": {
                 well.name: well.to_dict()
                 for well in self

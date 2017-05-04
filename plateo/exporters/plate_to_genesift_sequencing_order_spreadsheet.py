@@ -29,8 +29,8 @@ def plate_to_genesift_sequencing_order_spreadsheet(plate, output_file,
     >>> plate_to_genesift_sequencing_order_spreadsheet(
             plate,
             output_file="genesift.xls",
-            sample_name_function= lambda well: well.metadata['part_name'] ,
-            well_filter=lambda well: well.metadata.get('part_name', False)
+            sample_name_function= lambda well: data['part_name'] ,
+            well_filter=lambda well: data.get('part_name', False)
             direction='column')
 
     """
@@ -39,8 +39,8 @@ def plate_to_genesift_sequencing_order_spreadsheet(plate, output_file,
         return number_to_rowname(well.row) + "%02d" % well.column
     def sample_function(well):
         return sample_name_function(w) if well_filter(well) else None
-    new_plate.compute_metadata_field("Position", position_function)
-    new_plate.compute_metadata_field("Sample", sample_function)
+    new_plate.compute_data_field("Position", position_function)
+    new_plate.compute_data_field("Sample", sample_function)
     dataframe = plate_to_pandas_dataframe(new_plate, direction=direction)
     dataframe = dataframe[["Position", "Sample"]]
     dataframe = dataframe[[(e is not None) for e in dataframe['Sample']]]
