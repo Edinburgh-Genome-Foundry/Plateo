@@ -74,9 +74,16 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
                                 num_wells=num_wells,
                                 metadata={"filename": filename})
 
-
 def plate_from_platemap_spreadsheet(filename, metadata_field="info",
                                     num_wells="infer", headers=True):
+    if filename.lower().endswith(".csv"):
+        file_type = "csv"
+    else:
+        file_type = "xlsx"
+    with open(filename, 'rb') as file_handle:
+        plate_from_platemap_spreadsheet_file(file_handle, file_type, filename, metadata_field, num_wells, headers)
+
+def plate_from_platemap_spreadsheet_file(file_handle, file_type="csv", file_name="unknown", metadata_field="info", num_wells="infer", headers=True):
     """Parse spreadsheets representing a plate map.
 
     The spreadsheet should be either a 8 rows x 12 columns csv/excel file,
@@ -96,11 +103,11 @@ def plate_from_platemap_spreadsheet(filename, metadata_field="info",
     """
 
     index_col = 0 if headers else None
-    if filename.lower().endswith(".csv"):
-        dataframe = pd.read_csv(filename, index_col=index_col,
+    if file_type == "csv":
+        dataframe = pd.read_csv(file_handle, index_col=index_col,
                                 header=index_col)
     else:
-        dataframe = pd.read_excel(filename, index_col=index_col,
+        dataframe = pd.read_excel(file_handle, index_col=index_col,
                                   header=index_col)
     if headers:
         wells_metadata = {
@@ -119,4 +126,4 @@ def plate_from_platemap_spreadsheet(filename, metadata_field="info",
         num_wells = infer_plate_size_from_wellnames(wells_metadata.keys())
     plate_class = get_plate_class(num_wells=num_wells)
     return plate_class(wells_metadata=wells_metadata,
-                       metadata={"file_source": filename})
+                       metadata={"file_source": file_name})
