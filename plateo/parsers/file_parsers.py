@@ -1,5 +1,5 @@
 """Misc. file parsers that are useful for other parsers"""
-from xml.sax import saxutils, parse
+from xml.sax import saxutils, parse, parseString
 
 class ExcelHandler(saxutils.handler.ContentHandler):
     """
@@ -41,4 +41,10 @@ def parse_excel_xml(xml_file):
     """Return a list of the tables (2D arrays) in the Excel XML file."""
     handler = ExcelHandler()
     parse(xml_file, handler)
+    return handler.tables
+
+def parse_excel_xml_string(xml_string):
+    """Return a list of the tables (2D arrays) in the Excel XML file."""
+    handler = ExcelHandler()
+    parseString(xml_string, handler)
     return handler.tables

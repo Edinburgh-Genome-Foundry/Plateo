@@ -1,9 +1,10 @@
 import pandas
 
 from plateo.tools import index_to_wellname
-from plateo.parsers.file_parsers import parse_excel_xml
+from plateo.parsers.file_parsers import parse_excel_xml, parse_excel_xml_string
 from plateo.parsers.plate_from_tables import plate_from_dataframe
 import numpy as np
+import warnings
 
 def parse_numeric(numeric_wannabe):
     try:
@@ -36,6 +37,14 @@ def plate_from_nanodrop_xml_file(xml_file, num_wells=96, direction="row"):
 
     """
     table = parse_excel_xml(xml_file)[0]
+    return process_table(table, num_wells, direction)
+
+def plate_from_nanodrop_xml_string(xml_string, num_wells=96, direction='row'):
+    """Same as above, but use xml_string instead xml_file_name"""
+    table = parse_excel_xml_string(xml_string)[0]
+    return process_table(table, num_wells, direction)
+
+def process_table(table, num_wells, direction):
     dataframe = pandas.DataFrame(table[1:], columns=table[0])
     for column in dataframe.columns:
         dataframe[column] = pandas.to_numeric(dataframe[column],
