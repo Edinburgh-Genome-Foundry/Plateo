@@ -82,9 +82,9 @@ def plate_from_platemap_spreadsheet(filename, data_field="info",
     else:
         file_type = "xlsx"
     with open(filename, 'rb') as file_handle:
-        plate_from_platemap_spreadsheet_file(file_handle, file_type, filename, metadata_field, num_wells, headers)
+        plate_from_platemap_spreadsheet_file(file_handle, file_type, filename, metadata_field, num_wells, headers, skiprows)
 
-def plate_from_platemap_spreadsheet_file(file_handle, file_type="csv", filename="unknown", metadata_field="info", num_wells="infer", headers=True):
+def plate_from_platemap_spreadsheet_file(file_handle, file_type="csv", filename="unknown", metadata_field="info", num_wells="infer", headers=True, skiprows=None):
     """Parse spreadsheets representing a plate map.
 
     The spreadsheet should be either a 8 rows x 12 columns csv/excel file,
