@@ -13,3 +13,6 @@ from .plate_to_matplotlib_plots import (PlateGraphsPlotter, PlateTextPlotter,
 
 from .plate_to_tables import (plate_to_pandas_dataframe,
                               plate_to_platemap_spreadsheet)
+
+from .plate_to_genesift_sequencing_order_spreadsheet import \
+    plate_to_genesift_sequencing_order_spreadsheet

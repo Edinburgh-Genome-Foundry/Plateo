@@ -1,10 +1,10 @@
 import pandas
 
 from plateo.tools import index_to_wellname
-from plateo.parsers.file_parsers import parse_excel_xml, parse_excel_xml_string
+from plateo.parsers.file_parsers import parse_excel_xml
 from plateo.parsers.plate_from_tables import plate_from_dataframe
 import numpy as np
-import warnings
+
 
 def parse_numeric(numeric_wannabe):
     try:
@@ -12,7 +12,8 @@ def parse_numeric(numeric_wannabe):
     except ValueError:
         return np.nan
 
-def plate_from_nanodrop_xml_file(xml_file, num_wells=96, direction="row"):
+def plate_from_nanodrop_xml_file(xml_file=None, xml_string=None, num_wells=96,
+                                 direction="row"):
     """Return a plate with the DNA concentrations measured by the Nanodrop.
 
     Parameters
@@ -36,15 +37,8 @@ def plate_from_nanodrop_xml_file(xml_file, num_wells=96, direction="row"):
     TODO: complete
 
     """
-    table = parse_excel_xml(xml_file)[0]
-    return process_table(table, num_wells, direction)
 
-def plate_from_nanodrop_xml_string(xml_string, num_wells=96, direction='row'):
-    """Same as above, but use xml_string instead xml_file_name"""
-    table = parse_excel_xml_string(xml_string)[0]
-    return process_table(table, num_wells, direction)
-
-def process_table(table, num_wells, direction):
+    table = parse_excel_xml(xml_file=xml_file, xml_string=xml_string)[0]
     dataframe = pandas.DataFrame(table[1:], columns=table[0])
     for column in dataframe.columns:
         dataframe[column] = pandas.to_numeric(dataframe[column],
@@ -55,5 +49,4 @@ def process_table(table, num_wells, direction):
     dataframe["wellname"] = dataframe["#"].apply(wellname)
     dataframe["Nucleic Acid"] = [parse_numeric(e)
                                  for e in dataframe["Nucleic Acid"]]
-
     return plate_from_dataframe(dataframe)

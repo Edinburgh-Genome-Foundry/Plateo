@@ -34,11 +34,14 @@ def plate_to_genesift_sequencing_order_spreadsheet(plate, output_file,
             direction='column')
 
     """
+    if well_filter is None:
+        well_filter = lambda w: True
+    
     new_plate = deepcopy(plate)
     def position_function(well):
         return number_to_rowname(well.row) + "%02d" % well.column
     def sample_function(well):
-        return sample_name_function(w) if well_filter(well) else None
+        return sample_name_function(well) if well_filter(well) else None
     new_plate.compute_data_field("Position", position_function)
     new_plate.compute_data_field("Sample", sample_function)
     dataframe = plate_to_pandas_dataframe(new_plate, direction=direction)

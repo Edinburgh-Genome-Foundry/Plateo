@@ -37,14 +37,17 @@ class ExcelHandler(saxutils.handler.ContentHandler):
             self.tables.append(self.rows)
 
 
-def parse_excel_xml(xml_file):
-    """Return a list of the tables (2D arrays) in the Excel XML file."""
-    handler = ExcelHandler()
-    parse(xml_file, handler)
-    return handler.tables
+def parse_excel_xml(xml_file=None, xml_string=None):
+    """Return a list of the tables (2D arrays) in the Excel XML.
 
-def parse_excel_xml_string(xml_string):
-    """Return a list of the tables (2D arrays) in the Excel XML file."""
+    Provide either the path to an XML file, or a string of XML content.
+    """
     handler = ExcelHandler()
-    parseString(xml_string, handler)
+    if xml_file is not None:
+        parse(xml_file, handler)
+    elif xml_string is not None:
+        parseString(xml_string, handler)
+    else:
+        raise ValueError("At least one of xml_file or xml_string should be"
+                         " provided.")
     return handler.tables
