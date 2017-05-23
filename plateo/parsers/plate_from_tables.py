@@ -77,8 +77,9 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
 
 
 def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
-    original_filename=None, data_field="info", num_wells="infer", headers=True,
-    skiprows=None):
+                                    original_filename=None, data_field="info",
+                                    num_wells="infer", headers=True,
+                                    skiprows=None):
     """Parse spreadsheets representing a plate map.
 
     Parameters

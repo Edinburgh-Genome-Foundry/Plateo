@@ -21,7 +21,12 @@ def plate_from_nanodrop_xml_file(xml_file=None, xml_string=None, num_wells=96,
 
     xml_file
       The xml file exported from the Nanodrop software. It should contain one
-      measurement per well.
+      measurement per well. An xml_string can be provided instead of this
+      argument.
+
+    xml_string
+       The content of an xml file exported from the Nanodrop software. Can be
+       provided instead of xml_file. Should contain one measurement per well.
 
     num_wells
       Number of wells in the Plate
