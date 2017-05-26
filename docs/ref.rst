@@ -2,8 +2,22 @@
 Reference
 =================
 
+
+Code organization
+------------------
+
+- ``Plate.py``, ``Well.py`` and ``Picklist.py`` implement the central objects
+ ``Plate``, ``Well``, and ``Picklist``.
+- The ``containers`` folder contains specific classes of ``Plate`` and ``Well``
+ will predefined dimensions, capacity, dead volume, etc.
+- The ``parsers`` folder contains all methods to generate Plates or Picklists
+ from machine files and data.
+- The ``exporters`` folder contains all methods to export plates in picklists
+ in human- or machine-readable format.
+
+
 Plates
-------------------------------------------------------
+-------
 
 .. automodule:: plateo.Plate
    :members:
