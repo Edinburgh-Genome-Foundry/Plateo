@@ -8,7 +8,7 @@ import json
 from .Well import Well
 from .tools import (index_to_wellname, wellname_to_index,
                     coordinates_to_wellname, rowname_to_number)
-
+from box import Box
 
 class Plate:
     """Base class for all wells."""
@@ -19,10 +19,10 @@ class Plate:
                  data=None):
 
         self.name = name
-        self.data = {} if data is None else data
+        self.data = Box({} if data is None else data)
         self.wells_data = {} if wells_data is None else wells_data
         self.num_wells = self.num_rows * self.num_columns
-        self.wells = OrderedDict([])
+        self.wells = Box()
 
         for row in range(1, self.num_rows + 1):
             for column in range(1, self.num_columns + 1):

@@ -13,4 +13,4 @@ setup(name='plateo',
     license='see LICENSE.txt',
     keywords="microplate biology parser converter report",
     packages= find_packages(exclude='docs'),
-    install_requires= ['pandas'])
+    install_requires= ['pandas', 'python-box', 'numpy'])

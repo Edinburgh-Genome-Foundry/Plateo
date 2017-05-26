@@ -1,4 +1,4 @@
-import addict
+from box import Box
 
 class TransferError(ValueError):
     pass
@@ -14,7 +14,7 @@ class WellContent:
         if quantities is None:
             quantities = {}
         self.volume = volume
-        self.quantities = quantities
+        self.quantities = Box(quantities)
 
     def concentration(self, component):
         return 1.0 * self.quantities[component] / self.volume
@@ -59,7 +59,7 @@ class Well:
         self.row = row
         self.column = column
         self.name = name
-        self.data = addict.Dict({} if data is None else data)
+        self.data = Box({} if data is None else data)
         self.sources = []
         self.content = WellContent()
 

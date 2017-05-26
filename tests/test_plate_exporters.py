@@ -5,9 +5,10 @@ from plateo.exporters import (plate_to_platemap_spreadsheet,
                               PlateTextPlotter,
                               PlateGraphsPlotter,
                               PlateColorsPlotter)
+from plateo.containers import Plate96
 
 def test_plate_to_platemap_spreadsheet():
-    plate_to_platemap_spreadsheet
+    plate = Plate96("TestPlate")
 
 
 def test_plate_to_genesift_sequencing_order_spreadsheet():
