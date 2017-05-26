@@ -1,9 +1,14 @@
 from copy import deepcopy
 
-from bokeh.plotting import figure, ColumnDataSource
-from bokeh.models import (
-    Range1d, TapTool, HoverTool, OpenURL
-)
+try:
+    from bokeh.plotting import figure, ColumnDataSource
+    from bokeh.models import (
+        Range1d, TapTool, HoverTool, OpenURL
+    )
+    BOKEH_AVAILABLE = True
+except ImportError:
+    BOKEH_AVAILABLE = False
+
 from ..tools import (
     dicts_to_columns,
     wellname_to_coordinates,
@@ -35,6 +40,10 @@ def plate_to_bokeh_plot(plate, hover_data=(), well_to_html=None,
     well_color_function
       A function well=> #a103ba associating a color to fill each well
     """
+
+    if not BOKEH_AVAILABLE:
+        raise ImportError(
+            "Function plate_to_bokeh_plot requires Bokeh installed")
     wells = deepcopy(plate.wells)
 
     if well_color_function is None:

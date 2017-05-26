@@ -1,7 +1,10 @@
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from mpl_toolkits.axes_grid.inset_locator import inset_axes
-
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
+    from mpl_toolkits.axes_grid.inset_locator import inset_axes
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
 from tqdm import tqdm
 
 from ..tools import (
@@ -79,6 +82,9 @@ class PlatePlotter:
           The matplotlib ax on which the figure was plotted, and the computed
           stats in format {wellname: well_stat}, (if relevant)
         """
+
+        if not MATPLOTLIB_AVAILABLE:
+            raise IOError("Install Matplotlib to be able to plot")
         if ax is None:
             fig, ax = plt.subplots(1, facecolor="white", figsize=figsize)
         if well_filter is None:
