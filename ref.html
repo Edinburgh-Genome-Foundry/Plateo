@@ -1,0 +1,1088 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Reference &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="index.html"/>
+        <link rel="prev" title="Plateo Documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-organization">Code organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-plateo.Plate">Plates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#plate-parsers">Plate parsers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-tables">From tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#from-fragment-analyzer-data">From Fragment analyzer data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plate-exporters">Plate Exporters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#plotters">Plotters</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-plateo.containers.plates">Container classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-plateo.PickList">Picklists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#picklist-parsers">Picklist Parsers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-plateo.tools">Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/ref.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="code-organization">
+<h2>Code organization<a class="headerlink" href="#code-organization" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Plate.py</span></code>, <code class="docutils literal"><span class="pre">Well.py</span></code> and <code class="docutils literal"><span class="pre">Picklist.py</span></code> implement the central objects</li>
+</ul>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">Plate</span></code>, <code class="docutils literal"><span class="pre">Well</span></code>, and <code class="docutils literal"><span class="pre">Picklist</span></code>.</div></blockquote>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">containers</span></code> folder contains specific classes of <code class="docutils literal"><span class="pre">Plate</span></code> and <code class="docutils literal"><span class="pre">Well</span></code></li>
+</ul>
+<blockquote>
+<div>will predefined dimensions, capacity, dead volume, etc.</div></blockquote>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">parsers</span></code> folder contains all methods to generate Plates or Picklists</li>
+</ul>
+<blockquote>
+<div>from machine files and data.</div></blockquote>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">exporters</span></code> folder contains all methods to export plates in picklists</li>
+</ul>
+<blockquote>
+<div>in human- or machine-readable format.</div></blockquote>
+</div>
+<div class="section" id="module-plateo.Plate">
+<span id="plates"></span><h2>Plates<a class="headerlink" href="#module-plateo.Plate" title="Permalink to this headline">¶</a></h2>
+<p>This module implements the Base class for all plates.</p>
+<p>See plateo.container for more specific plate subclasses, with
+set number of wells, well format, etc.</p>
+<dl class="class">
+<dt id="plateo.Plate.Plate">
+<em class="property">class </em><code class="descclassname">plateo.Plate.</code><code class="descname">Plate</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all wells.</p>
+<p class="rubric">Methods</p>
+<dl class="attribute">
+<dt id="plateo.Plate.Plate.PlateWell">
+<code class="descname">PlateWell</code><a class="headerlink" href="#plateo.Plate.Plate.PlateWell" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Well</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.apply_to_wells">
+<code class="descname">apply_to_wells</code><span class="sig-paren">(</span><em>fun</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.apply_to_wells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.apply_to_wells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run fun(well) for every <cite>name:well</cite> in <cite>self.wells_dict</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.iter_wells">
+<code class="descname">iter_wells</code><span class="sig-paren">(</span><em>direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.iter_wells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.iter_wells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iter through the wells either by row or by column</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.merge_data_from">
+<code class="descname">merge_data_from</code><span class="sig-paren">(</span><em>other_plate</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.merge_data_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.merge_data_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new field <cite>field_name</cite> to the</p>
+<p>Note that <cite>fun</cite> can also return nothing and simply transform the wells.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.wells_in_column">
+<code class="descname">wells_in_column</code><span class="sig-paren">(</span><em>column_number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.wells_in_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.wells_in_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of all wells of the plate in the given column.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.wells_in_row">
+<code class="descname">wells_in_row</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.wells_in_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.wells_in_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of all wells of the plate in the given row.</p>
+<p>The <cite>row</cite> can be either a row number (1,2,3) or row letter(s) (A,B,C).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Plate.Plate.wells_satisfying">
+<code class="descname">wells_satisfying</code><span class="sig-paren">(</span><em>condition</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Plate.html#Plate.wells_satisfying"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Plate.Plate.wells_satisfying" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">condition</span><span class="p">(</span><span class="n">well</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">well</span><span class="o">.</span><span class="n">volume</span> <span class="o">&gt;</span> <span class="mi">50</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="n">myplate</span><span class="o">.</span><span class="n">wells_satifying</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span> <span class="n">well</span><span class="o">.</span><span class="n">name</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-plateo.Well"></span><dl class="class">
+<dt id="plateo.Well.Well">
+<em class="property">class </em><code class="descclassname">plateo.Well.</code><code class="descname">Well</code><span class="sig-paren">(</span><em>plate</em>, <em>row</em>, <em>column</em>, <em>name</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Well.html#Well"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Well.Well" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for a well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>plate</strong></p>
+<blockquote>
+<div><p>The plate on which the well is located</p>
+</div></blockquote>
+<p><strong>row</strong></p>
+<blockquote>
+<div><p>The well’s row (a number, starting from 0)</p>
+</div></blockquote>
+<p><strong>column</strong></p>
+<blockquote>
+<div><p>The well’s column (a number, starting from 0)</p>
+</div></blockquote>
+<p><strong>name</strong></p>
+<blockquote>
+<div><p>The well’s name, for instance “A1”</p>
+</div></blockquote>
+<p><strong>data</strong></p>
+<blockquote class="last">
+<div><p>A dictionnary storing data on the well, used in algorithms and reports.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>capacity</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.Well.WellContent">
+<em class="property">class </em><code class="descclassname">plateo.Well.</code><code class="descname">WellContent</code><span class="sig-paren">(</span><em>quantities=None</em>, <em>volume=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Well.html#WellContent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Well.WellContent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to represent the volume and quantities of a well.</p>
+<p>Having the well content represented as a separate object makes it possible
+to have several wells share the same content, e.g. in throughs.</p>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="plateo.Well.WellContent.components_as_string">
+<code class="descname">components_as_string</code><span class="sig-paren">(</span><em>separator=’ ‘</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Well.html#WellContent.components_as_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Well.WellContent.components_as_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string representation of what’s in the well mix</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.Well.WellContent.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/Well.html#WellContent.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.Well.WellContent.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict {volume: 0.0001, quantities: {…:…}}</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="plate-parsers">
+<h3>Plate parsers<a class="headerlink" href="#plate-parsers" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="from-tables">
+<h4>From tables<a class="headerlink" href="#from-tables" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="plateo.parsers.plate_from_dataframe">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>wellname_field=’wellname’</em>, <em>num_wells=’infer’</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_tables.html#plate_from_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plate from a Pandas dataframe where each row contains the
+name of a well and data on the well.</p>
+<p>it is assumed that the dataframe’s index is given by the well names.</p>
+<p>This function is used e.g. in <cite>plate_from_list_spreadsheet</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dataframe</strong></p>
+<blockquote>
+<div><p>A Pandas dataframe</p>
+</div></blockquote>
+<p><strong>wellname_field</strong></p>
+<blockquote>
+<div><p>The name of the Pandas dataframe column indicating the name of the wells.</p>
+</div></blockquote>
+<p><strong>num_wells</strong></p>
+<blockquote>
+<div><p>Number of wells in the Plate to be created. If left to default ‘infer’,
+the size of the plate will be chosen as the smallest format (out of
+96, 384 and 1536 wells) which contains all the well names.</p>
+</div></blockquote>
+<p><strong>data</strong></p>
+<blockquote class="last">
+<div><p>Metadata information for the plate.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.parsers.plate_from_list_spreadsheet">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_list_spreadsheet</code><span class="sig-paren">(</span><em>filename</em>, <em>sheetname=0</em>, <em>num_wells=’infer’</em>, <em>wellname_field=’wellname’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_tables.html#plate_from_list_spreadsheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_list_spreadsheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a plate from a Pandas dataframe where each row contains the
+name of a well and metadata on the well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong></p>
+<blockquote>
+<div><p>Path to the spreadsheet file.</p>
+</div></blockquote>
+<p><strong>sheetname</strong></p>
+<blockquote>
+<div><p>Index or name of the spreadsheet to use.</p>
+</div></blockquote>
+<p><strong>num_wells</strong></p>
+<blockquote>
+<div><p>Number of wells in the Plate to be created. If left to default ‘infer’,
+the size of the plate will be chosen as the smallest format (out of
+96, 384 and 1536 wells) which contains all the well names.</p>
+</div></blockquote>
+<p><strong>wellname_field=”wellname”</strong></p>
+<blockquote class="last">
+<div><p>Name of the column of the spreadsheet giving the well names</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.parsers.plate_from_platemap_spreadsheet">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_platemap_spreadsheet</code><span class="sig-paren">(</span><em>file_handle</em>, <em>file_type=’auto’</em>, <em>original_filename=None</em>, <em>data_field=’info’</em>, <em>num_wells=’infer’</em>, <em>headers=True</em>, <em>skiprows=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_tables.html#plate_from_platemap_spreadsheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_platemap_spreadsheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse spreadsheets representing a plate map.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_handle</strong></p>
+<blockquote>
+<div><p>Either a file handle or a file path to a CSV/Excel spreadsheet. If a file
+handle is provided, then the file_type must be set, or at least the
+“original_filename”.</p>
+</div></blockquote>
+<p><strong>file_type</strong></p>
+<blockquote>
+<div><p>Either “csv” or “excel” or “auto” (at which case the type is determined
+based on the provided file path in <code class="docutils literal"><span class="pre">file_handle</span></code> or
+<code class="docutils literal"><span class="pre">original_filename</span></code>)</p>
+</div></blockquote>
+<p><strong>original_filename</strong></p>
+<blockquote>
+<div><p>Original filename (optional if file_handle is already a file path or
+if file_type is specified)</p>
+</div></blockquote>
+<p><strong>data_field</strong></p>
+<blockquote>
+<div><p>Data field of the well under which platemap’s information will be stored</p>
+</div></blockquote>
+<p><strong>num_wells</strong></p>
+<blockquote>
+<div><p>Number of wells in the Plate to be created. If left to default ‘infer’,
+the size of the plate will be chosen as the smallest format (out of
+96, 384 and 1536 wells) which contains all the well names.</p>
+</div></blockquote>
+<p><strong>headers</strong></p>
+<blockquote>
+<div><p>Whether the spreadsheet actually writes the “A” “B”, and “1” “2”</p>
+</div></blockquote>
+<p><strong>skiprows</strong></p>
+<blockquote>
+<div><p>Number of rows to skip (= rows before the platemap starts)</p>
+</div></blockquote>
+<p><strong>The spreadsheet should be either a 8 rows x 12 columns csv/excel file,</strong></p>
+<p><strong>or have headers like this</strong></p>
+<p><strong>.. code:: bash</strong></p>
+<blockquote class="last">
+<div><blockquote>
+<div><p>1  2  3  4  5  6  7  8  9  10 11 12</p>
+</div></blockquote>
+<p>A  .  .  .  .  .  .  .  .  .  .  .  .
+B  .  .  .  .  .  .  .  .  .  .  .  .
+C  .  .  .  .  .  .  .  .  .  .  .  .
+D  .  .  .  .  .  .  .  .  .  .  .  .
+E  .  .  .  .  .  .  .  .  .  .  .  .
+F  .  .  .  .  .  .  .  .  .  .  .  .
+G  .  .  .  .  .  .  .  .  .  .  .  .
+H  .  .  .  .  .  .  .  .  .  .  .  .</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="from-fragment-analyzer-data">
+<h4>From Fragment analyzer data<a class="headerlink" href="#from-fragment-analyzer-data" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="plateo.parsers.plate_from_aati_fragment_analyzer_peaktable">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_aati_fragment_analyzer_peaktable</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_aati_fragment_analyzer.html#plate_from_aati_fragment_analyzer_peaktable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_aati_fragment_analyzer_peaktable" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Return a Plate96 object with a data field for the <code class="docutils literal"><span class="pre">bands</span></code>.</p>
+<p>Provided a <code class="docutils literal"><span class="pre">filename</span></code> of an AATI fragment analyzer Peak table
+(these are generally named <code class="docutils literal"><span class="pre">{DATE}</span> <span class="pre">Peak</span> <span class="pre">Table.csv</span></code>), it generates a
+Plate96 object where each well has a data attribute “bands” of the form
+<code class="docutils literal"><span class="pre">{peak_id:</span> <span class="pre">{attrs}}</span></code> where the <code class="docutils literal"><span class="pre">peak_id</span></code> is a number (&gt;1) and the attrs
+attribute has fields such as <code class="docutils literal"><span class="pre">Size</span> <span class="pre">(bp)</span></code>, <code class="docutils literal"><span class="pre">%</span> <span class="pre">(Conc.)</span></code>, <code class="docutils literal"><span class="pre">nmole/L</span></code>,
+<code class="docutils literal"><span class="pre">ng/ul</span></code>, <code class="docutils literal"><span class="pre">RFU</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.parsers.plate_from_aati_fragment_analyzer_zip">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_aati_fragment_analyzer_zip</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_aati_fragment_analyzer.html#plate_from_aati_fragment_analyzer_zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_aati_fragment_analyzer_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Return a Plate96 object with data for bands and migration image.</p>
+<p>Provided a zip output of an AATI fragment analyzer, it will find the
+relevant files and extract band sizes and gel images, and store these in
+each well’s data.</p>
+<p>In the final plate, each well has a data attribute “bands” of the form
+<code class="docutils literal"><span class="pre">{peak_id:</span> <span class="pre">{attrs}}</span></code> where the <code class="docutils literal"><span class="pre">peak_id</span></code> is a number (&gt;1) and the attrs
+attribute has fields such as <code class="docutils literal"><span class="pre">Size</span> <span class="pre">(bp)</span></code>, <code class="docutils literal"><span class="pre">%</span> <span class="pre">(Conc.)</span></code>, <code class="docutils literal"><span class="pre">nmole/L</span></code>,
+<code class="docutils literal"><span class="pre">ng/ul</span></code>, <code class="docutils literal"><span class="pre">RFU</span></code>.</p>
+<p>Each well also has a  <code class="docutils literal"><span class="pre">data[&quot;migration_image&quot;]</span></code> which is a WxH
+array, a greyscale version of the image.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="miscellaneous">
+<h4>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="plateo.parsers.plate_from_nanodrop_xml_file">
+<code class="descclassname">plateo.parsers.</code><code class="descname">plate_from_nanodrop_xml_file</code><span class="sig-paren">(</span><em>xml_file=None</em>, <em>xml_string=None</em>, <em>num_wells=96</em>, <em>direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/plate_from_nanodrop_xml_file.html#plate_from_nanodrop_xml_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.plate_from_nanodrop_xml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a plate with the DNA concentrations measured by the Nanodrop.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>xml_file</strong></p>
+<blockquote>
+<div><p>The xml file exported from the Nanodrop software. It should contain one
+measurement per well. An xml_string can be provided instead of this
+argument.</p>
+</div></blockquote>
+<p><strong>xml_string</strong></p>
+<blockquote>
+<div><p>The content of an xml file exported from the Nanodrop software. Can be
+provided instead of xml_file. Should contain one measurement per well.</p>
+</div></blockquote>
+<p><strong>num_wells</strong></p>
+<blockquote>
+<div><p>Number of wells in the Plate</p>
+</div></blockquote>
+<p><strong>direction</strong></p>
+<blockquote>
+<div><p>Either <code class="docutils literal"><span class="pre">row</span></code> or <cite>column`</cite>. Order of the measurements on the plate.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A Plate where the wells have the following data fields:</p>
+<p class="last">TODO: complete</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="plate-exporters">
+<h3>Plate Exporters<a class="headerlink" href="#plate-exporters" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plateo.exporters.plate_to_bokeh_plot">
+<code class="descclassname">plateo.exporters.</code><code class="descname">plate_to_bokeh_plot</code><span class="sig-paren">(</span><em>plate</em>, <em>hover_data=()</em>, <em>well_to_html=None</em>, <em>well_color_function=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_bokeh_plots.html#plate_to_bokeh_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.plate_to_bokeh_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an interactive bokeh plot of the plate.</p>
+<p>Hovering the wells displays some data on the wells.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>plate</strong></p>
+<blockquote>
+<div><p>The plate to be converted</p>
+</div></blockquote>
+<p><strong>hover_data</strong></p>
+<blockquote>
+<div><p>list or tuple of all fields from the well’s data that should be
+displayed when hovering a well</p>
+</div></blockquote>
+<p><strong>well_to_html</strong></p>
+<blockquote>
+<div><p>Html that sould be displayed when hovering a well (only works if
+hover_data is left empty).</p>
+</div></blockquote>
+<p><strong>well_color_function</strong></p>
+<blockquote class="last">
+<div><p>A function well=&gt; #a103ba associating a color to fill each well</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.exporters.plate_to_genesift_sequencing_order_spreadsheet">
+<code class="descclassname">plateo.exporters.</code><code class="descname">plate_to_genesift_sequencing_order_spreadsheet</code><span class="sig-paren">(</span><em>plate</em>, <em>output_file</em>, <em>sample_name_function</em>, <em>well_filter=None</em>, <em>direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_genesift_sequencing_order_spreadsheet.html#plate_to_genesift_sequencing_order_spreadsheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.plate_to_genesift_sequencing_order_spreadsheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an excel spreadsheet for ordering through Genesift</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>plate</strong></p>
+<p><strong>output_file</strong></p>
+<p><strong>sample_name_function</strong></p>
+<blockquote>
+<div><p>A function  f(well) =&gt; Sample name</p>
+</div></blockquote>
+<p><strong>well_filter</strong></p>
+<blockquote class="last">
+<div><p>A function  f(well) =&gt; True/false</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.exporters.plate_to_platemap_spreadsheet">
+<code class="descclassname">plateo.exporters.</code><code class="descname">plate_to_platemap_spreadsheet</code><span class="sig-paren">(</span><em>plate</em>, <em>wellinfo_function</em>, <em>filepath=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_tables.html#plate_to_platemap_spreadsheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.plate_to_platemap_spreadsheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a spreadsheet with a map of the plate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>plate</strong></p>
+<blockquote>
+<div><p>A Plate object</p>
+</div></blockquote>
+<p><strong>filepath</strong></p>
+<blockquote>
+<div><p>Path to a “.csv” or “.xls(x)” file</p>
+</div></blockquote>
+<p><strong>wellinfo_function</strong></p>
+<blockquote class="last">
+<div><p>A function <cite>f(well) -&gt; info</cite> where <cite>well</cite> is a Well object of the
+plate and the returned <cite>info</cite> is an information about the well that
+will be displayed in the well’s cell in the final spreadsheet. The
+info can be a string or any other object that can be converted to a
+string</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>   <span class="mi">1</span>  <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">4</span>  <span class="mi">5</span>  <span class="mi">6</span>  <span class="mi">7</span>  <span class="mi">8</span>  <span class="mi">9</span>  <span class="mi">10</span> <span class="mi">11</span> <span class="mi">12</span>
+<span class="n">A</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">B</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">C</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">D</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">E</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">F</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">G</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+<span class="n">H</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>  <span class="o">.</span>
+</pre></div>
+</div>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="plotters">
+<h4>Plotters<a class="headerlink" href="#plotters" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="plateo.exporters.PlateTextPlotter">
+<code class="descclassname">plateo.exporters.</code><code class="descname">PlateTextPlotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_matplotlib_plots.html#PlateTextPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.PlateTextPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a plate’s well statistic as text at the well’s positions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>text_function</strong></p>
+<blockquote>
+<div><p>A function (well) =&gt; text</p>
+</div></blockquote>
+<p><strong>with_colorbar</strong></p>
+<blockquote class="last">
+<div><p>It true a colorbar giving a scale for color values will be plotted
+alongside the map</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.exporters.PlateColorsPlotter">
+<code class="descclassname">plateo.exporters.</code><code class="descname">PlateColorsPlotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_matplotlib_plots.html#PlateColorsPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.PlateColorsPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a plate’s well statistic with wells colored differently.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stat_function</strong></p>
+<blockquote>
+<div><p>The function to be plotted, with signature (well) =&gt; value</p>
+</div></blockquote>
+<p><strong>with_colorbar</strong></p>
+<blockquote class="last">
+<div><p>It true a colorbar giving a scale for color values will be plotted
+alongside the map</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.exporters.PlateGraphsPlotter">
+<code class="descclassname">plateo.exporters.</code><code class="descname">PlateGraphsPlotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/exporters/plate_to_matplotlib_plots.html#PlateGraphsPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.exporters.PlateGraphsPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a graph (for instance time series) for each well of the plate</p>
+<p>The result has the shape of a plate, with each well replaced by a graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>plot_function</strong></p>
+<blockquote class="last">
+<div><blockquote>
+<div><p>A function f(well, well_ax) which plots something on the provided
+<code class="docutils literal"><span class="pre">well_ax</span></code> depending on the <code class="docutils literal"><span class="pre">well</span></code>.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>subplot_size</dt>
+<dd><p class="first last">(width, height) of subplots, between 0 and 1 (1 meaning the graphs of
+the different wells will have virtually no margin between them)</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-plateo.containers.plates">
+<span id="container-classes"></span><h3>Container classes<a class="headerlink" href="#module-plateo.containers.plates" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="plateo.containers.plates.Plate1536">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate1536</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate1536"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate1536" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for 1536-well plates (32 rows, 48 columns)</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Plate2x4">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate2x4</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate2x4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate2x4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for 8-well (2 x 4) plates such as colony plating plates</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Plate384">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate384</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate384"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate384" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for standard 384-well plates</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Plate4ti0130">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate4ti0130</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate4ti0130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate4ti0130" title="Permalink to this definition">¶</a></dt>
+<dd><p>96-well plate with 2ml deepwells from 4titude</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Plate4ti0960">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate4ti0960</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate4ti0960"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate4ti0960" title="Permalink to this definition">¶</a></dt>
+<dd><p>96-well plate from from 4titude</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Plate96">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Plate96</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Plate96"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Plate96" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for standard 96-well plates</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.PlateLabcyteEchoLp0200Ldv">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">PlateLabcyteEchoLp0200Ldv</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#PlateLabcyteEchoLp0200Ldv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.PlateLabcyteEchoLp0200Ldv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low dead volume 384-well Echo plate</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.PlateLabcyteEchoP05525Pp">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">PlateLabcyteEchoP05525Pp</code><span class="sig-paren">(</span><em>name=None</em>, <em>wells_data=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#PlateLabcyteEchoP05525Pp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.PlateLabcyteEchoP05525Pp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Polypropylene 384-well ECHO plate</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.containers.plates.Trough8x1">
+<em class="property">class </em><code class="descclassname">plateo.containers.plates.</code><code class="descname">Trough8x1</code><span class="sig-paren">(</span><em>name</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/containers/plates.html#Trough8x1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.containers.plates.Trough8x1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eight positions share the same content</p>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-plateo.PickList">
+<span id="picklists"></span><h2>Picklists<a class="headerlink" href="#module-plateo.PickList" title="Permalink to this headline">¶</a></h2>
+<p>Classes to represent picklists and liquid transfers in general</p>
+<dl class="class">
+<dt id="plateo.PickList.PickList">
+<em class="property">class </em><code class="descclassname">plateo.PickList.</code><code class="descname">PickList</code><span class="sig-paren">(</span><em>transfers_list=()</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a list of well-to-well transfers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>transfers_list</strong></p>
+<blockquote>
+<div><p>A list of Transfer objects that will be part of a same dispensing
+operation, in the order in which they are meant to be executed.</p>
+</div></blockquote>
+<p><strong>data</strong></p>
+<blockquote class="last">
+<div><p>A dict with some infos on the picklist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="plateo.PickList.PickList.add_transfer">
+<code class="descname">add_transfer</code><span class="sig-paren">(</span><em>source_well=None</em>, <em>destination_well=None</em>, <em>volume=None</em>, <em>data=None</em>, <em>transfer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.add_transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.add_transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a transfer to the picklist’s tranfers list.</p>
+<p>You can either provide a <code class="docutils literal"><span class="pre">Transfer</span></code> object with the <code class="docutils literal"><span class="pre">transfer</span></code>
+parameter, or the parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.enforce_maximum_dispense_volume">
+<code class="descname">enforce_maximum_dispense_volume</code><span class="sig-paren">(</span><em>max_dispense_volume</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.enforce_maximum_dispense_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.enforce_maximum_dispense_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new picklist were every too-large dispense is broken down
+into smaller dispenses.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>content_field=’content’</em>, <em>inplace=True</em>, <em>callback_function=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate the execution of the picklist</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="plateo.PickList.PickList.from_plates">
+<em class="property">static </em><code class="descname">from_plates</code><span class="sig-paren">(</span><em>source_plate</em>, <em>destination_plate</em>, <em>volume</em>, <em>source_criterion=None</em>, <em>destination_criterion=None</em>, <em>source_direction=’row’</em>, <em>destination_direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.from_plates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.from_plates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a PickList object based on plates and conditions.</p>
+<p>BROKEN due to changes in picklists. TODO: Fix.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="plateo.PickList.PickList.merge_picklists">
+<em class="property">static </em><code class="descname">merge_picklists</code><span class="sig-paren">(</span><em>picklists_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.merge_picklists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.merge_picklists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge the list of picklists into a single picklist.</p>
+<p>The transfers in the final picklist are the concatenation of the
+tranfers in the different picklists, in the order in which they appear
+in the list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.restricted_to">
+<code class="descname">restricted_to</code><span class="sig-paren">(</span><em>transfer_filter=None</em>, <em>source_well=None</em>, <em>destination_well=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.restricted_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.restricted_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a version of the picklist restricted to transfers with the
+right source/destination well.</p>
+<p>You can provide <code class="docutils literal"><span class="pre">source_well</span></code> and <code class="docutils literal"><span class="pre">destination_well</span></code> or
+alternatively just a function <code class="docutils literal"><span class="pre">transfer_filter</span></code> with signature
+(transfer)=&gt;True/False that will be used to filter out transfers
+(for which it returns false).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.sorted_by">
+<code class="descname">sorted_by</code><span class="sig-paren">(</span><em>sorting_method=’source_well’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.sorted_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.sorted_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new version of the picklist sorted by some parameter.</p>
+<p>The <code class="docutils literal"><span class="pre">sorting_method</span></code> is either the name of an attribute of the
+transfers, such as “source_well”, or a function f(transfer) -&gt; value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.split_by">
+<code class="descname">split_by</code><span class="sig-paren">(</span><em>category</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.split_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.split_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the picklist into a list of picklists, per category.</p>
+<p>The returned list if of the form [(cat, subpicklist)] where
+<code class="docutils literal"><span class="pre">cat</span></code> is the value of the category for all transfers in
+<code class="docutils literal"><span class="pre">subpicklist</span></code>.</p>
+<p>The parameter <code class="docutils literal"><span class="pre">category</span></code> is either the name of a transfer attribute
+or a function f(transfer)=&gt; value which is used to</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.to_plain_string">
+<code class="descname">to_plain_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.to_plain_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.to_plain_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of transfers in human readable format</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.to_plain_textfile">
+<code class="descname">to_plain_textfile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.to_plain_textfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.to_plain_textfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the picklist in a file in a human reable format.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.PickList.total_transfered_volume">
+<code class="descname">total_transfered_volume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#PickList.total_transfered_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.PickList.total_transfered_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum of all volumes from all transfers.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="plateo.PickList.Transfer">
+<em class="property">class </em><code class="descclassname">plateo.PickList.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>source_well</em>, <em>destination_well</em>, <em>volume</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.Transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A tranfer from a source to a destination</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source_well</strong></p>
+<blockquote>
+<div><p>A Well object representing the plate well from which to transfer</p>
+</div></blockquote>
+<p><strong>destination_well</strong></p>
+<blockquote>
+<div><p>A Well object representing the plate well to which to transfer.</p>
+</div></blockquote>
+<p><strong>volume</strong></p>
+<blockquote>
+<div><p>Volume to be transfered, expressed in liters.</p>
+</div></blockquote>
+<p><strong>data</strong></p>
+<blockquote class="last">
+<div><p>A dict containing any useful information on the transfer, this
+information can be used later e.g. as parameters for the transfer
+when exporting a picklist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="plateo.PickList.Transfer.change_volume">
+<code class="descname">change_volume</code><span class="sig-paren">(</span><em>new_volume</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#Transfer.change_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.Transfer.change_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a version of the transfer with a new volume.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="plateo.PickList.Transfer.to_plain_string">
+<code class="descname">to_plain_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/PickList.html#Transfer.to_plain_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.PickList.Transfer.to_plain_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return “xx L from {source_well} into {dest_well}”.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="picklist-parsers">
+<h3>Picklist Parsers<a class="headerlink" href="#picklist-parsers" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plateo.parsers.picklist_from_labcyte_echo_logfile">
+<code class="descclassname">plateo.parsers.</code><code class="descname">picklist_from_labcyte_echo_logfile</code><span class="sig-paren">(</span><em>logfile=None</em>, <em>logcontent=None</em>, <em>plates_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/parsers/picklist_from_labcyte_echo_logfile.html#picklist_from_labcyte_echo_logfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.parsers.picklist_from_labcyte_echo_logfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a picklist of what was actually dispensed in the ECHO, based
+on the log file.</p>
+<p>Picklist.metadata[“exceptions”] is a picklist of all transfers that went
+wrong.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>logfile</strong></p>
+<blockquote>
+<div><p>The path to the echo logfile.</p>
+</div></blockquote>
+<p><strong>logcontent</strong></p>
+<blockquote>
+<div><p>Echo logfile content, can be provided instead of filename</p>
+</div></blockquote>
+<p><strong>plates_dict</strong></p>
+<blockquote class="last">
+<div><p>A dictionary of the form {‘Plate name’: Plate()} linking the plate names
+found in the Echo logs to Plateo Plate objects. If None is provided,
+plates are infered from the Echo logs (a bit experimental).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-plateo.tools">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-plateo.tools" title="Permalink to this headline">¶</a></h2>
+<p>Miscellaneous useful functions.</p>
+<p>In particulat, methods for converting to and from plate coordinates.</p>
+<dl class="function">
+<dt id="plateo.tools.compute_rows_columns">
+<code class="descclassname">plateo.tools.</code><code class="descname">compute_rows_columns</code><span class="sig-paren">(</span><em>num_wells</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#compute_rows_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.compute_rows_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert 96-&gt;(8,12), 384-&gt;(16,24), etc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.coordinates_to_wellname">
+<code class="descclassname">plateo.tools.</code><code class="descname">coordinates_to_wellname</code><span class="sig-paren">(</span><em>coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#coordinates_to_wellname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.coordinates_to_wellname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert (1,1)-&gt;A1, (4,3)-&gt;D3, (12, 12)-&gt;H12, etc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.index_to_wellname">
+<code class="descclassname">plateo.tools.</code><code class="descname">index_to_wellname</code><span class="sig-paren">(</span><em>index</em>, <em>num_wells</em>, <em>direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#index_to_wellname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.index_to_wellname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert e.g. 1..96 into A1..H12</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.infer_plate_size_from_wellnames">
+<code class="descclassname">plateo.tools.</code><code class="descname">infer_plate_size_from_wellnames</code><span class="sig-paren">(</span><em>wellnames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#infer_plate_size_from_wellnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.infer_plate_size_from_wellnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first of 96, 384, or 1536, to contain all wellnames.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.number_to_rowname">
+<code class="descclassname">plateo.tools.</code><code class="descname">number_to_rowname</code><span class="sig-paren">(</span><em>number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#number_to_rowname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.number_to_rowname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert 1-&gt;A 26-&gt;Z 27-&gt;AA etc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.rowname_to_number">
+<code class="descclassname">plateo.tools.</code><code class="descname">rowname_to_number</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#rowname_to_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.rowname_to_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert A-&gt;1 Z-&gt;26 AA-&gt;27 etc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.wellname_to_coordinates">
+<code class="descclassname">plateo.tools.</code><code class="descname">wellname_to_coordinates</code><span class="sig-paren">(</span><em>wellname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#wellname_to_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.wellname_to_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert A1-&gt;(1,1), H11-&gt;(8, 11), etc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="plateo.tools.wellname_to_index">
+<code class="descclassname">plateo.tools.</code><code class="descname">wellname_to_index</code><span class="sig-paren">(</span><em>wellname</em>, <em>num_wells</em>, <em>direction=’row’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plateo/tools.html#wellname_to_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plateo.tools.wellname_to_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert e.g. A1..H12 into 1..96
+direction is either row for A1 A2 A3… or column for A1 B1 C1 D1 etc.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Plateo Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.PickList &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.PickList</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.PickList</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Classes to represent picklists and liquid transfers in general&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="c1">#import parsers</span>
+<span class="c1">#import exporters</span>
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="n">compute_rows_columns</span><span class="p">,</span> <span class="n">wellname_to_index</span><span class="p">,</span> <span class="n">index_to_wellname</span>
+
+
+
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../ref.html#plateo.PickList.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A tranfer from a source to a destination</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    source_well</span>
+<span class="sd">      A Well object representing the plate well from which to transfer</span>
+
+<span class="sd">    destination_well</span>
+<span class="sd">      A Well object representing the plate well to which to transfer.</span>
+
+<span class="sd">    volume</span>
+<span class="sd">      Volume to be transfered, expressed in liters.</span>
+
+<span class="sd">    data</span>
+<span class="sd">      A dict containing any useful information on the transfer, this</span>
+<span class="sd">      information can be used later e.g. as parameters for the transfer</span>
+<span class="sd">      when exporting a picklist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_well</span><span class="p">,</span> <span class="n">destination_well</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_well</span> <span class="o">=</span> <span class="n">source_well</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destination_well</span> <span class="o">=</span> <span class="n">destination_well</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="Transfer.to_plain_string"><a class="viewcode-back" href="../../ref.html#plateo.PickList.Transfer.to_plain_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_plain_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return &quot;xx L from {source_well} into {dest_well}&quot;.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{self.volume:.02E}</span><span class="s2">L from </span><span class="si">{self.source_well.plate.name}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{self.source_well.name}</span><span class="s2"> into &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{self.destination_well.plate.name}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{self.destination_well.name}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transfer.change_volume"><a class="viewcode-back" href="../../ref.html#plateo.PickList.Transfer.change_volume">[docs]</a>    <span class="k">def</span> <span class="nf">change_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_volume</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a version of the transfer with a new volume.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Transfer</span><span class="p">(</span><span class="n">source_well</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_well</span><span class="p">,</span>
+                        <span class="n">destination_well</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_well</span><span class="p">,</span>
+                        <span class="n">volume</span><span class="o">=</span><span class="n">new_volume</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PickList"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList">[docs]</a><span class="k">class</span> <span class="nc">PickList</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Representation of a list of well-to-well transfers.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+
+<span class="sd">    transfers_list</span>
+<span class="sd">      A list of Transfer objects that will be part of a same dispensing</span>
+<span class="sd">      operation, in the order in which they are meant to be executed.</span>
+
+<span class="sd">    data</span>
+<span class="sd">      A dict with some infos on the picklist.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transfers_list</span><span class="o">=</span><span class="p">(),</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transfers_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="PickList.add_transfer"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.add_transfer">[docs]</a>    <span class="k">def</span> <span class="nf">add_transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_well</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destination_well</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">volume</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transfer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a transfer to the picklist&#39;s tranfers list.</span>
+
+<span class="sd">        You can either provide a ``Transfer`` object with the ``transfer``</span>
+<span class="sd">        parameter, or the parameters</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transfer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transfer</span> <span class="o">=</span> <span class="n">Transfer</span><span class="p">(</span><span class="n">source_well</span><span class="o">=</span><span class="n">source_well</span><span class="p">,</span>
+                                <span class="n">destination_well</span><span class="o">=</span><span class="n">destination_well</span><span class="p">,</span>
+                                <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span>
+                                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transfer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PickList.to_plain_string"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.to_plain_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_plain_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of transfers in human readable format&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">transfer</span><span class="o">.</span><span class="n">to_plain_string</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PickList.to_plain_textfile"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.to_plain_textfile">[docs]</a>    <span class="k">def</span> <span class="nf">to_plain_textfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the picklist in a file in a human reable format.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_plain_string</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PickList.execute"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content_field</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">callback_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Simulate the execution of the picklist&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="n">all_plates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="n">plate</span>
+                <span class="k">for</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span>
+                <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">transfer</span><span class="o">.</span><span class="n">source_well</span><span class="o">.</span><span class="n">plate</span><span class="p">,</span>
+                              <span class="n">transfer</span><span class="o">.</span><span class="n">destination_well</span><span class="o">.</span><span class="n">plate</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">new_plates</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">plate</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">plate</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">all_plates</span>
+            <span class="p">}</span>
+
+            <span class="n">new_transfer_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">:</span>
+                <span class="n">new_source_plate</span> <span class="o">=</span> <span class="n">new_plates</span><span class="p">[</span><span class="n">transfer</span><span class="o">.</span><span class="n">source_well</span><span class="o">.</span><span class="n">plate</span><span class="p">]</span>
+                <span class="n">new_dest_plate</span> <span class="o">=</span> <span class="n">new_plates</span><span class="p">[</span><span class="n">transfer</span><span class="o">.</span><span class="n">destination_well</span><span class="o">.</span><span class="n">plate</span><span class="p">]</span>
+                <span class="n">new_source_well</span> <span class="o">=</span> <span class="n">new_source_plate</span><span class="o">.</span><span class="n">wells</span><span class="p">[</span>
+                    <span class="n">transfer</span><span class="o">.</span><span class="n">source_well</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">new_dest_well</span> <span class="o">=</span> <span class="n">new_dest_plate</span><span class="o">.</span><span class="n">wells</span><span class="p">[</span>
+                    <span class="n">transfer</span><span class="o">.</span><span class="n">destination_well</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">new_transfer_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transfer</span><span class="p">(</span>
+                    <span class="n">volume</span><span class="o">=</span><span class="n">transfer</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span>
+                    <span class="n">source_well</span><span class="o">=</span><span class="n">new_source_well</span><span class="p">,</span>
+                    <span class="n">destination_well</span><span class="o">=</span><span class="n">new_dest_well</span>
+                <span class="p">))</span>
+
+            <span class="n">new_picklist</span> <span class="o">=</span> <span class="n">PickList</span><span class="p">(</span><span class="n">transfers_list</span><span class="o">=</span><span class="n">new_transfer_list</span><span class="p">)</span>
+            <span class="n">new_picklist</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">content_field</span><span class="o">=</span><span class="n">content_field</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">callback_function</span><span class="o">=</span><span class="n">callback_function</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_plates</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">:</span>
+                <span class="n">transfer</span><span class="o">.</span><span class="n">source_well</span><span class="o">.</span><span class="n">transfer_to_other_well</span><span class="p">(</span>
+                    <span class="n">destination_well</span><span class="o">=</span><span class="n">transfer</span><span class="o">.</span><span class="n">destination_well</span><span class="p">,</span>
+                    <span class="n">transfer_volume</span><span class="o">=</span><span class="n">transfer</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">callback_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">callback_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transfer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PickList.restricted_to"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.restricted_to">[docs]</a>    <span class="k">def</span> <span class="nf">restricted_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transfer_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_well</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">destination_well</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a version of the picklist restricted to transfers with the</span>
+<span class="sd">        right source/destination well.</span>
+
+<span class="sd">        You can provide ``source_well`` and ``destination_well`` or</span>
+<span class="sd">        alternatively just a function ``transfer_filter`` with signature</span>
+<span class="sd">        (transfer)=&gt;True/False that will be used to filter out transfers</span>
+<span class="sd">        (for which it returns false).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transfer_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">transfer_filter</span><span class="p">(</span><span class="n">tr</span><span class="p">):</span>
+                <span class="n">source_well_is_ok</span> <span class="o">=</span> <span class="p">((</span><span class="n">source_well</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span>
+                                     <span class="p">(</span><span class="n">source_well</span> <span class="o">==</span> <span class="n">tr</span><span class="o">.</span><span class="n">source_well</span><span class="p">))</span>
+                <span class="n">dest_well_is_ok</span> <span class="o">=</span> <span class="p">((</span><span class="n">destination_well</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span>
+                                   <span class="p">(</span><span class="n">destination_well</span> <span class="o">==</span> <span class="n">tr</span><span class="o">.</span><span class="n">destination_well</span><span class="p">))</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">source_well_is_ok</span> <span class="ow">and</span> <span class="n">dest_well_is_ok</span><span class="p">)</span>
+
+        <span class="n">transfers</span> <span class="o">=</span> <span class="p">[</span><span class="n">tr</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span> <span class="k">if</span> <span class="n">transfer_filter</span><span class="p">(</span><span class="n">tr</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">PickList</span><span class="p">(</span><span class="n">transfers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="PickList.sorted_by"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.sorted_by">[docs]</a>    <span class="k">def</span> <span class="nf">sorted_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sorting_method</span><span class="o">=</span><span class="s2">&quot;source_well&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new version of the picklist sorted by some parameter.</span>
+
+<span class="sd">        The ``sorting_method`` is either the name of an attribute of the</span>
+<span class="sd">        transfers, such as &quot;source_well&quot;, or a function f(transfer) -&gt; value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sorting_method</span><span class="p">,</span> <span class="s2">&quot;__call__&quot;</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">sorting_method</span><span class="p">(</span><span class="n">transfer</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">transfer</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">sorting_method</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">PickList</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sorting_method</span><span class="p">),</span>
+                        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="PickList.split_by"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.split_by">[docs]</a>    <span class="k">def</span> <span class="nf">split_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Split the picklist into a list of picklists, per category.</span>
+
+<span class="sd">        The returned list if of the form [(cat, subpicklist)] where</span>
+<span class="sd">        ``cat`` is the value of the category for all transfers in</span>
+<span class="sd">        ``subpicklist``.</span>
+
+<span class="sd">        The parameter ``category`` is either the name of a transfer attribute</span>
+<span class="sd">        or a function f(transfer)=&gt; value which is used to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">str_category</span> <span class="o">=</span> <span class="n">category</span>
+            <span class="k">def</span> <span class="nf">category</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">str_category</span><span class="p">]</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">category</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">restricted_to</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tr</span><span class="p">:</span> <span class="n">category</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">==</span> <span class="n">cat</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="PickList.total_transfered_volume"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.total_transfered_volume">[docs]</a>    <span class="k">def</span> <span class="nf">total_transfered_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the sum of all volumes from all transfers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">transfer</span><span class="o">.</span><span class="n">volume</span> <span class="k">for</span> <span class="n">transfer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="PickList.from_plates"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.from_plates">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_plates</span><span class="p">(</span><span class="n">source_plate</span><span class="p">,</span> <span class="n">destination_plate</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span>
+                    <span class="n">source_criterion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">destination_criterion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">,</span>
+                    <span class="n">destination_direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a PickList object based on plates and conditions.</span>
+
+<span class="sd">        BROKEN due to changes in picklists. TODO: Fix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="s2">&quot;__call__&quot;</span><span class="p">):</span>
+            <span class="n">constant_volume</span> <span class="o">=</span> <span class="n">volume</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">source_well</span><span class="p">:</span> <span class="n">constant_volume</span>
+
+        <span class="k">if</span> <span class="n">source_criterion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">source_criterion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">well</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">destination_criterion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">destination_criterion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">well</span><span class="p">:</span> <span class="kc">True</span>
+
+        <span class="k">def</span> <span class="nf">destination_wellnames_generator</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">destination_plate</span><span class="o">.</span><span class="n">num_wells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">destination_wellname</span> <span class="o">=</span> <span class="n">index_to_wellname</span><span class="p">(</span>
+                    <span class="n">index</span><span class="p">,</span> <span class="n">destination_plate</span><span class="o">.</span><span class="n">num_wells</span><span class="p">,</span>
+                    <span class="n">direction</span><span class="o">=</span><span class="n">destination_direction</span><span class="p">)</span>
+                <span class="n">destination_well</span> <span class="o">=</span> <span class="n">destination_plate</span><span class="p">[</span><span class="n">destination_wellname</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">destination_criterion</span><span class="p">(</span><span class="n">destination_well</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">destination_wellname</span>
+
+        <span class="n">destination_wellnames</span> <span class="o">=</span> <span class="n">destination_wellnames_generator</span><span class="p">()</span>
+
+        <span class="n">transfers_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">source_plate</span><span class="o">.</span><span class="n">num_wells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">source_wellname</span> <span class="o">=</span> <span class="n">index_to_wellname</span><span class="p">(</span>
+                <span class="n">index</span><span class="p">,</span> <span class="n">source_plate</span><span class="o">.</span><span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">source_direction</span><span class="p">)</span>
+            <span class="n">source_well</span> <span class="o">=</span> <span class="n">source_plate</span><span class="p">[</span><span class="n">source_wellname</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">source_criterion</span><span class="p">(</span><span class="n">source_well</span><span class="p">):</span>
+                <span class="n">destination_wellname</span> <span class="o">=</span> <span class="n">destination_wellnames</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">transfers_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Transfer</span><span class="p">(</span>
+                        <span class="n">source_well</span><span class="o">=</span><span class="n">source_wellname</span><span class="p">,</span>
+                        <span class="n">destination_well</span><span class="o">=</span><span class="n">destination_wellname</span><span class="p">,</span>
+                        <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">(</span><span class="n">source_well</span><span class="p">),</span>
+                        <span class="n">source_plate</span><span class="o">=</span><span class="n">source_plate</span><span class="p">,</span>
+                        <span class="n">destination_plate</span><span class="o">=</span><span class="n">destination_plate</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">PickList</span><span class="p">(</span><span class="n">transfers_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PickList.enforce_maximum_dispense_volume"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.enforce_maximum_dispense_volume">[docs]</a>    <span class="k">def</span> <span class="nf">enforce_maximum_dispense_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_dispense_volume</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new picklist were every too-large dispense is broken down</span>
+<span class="sd">        into smaller dispenses.&quot;&quot;&quot;</span>
+        <span class="n">transfers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">trf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">:</span>
+            <span class="n">n_additional_dispense</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">trf</span><span class="o">.</span><span class="n">volume</span> <span class="o">/</span> <span class="n">max_dispense_volume</span><span class="p">)</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">trf</span><span class="o">.</span><span class="n">volume</span> <span class="o">-</span> <span class="n">n_additional_dispense</span> <span class="o">*</span> <span class="n">max_dispense_volume</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_additional_dispense</span><span class="p">):</span>
+                <span class="n">transfers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trf</span><span class="o">.</span><span class="n">change_volume</span><span class="p">(</span><span class="n">max_dispense_volume</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">rest</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">transfers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trf</span><span class="o">.</span><span class="n">change_volume</span><span class="p">(</span><span class="n">rest</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">PickList</span><span class="p">(</span><span class="n">transfers_list</span><span class="o">=</span><span class="n">transfers</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PickList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transfers_list</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">transfers_list</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PickList.merge_picklists"><a class="viewcode-back" href="../../ref.html#plateo.PickList.PickList.merge_picklists">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_picklists</span><span class="p">(</span><span class="n">picklists_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Merge the list of picklists into a single picklist.</span>
+
+<span class="sd">        The transfers in the final picklist are the concatenation of the</span>
+<span class="sd">        tranfers in the different picklists, in the order in which they appear</span>
+<span class="sd">        in the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">picklists_list</span><span class="p">,</span> <span class="n">PickList</span><span class="p">([]))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

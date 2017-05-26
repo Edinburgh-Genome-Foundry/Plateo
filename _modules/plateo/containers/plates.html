@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.containers.plates &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.containers.plates</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.containers.plates</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">..Plate</span> <span class="k">import</span> <span class="n">Plate</span>
+<span class="kn">from</span> <span class="nn">..Well</span> <span class="k">import</span> <span class="n">Well</span>
+
+<span class="k">def</span> <span class="nf">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="mi">96</span><span class="p">:</span> <span class="n">Plate96</span><span class="p">,</span>
+        <span class="mi">384</span><span class="p">:</span> <span class="n">Plate384</span><span class="p">,</span>
+        <span class="mi">1536</span><span class="p">:</span> <span class="n">Plate1536</span><span class="p">,</span>
+    <span class="p">}[</span><span class="n">num_wells</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Plate96"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate96">[docs]</a><span class="k">class</span> <span class="nc">Plate96</span><span class="p">(</span><span class="n">Plate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for standard 96-well plates&quot;&quot;&quot;</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">num_columns</span> <span class="o">=</span> <span class="mi">12</span></div>
+
+
+<div class="viewcode-block" id="Plate384"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate384">[docs]</a><span class="k">class</span> <span class="nc">Plate384</span><span class="p">(</span><span class="n">Plate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for standard 384-well plates&quot;&quot;&quot;</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">num_columns</span> <span class="o">=</span> <span class="mi">24</span></div>
+
+
+<div class="viewcode-block" id="Plate1536"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate1536">[docs]</a><span class="k">class</span> <span class="nc">Plate1536</span><span class="p">(</span><span class="n">Plate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for 1536-well plates (32 rows, 48 columns)&quot;&quot;&quot;</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">num_columns</span> <span class="o">=</span> <span class="mi">48</span></div>
+
+<div class="viewcode-block" id="Plate2x4"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate2x4">[docs]</a><span class="k">class</span> <span class="nc">Plate2x4</span><span class="p">(</span><span class="n">Plate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for 8-well (2 x 4) plates such as colony plating plates&quot;&quot;&quot;</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">num_columns</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+
+<div class="viewcode-block" id="Plate4ti0960"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate4ti0960">[docs]</a><span class="k">class</span> <span class="nc">Plate4ti0960</span><span class="p">(</span><span class="n">Plate96</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;96-well plate from from 4titude&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">PlateWell</span><span class="p">(</span><span class="n">Well</span><span class="p">):</span>
+        <span class="n">capacity</span> <span class="o">=</span> <span class="mf">150e-6</span></div>
+
+<div class="viewcode-block" id="Plate4ti0130"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Plate4ti0130">[docs]</a><span class="k">class</span> <span class="nc">Plate4ti0130</span><span class="p">(</span><span class="n">Plate96</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;96-well plate with 2ml deepwells from 4titude&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">PlateWell</span><span class="p">(</span><span class="n">Well</span><span class="p">):</span>
+        <span class="n">capacity</span> <span class="o">=</span> <span class="mf">1900e-6</span></div>
+
+<div class="viewcode-block" id="PlateLabcyteEchoLp0200Ldv"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.PlateLabcyteEchoLp0200Ldv">[docs]</a><span class="k">class</span> <span class="nc">PlateLabcyteEchoLp0200Ldv</span><span class="p">(</span><span class="n">Plate384</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Low dead volume 384-well Echo plate&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">PlateWell</span><span class="p">(</span><span class="n">Well</span><span class="p">):</span>
+        <span class="n">capacity</span> <span class="o">=</span> <span class="mf">12e-6</span>
+        <span class="n">echo_dead_volume</span> <span class="o">=</span> <span class="mf">3e-6</span></div>
+
+<div class="viewcode-block" id="PlateLabcyteEchoP05525Pp"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.PlateLabcyteEchoP05525Pp">[docs]</a><span class="k">class</span> <span class="nc">PlateLabcyteEchoP05525Pp</span><span class="p">(</span><span class="n">Plate384</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Polypropylene 384-well ECHO plate&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">PlateWell</span><span class="p">(</span><span class="n">Well</span><span class="p">):</span>
+        <span class="n">capacity</span> <span class="o">=</span> <span class="mf">50e-6</span>
+        <span class="n">echo_dead_volume</span> <span class="o">=</span> <span class="mf">15e-6</span></div>
+
+<div class="viewcode-block" id="Trough8x1"><a class="viewcode-back" href="../../../ref.html#plateo.containers.plates.Trough8x1">[docs]</a><span class="k">class</span> <span class="nc">Trough8x1</span><span class="p">(</span><span class="n">Plate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Eight positions share the same content&quot;&quot;&quot;</span>
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">num_columns</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Plate</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">well</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;A1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">content</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

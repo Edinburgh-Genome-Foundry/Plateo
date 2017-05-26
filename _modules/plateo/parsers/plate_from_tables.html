@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.parsers.plate_from_tables &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.parsers.plate_from_tables</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.parsers.plate_from_tables</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">..tools</span> <span class="k">import</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">,</span> <span class="n">number_to_rowname</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">plateo.containers</span> <span class="k">import</span> <span class="n">get_plate_class</span>
+
+<div class="viewcode-block" id="plate_from_dataframe"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_dataframe">[docs]</a><span class="k">def</span> <span class="nf">plate_from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span><span class="p">,</span>
+                         <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a plate from a Pandas dataframe where each row contains the</span>
+<span class="sd">    name of a well and data on the well.</span>
+
+<span class="sd">    it is assumed that the dataframe&#39;s index is given by the well names.</span>
+
+<span class="sd">    This function is used e.g. in `plate_from_list_spreadsheet`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    dataframe</span>
+<span class="sd">      A Pandas dataframe</span>
+
+<span class="sd">    wellname_field</span>
+<span class="sd">      The name of the Pandas dataframe column indicating the name of the wells.</span>
+
+<span class="sd">    num_wells</span>
+<span class="sd">      Number of wells in the Plate to be created. If left to default &#39;infer&#39;,</span>
+<span class="sd">      the size of the plate will be chosen as the smallest format (out of</span>
+<span class="sd">      96, 384 and 1536 wells) which contains all the well names.</span>
+
+<span class="sd">    data</span>
+<span class="sd">      Metadata information for the plate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: infer plate class automatically ?</span>
+
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">wellname_field</span><span class="p">)</span>
+    <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">well</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">well</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">num_wells</span> <span class="o">==</span> <span class="s2">&quot;infer&quot;</span><span class="p">:</span>
+        <span class="n">num_wells</span> <span class="o">=</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">(</span><span class="n">wells_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">plate_class</span> <span class="o">=</span> <span class="n">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plate_class</span><span class="p">(</span><span class="n">wells_data</span><span class="o">=</span><span class="n">wells_data</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plate_from_list_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_list_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_list_spreadsheet</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheetname</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span>
+                                <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a plate from a Pandas dataframe where each row contains the</span>
+<span class="sd">    name of a well and metadata on the well.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    filename</span>
+<span class="sd">      Path to the spreadsheet file.</span>
+
+<span class="sd">    sheetname</span>
+<span class="sd">      Index or name of the spreadsheet to use.</span>
+
+<span class="sd">    num_wells</span>
+<span class="sd">      Number of wells in the Plate to be created. If left to default &#39;infer&#39;,</span>
+<span class="sd">      the size of the plate will be chosen as the smallest format (out of</span>
+<span class="sd">      96, 384 and 1536 wells) which contains all the well names.</span>
+
+<span class="sd">    wellname_field=&quot;wellname&quot;</span>
+<span class="sd">      Name of the column of the spreadsheet giving the well names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s2">&quot;.xls&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>  <span class="c1"># includes xlsx</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheetname</span><span class="o">=</span><span class="n">sheetname</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plate_from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="n">wellname_field</span><span class="p">,</span>
+                                <span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">,</span>
+                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="plate_from_platemap_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_platemap_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_platemap_spreadsheet</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                                    <span class="n">original_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_field</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span>
+                                    <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">skiprows</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse spreadsheets representing a plate map.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    file_handle</span>
+<span class="sd">      Either a file handle or a file path to a CSV/Excel spreadsheet. If a file</span>
+<span class="sd">      handle is provided, then the file_type must be set, or at least the</span>
+<span class="sd">      &quot;original_filename&quot;.</span>
+
+<span class="sd">    file_type</span>
+<span class="sd">      Either &quot;csv&quot; or &quot;excel&quot; or &quot;auto&quot; (at which case the type is determined</span>
+<span class="sd">      based on the provided file path in ``file_handle`` or</span>
+<span class="sd">      ``original_filename``)</span>
+
+<span class="sd">    original_filename</span>
+<span class="sd">      Original filename (optional if file_handle is already a file path or</span>
+<span class="sd">      if file_type is specified)</span>
+
+<span class="sd">    data_field</span>
+<span class="sd">      Data field of the well under which platemap&#39;s information will be stored</span>
+
+<span class="sd">    num_wells</span>
+<span class="sd">      Number of wells in the Plate to be created. If left to default &#39;infer&#39;,</span>
+<span class="sd">      the size of the plate will be chosen as the smallest format (out of</span>
+<span class="sd">      96, 384 and 1536 wells) which contains all the well names.</span>
+
+<span class="sd">    headers</span>
+<span class="sd">      Whether the spreadsheet actually writes the &quot;A&quot; &quot;B&quot;, and &quot;1&quot; &quot;2&quot;</span>
+
+
+<span class="sd">    skiprows</span>
+<span class="sd">      Number of rows to skip (= rows before the platemap starts)</span>
+
+<span class="sd">    The spreadsheet should be either a 8 rows x 12 columns csv/excel file,</span>
+<span class="sd">    or have headers like this</span>
+
+<span class="sd">    .. code:: bash</span>
+
+<span class="sd">          1  2  3  4  5  6  7  8  9  10 11 12</span>
+<span class="sd">       A  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       B  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       C  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       D  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       E  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       F  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       G  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">       H  .  .  .  .  .  .  .  .  .  .  .  .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># The provided file is a file path</span>
+        <span class="n">original_filename</span> <span class="o">=</span> <span class="n">file_handle</span>
+
+    <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="c1"># Determine the file type based on the file name.</span>
+        <span class="n">base</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">original_filename</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+            <span class="n">file_type</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.xls&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">]:</span>
+            <span class="n">file_type</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span>
+
+    <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">headers</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+                                <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+                                  <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">row</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">):</span> <span class="p">{</span><span class="n">data_field</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">column_content</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">column_content</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="p">{</span><span class="n">data_field</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">column_content</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">column_content</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">num_wells</span> <span class="o">==</span> <span class="s2">&quot;infer&quot;</span><span class="p">:</span>
+        <span class="n">num_wells</span> <span class="o">=</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">(</span><span class="n">wells_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">plate_class</span> <span class="o">=</span> <span class="n">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plate_class</span><span class="p">(</span><span class="n">wells_data</span><span class="o">=</span><span class="n">wells_data</span><span class="p">,</span>
+                       <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file_source&quot;</span><span class="p">:</span> <span class="n">original_filename</span><span class="p">})</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.tools &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.tools</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.tools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Miscellaneous useful functions.</span>
+
+<span class="sd">In particulat, methods for converting to and from plate coordinates.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<div class="viewcode-block" id="compute_rows_columns"><a class="viewcode-back" href="../../ref.html#plateo.tools.compute_rows_columns">[docs]</a><span class="k">def</span> <span class="nf">compute_rows_columns</span><span class="p">(</span><span class="n">num_wells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert 96-&gt;(8,12), 384-&gt;(16,24), etc.&quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num_wells</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)))</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span>
+    <span class="n">n_columns</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">a</span>
+    <span class="k">return</span> <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span></div>
+
+<div class="viewcode-block" id="rowname_to_number"><a class="viewcode-back" href="../../ref.html#plateo.tools.rowname_to_number">[docs]</a><span class="k">def</span> <span class="nf">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="s2">&quot;Convert A-&gt;1 Z-&gt;26 AA-&gt;27 etc.&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">26</span> <span class="o">*</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="number_to_rowname"><a class="viewcode-back" href="../../ref.html#plateo.tools.number_to_rowname">[docs]</a><span class="k">def</span> <span class="nf">number_to_rowname</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="s2">&quot;Convert 1-&gt;A 26-&gt;Z 27-&gt;AA etc.&quot;</span>
+    <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;</span> <span class="mi">26</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">number_to_rowname</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span> <span class="o">/</span> <span class="mi">26</span><span class="p">))</span> <span class="o">+</span>\
+               <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">number</span> <span class="o">%</span> <span class="mi">26</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span><span class="p">[</span><span class="n">number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="wellname_to_coordinates"><a class="viewcode-back" href="../../ref.html#plateo.tools.wellname_to_coordinates">[docs]</a><span class="k">def</span> <span class="nf">wellname_to_coordinates</span><span class="p">(</span><span class="n">wellname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert A1-&gt;(1,1), H11-&gt;(8, 11), etc.&quot;&quot;&quot;</span>
+    <span class="n">rowname</span><span class="p">,</span> <span class="n">colname</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;([a-zA-Z]+)([0-9]+)&quot;</span><span class="p">,</span> <span class="n">wellname</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">rowname</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">colname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="coordinates_to_wellname"><a class="viewcode-back" href="../../ref.html#plateo.tools.coordinates_to_wellname">[docs]</a><span class="k">def</span> <span class="nf">coordinates_to_wellname</span><span class="p">(</span><span class="n">coords</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert (1,1)-&gt;A1, (4,3)-&gt;D3, (12, 12)-&gt;H12, etc.&quot;&quot;&quot;</span>
+    <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">coords</span>
+    <span class="k">return</span> <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="wellname_to_index"><a class="viewcode-back" href="../../ref.html#plateo.tools.wellname_to_index">[docs]</a><span class="k">def</span> <span class="nf">wellname_to_index</span><span class="p">(</span><span class="n">wellname</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert e.g. A1..H12 into 1..96</span>
+<span class="sd">    direction is either row for A1 A2 A3... or column for A1 B1 C1 D1 etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">=</span> <span class="n">compute_rows_columns</span><span class="p">(</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">wellname_to_coordinates</span><span class="p">(</span><span class="n">wellname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;row&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">column</span> <span class="o">+</span> <span class="n">n_columns</span><span class="o">*</span><span class="p">(</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;column&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">row</span> <span class="o">+</span> <span class="n">n_rows</span><span class="o">*</span><span class="p">(</span><span class="n">column</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`direction` must be in (row, column)&quot;</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">index_to_row_column</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+    <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">=</span> <span class="n">compute_rows_columns</span><span class="p">(</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;row&quot;</span><span class="p">:</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">((</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_columns</span><span class="p">)</span>
+        <span class="n">column</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_columns</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;column&quot;</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_rows</span><span class="p">),</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">((</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_rows</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`direction` must be in (row, column)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span>
+
+<div class="viewcode-block" id="index_to_wellname"><a class="viewcode-back" href="../../ref.html#plateo.tools.index_to_wellname">[docs]</a><span class="k">def</span> <span class="nf">index_to_wellname</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert e.g. 1..96 into A1..H12&quot;&quot;&quot;</span>
+    <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">index_to_row_column</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coordinates_to_wellname</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">))</span></div>
+
+<span class="k">def</span> <span class="nf">shift_wellname</span><span class="p">(</span><span class="n">wellname</span><span class="p">,</span> <span class="n">row_shift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column_shift</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">letter</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="n">wellname</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wellname</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">letter_rownum</span> <span class="o">=</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+    <span class="n">new_letter_rownum</span> <span class="o">=</span> <span class="n">letter_rownum</span> <span class="o">+</span> <span class="n">row_shift</span>
+    <span class="n">new_letter</span> <span class="o">=</span> <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">new_letter_rownum</span><span class="p">)</span>
+    <span class="n">new_number</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span> <span class="o">+</span> <span class="n">column_shift</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_letter</span> <span class="o">+</span> <span class="n">new_number</span>
+
+
+<div class="viewcode-block" id="infer_plate_size_from_wellnames"><a class="viewcode-back" href="../../ref.html#plateo.tools.infer_plate_size_from_wellnames">[docs]</a><span class="k">def</span> <span class="nf">infer_plate_size_from_wellnames</span><span class="p">(</span><span class="n">wellnames</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the first of 96, 384, or 1536, to contain all wellnames.&quot;&quot;&quot;</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">wellname_to_coordinates</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">wellnames</span><span class="p">]</span>
+    <span class="n">all_rows</span><span class="p">,</span> <span class="n">all_columns</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">coordinates</span><span class="p">)</span>
+    <span class="n">max_rows</span><span class="p">,</span> <span class="n">max_columns</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_rows</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_columns</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">max_rows</span> <span class="o">&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">max_columns</span> <span class="o">&gt;</span> <span class="mi">24</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1536</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">max_rows</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">max_columns</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">384</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">96</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">dicts_to_columns</span><span class="p">(</span><span class="n">dicts</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dicts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

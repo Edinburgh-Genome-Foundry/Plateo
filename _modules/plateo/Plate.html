@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.Plate &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.Plate</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.Plate</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module implements the Base class for all plates.</span>
+
+<span class="sd">See plateo.container for more specific plate subclasses, with</span>
+<span class="sd">set number of wells, well format, etc.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">.Well</span> <span class="k">import</span> <span class="n">Well</span>
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="p">(</span><span class="n">index_to_wellname</span><span class="p">,</span> <span class="n">wellname_to_index</span><span class="p">,</span>
+                    <span class="n">coordinates_to_wellname</span><span class="p">,</span> <span class="n">rowname_to_number</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Plate"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate">[docs]</a><span class="k">class</span> <span class="nc">Plate</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all wells.&quot;&quot;&quot;</span>
+
+    <span class="n">PlateWell</span> <span class="o">=</span> <span class="n">Well</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wells_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wells_data</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">wells_data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">wells_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_wells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_rows</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wells</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([])</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_columns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">wellname</span> <span class="o">=</span> <span class="n">coordinates_to_wellname</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">))</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wellname</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">well</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PlateWell</span><span class="p">(</span><span class="n">plate</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                                      <span class="n">name</span><span class="o">=</span><span class="n">wellname</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wells</span><span class="p">[</span><span class="n">wellname</span><span class="p">]</span> <span class="o">=</span> <span class="n">well</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return e.g. well A1&#39;s dict when calling `myplate[&#39;A1&#39;]`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Plate.merge_data_from"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.merge_data_from">[docs]</a>    <span class="k">def</span> <span class="nf">merge_data_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_plate</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a new field `field_name` to the</span>
+
+<span class="sd">        Note that `fun` can also return nothing and simply transform the wells.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">well</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">other_plate</span><span class="o">.</span><span class="n">wells</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">other_well</span> <span class="o">=</span> <span class="n">other_plate</span><span class="p">[</span><span class="n">well</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">other_data</span> <span class="o">=</span> <span class="n">other_well</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="n">other_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">other_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                      <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">}</span>
+                <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plate.apply_to_wells"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.apply_to_wells">[docs]</a>    <span class="k">def</span> <span class="nf">apply_to_wells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run fun(well) for every `name:well` in `self.wells_dict`&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">fun</span><span class="p">(</span><span class="n">well</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">compute_data_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">ignore_none</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_none</span><span class="p">):</span>
+                <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">find_unique_well</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content_includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">content_includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">condition</span><span class="p">(</span><span class="n">well</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">content_includes</span> <span class="ow">in</span> <span class="n">well</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">quantities</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">wells</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">well</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wells</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Query returned several wells: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wells</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">wells</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No wells found matching the condition&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">to_pretty_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">well_name</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">well_name</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">list_well_data_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+            <span class="n">field</span>
+            <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)))</span>
+
+<div class="viewcode-block" id="Plate.wells_in_column"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.wells_in_column">[docs]</a>    <span class="k">def</span> <span class="nf">wells_in_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of all wells of the plate in the given column.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: at some point, avoid iterating over all wells, make it smarter</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">well</span> <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="k">if</span> <span class="n">well</span><span class="o">.</span><span class="n">column</span> <span class="o">==</span> <span class="n">column_number</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="Plate.wells_in_row"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.wells_in_row">[docs]</a>    <span class="k">def</span> <span class="nf">wells_in_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of all wells of the plate in the given row.</span>
+
+<span class="sd">        The `row` can be either a row number (1,2,3) or row letter(s) (A,B,C).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">well</span> <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="k">if</span> <span class="n">well</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="n">row</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="Plate.wells_satisfying"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.wells_satisfying">[docs]</a>    <span class="k">def</span> <span class="nf">wells_satisfying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        ---------</span>
+<span class="sd">        &gt;&gt;&gt; def condition(well):</span>
+<span class="sd">        &gt;&gt;&gt;     return well.volume &gt; 50</span>
+<span class="sd">        &gt;&gt;&gt; for well in myplate.wells_satifying(condition):</span>
+<span class="sd">        &gt;&gt;&gt;     print( well.name )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+    <span class="k">def</span> <span class="nf">wells_grouped_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">ignore_none</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction_of_occurence</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="n">well</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data_field</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_wells</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction_of_occurence</span><span class="p">):</span>
+            <span class="n">well_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">well_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+                <span class="n">dct</span><span class="p">[</span><span class="n">well_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">well</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dct</span><span class="p">[</span><span class="n">well_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ignore_none</span><span class="p">:</span>
+            <span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sort_keys</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">dct</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_well_from_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_to_wellname</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">well_at_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index_to_wellname</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">index_to_wellname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">index_to_wellname</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wellname_to_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wellname</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">wellname_to_index</span><span class="p">(</span><span class="n">wellname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Plate.iter_wells"><a class="viewcode-back" href="../../ref.html#plateo.Plate.Plate.iter_wells">[docs]</a>    <span class="k">def</span> <span class="nf">iter_wells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iter through the wells either by row or by column&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;row&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells_sorted_by</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">column</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wells_sorted_by</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">column</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">row</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">wells_sorted_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sortkey</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wells</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allow to iter through the well dicts using `for well in myplate`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_wells</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="s2">&quot;wells&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">well</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">well</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>plateo.exporters.plate_to_matplotlib_plots &mdash; Plateo 0.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/main.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Plateo 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Plateo
+          
+
+          
+            
+            <img src="../../../_static/html_logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Plateo Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../ref.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Plateo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>plateo.exporters.plate_to_matplotlib_plots</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for plateo.exporters.plate_to_matplotlib_plots</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid.inset_locator</span> <span class="k">import</span> <span class="n">inset_axes</span>
+
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">..tools</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">compute_rows_columns</span><span class="p">,</span>
+    <span class="n">number_to_rowname</span>
+<span class="p">)</span>
+
+<span class="n">letters</span> <span class="o">=</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">draw_plate_layout</span><span class="p">(</span><span class="n">num_wells</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw the plate&#39;s border, row letters, column numbers.&quot;&quot;&quot;</span>
+    <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">=</span> <span class="n">compute_rows_columns</span><span class="p">(</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">n_columns</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mf">1.075</span> <span class="o">*</span> <span class="n">n_rows</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="n">i</span><span class="p">,</span> <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">n_rows</span><span class="p">],</span> <span class="p">[</span><span class="n">n_columns</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">place_inset_ax_in_data_coordinates</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an ax inset in the given ax at the given bbox in</span>
+<span class="sd">    data coordinates (bottom, left, width, height)&quot;&quot;&quot;</span>
+
+    <span class="n">bottom</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">bbox</span>
+    <span class="n">pixels_data_00</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">transform</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">pixels_data_wh</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">transform</span><span class="p">([</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">])</span>
+    <span class="n">iwidth</span><span class="p">,</span> <span class="n">iheight</span> <span class="o">=</span> <span class="p">(</span><span class="n">pixels_data_wh</span> <span class="o">-</span> <span class="n">pixels_data_00</span><span class="p">)</span> <span class="o">/</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span>
+    <span class="k">return</span> <span class="n">inset_axes</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">iwidth</span><span class="p">,</span> <span class="n">iheight</span><span class="p">,</span>
+        <span class="n">loc</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># means &quot;center&quot;</span>
+        <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">[</span><span class="n">bottom</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">],</span>
+        <span class="n">bbox_transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PlatePlotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all matplotlib-based plate plotters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">plot_plate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">well_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the plate using Matplotlib.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        plate</span>
+<span class="sd">          The plate object to be plotted.</span>
+
+<span class="sd">        ax</span>
+<span class="sd">          The Matplotlib ax on which to plot. If none is provided, one will</span>
+<span class="sd">          be created (and returned at the end)</span>
+
+<span class="sd">        well_filter</span>
+<span class="sd">          Function f(well)=&gt;true/false. Wells returning false will not be</span>
+<span class="sd">          considered.</span>
+
+<span class="sd">        progress_bar</span>
+<span class="sd">          If true, display a progress bar while plotting.</span>
+
+<span class="sd">        figsize</span>
+<span class="sd">          Size of the figure, width/height in inches.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        ax, stats</span>
+<span class="sd">          The matplotlib ax on which the figure was plotted, and the computed</span>
+<span class="sd">          stats in format {wellname: well_stat}, (if relevant)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">well_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">well_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">well</span><span class="p">:</span>  <span class="kc">True</span>
+
+        <span class="n">draw_plate_layout</span><span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">num_wells</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="n">plate</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">progress_bar</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">plate</span><span class="o">.</span><span class="n">num_wells</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">plate</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="n">progress</span><span class="p">(</span><span class="n">plate</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">well_filter</span><span class="p">(</span><span class="n">well</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">column</span><span class="p">,</span> <span class="n">well</span><span class="o">.</span><span class="n">row</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">plate</span><span class="o">.</span><span class="n">num_rows</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">stats</span><span class="p">[</span><span class="n">well</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_well</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">well</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_process</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">stats</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">stats</span>
+
+    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">stats</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="PlateColorsPlotter"><a class="viewcode-back" href="../../../ref.html#plateo.exporters.PlateColorsPlotter">[docs]</a><span class="k">class</span> <span class="nc">PlateColorsPlotter</span><span class="p">(</span><span class="n">PlatePlotter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a plate&#39;s well statistic with wells colored differently.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    stat_function</span>
+<span class="sd">      The function to be plotted, with signature (well) =&gt; value</span>
+
+<span class="sd">    with_colorbar</span>
+<span class="sd">      It true a colorbar giving a scale for color values will be plotted</span>
+<span class="sd">      alongside the map</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat_function</span><span class="p">,</span> <span class="n">with_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat_function</span> <span class="o">=</span> <span class="n">stat_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">with_colorbar</span> <span class="o">=</span> <span class="n">with_colorbar</span>
+
+    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">well</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">stat_function</span><span class="p">(</span><span class="n">well</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">stats</span><span class="p">):</span>
+        <span class="n">xy</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">xy</span><span class="p">)</span>
+        <span class="n">scatterplot</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">stats</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_colorbar</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">scatterplot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlateTextPlotter"><a class="viewcode-back" href="../../../ref.html#plateo.exporters.PlateTextPlotter">[docs]</a><span class="k">class</span> <span class="nc">PlateTextPlotter</span><span class="p">(</span><span class="n">PlatePlotter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a plate&#39;s well statistic as text at the well&#39;s positions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    text_function</span>
+<span class="sd">      A function (well) =&gt; text</span>
+
+<span class="sd">    with_colorbar</span>
+<span class="sd">      It true a colorbar giving a scale for color values will be plotted</span>
+<span class="sd">      alongside the map</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_function</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fontdict</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">fontdict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fontdict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_function</span> <span class="o">=</span> <span class="n">text_function</span>
+
+    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">well</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_function</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+        <span class="n">fontdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fontdict</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fontdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">fontdict</span> <span class="o">=</span> <span class="n">fontdict</span><span class="p">(</span><span class="n">well</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>
+                <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span>
+                <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlateGraphsPlotter"><a class="viewcode-back" href="../../../ref.html#plateo.exporters.PlateGraphsPlotter">[docs]</a><span class="k">class</span> <span class="nc">PlateGraphsPlotter</span><span class="p">(</span><span class="n">PlatePlotter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a graph (for instance time series) for each well of the plate</span>
+
+<span class="sd">    The result has the shape of a plate, with each well replaced by a graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">     plot_function</span>
+<span class="sd">       A function f(well, well_ax) which plots something on the provided</span>
+<span class="sd">       ``well_ax`` depending on the ``well``.</span>
+
+<span class="sd">     subplot_size</span>
+<span class="sd">       (width, height) of subplots, between 0 and 1 (1 meaning the graphs of</span>
+<span class="sd">       the different wells will have virtually no margin between them)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot_function</span><span class="p">,</span> <span class="n">subplot_size</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_function</span> <span class="o">=</span> <span class="n">plot_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplot_size</span> <span class="o">=</span> <span class="n">subplot_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplot_width</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">subplot_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplot_height</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">subplot_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">well</span><span class="p">):</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">subplot_width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">subplot_height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subplot_width</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subplot_height</span><span class="p">)</span>
+        <span class="n">well_ax</span> <span class="o">=</span> <span class="n">place_inset_ax_in_data_coordinates</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_function</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">well_ax</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">well_ax</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Edinburgh Genome Foundry.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
