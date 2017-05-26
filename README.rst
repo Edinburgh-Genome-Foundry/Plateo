@@ -1,6 +1,15 @@
-
 Plateo
 ======
+
+
+.. image:: https://raw.githubusercontent.com/Edinburgh-Genome-Foundry/Plateo/master/docs/_static/images/title.png
+   :alt: [logo]
+   :align: center
+   :width: 500px
+
+.. image:: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo.svg?branch=master
+  :target: https://travis-ci.org/Edinburgh-Genome-Foundry/DnaCauldron
+  :alt: Travis CI build status
 
 Plateo (pronounced *Plato*, like the planet) is a Python library to assist in the
 planning, running and checking of laboratory experiments involving microplates.
