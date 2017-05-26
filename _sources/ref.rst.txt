@@ -50,8 +50,8 @@ Miscellaneous
 
 Plate Exporters
 ~~~~~~~~~~~~~~~
-.. autofunction:: plateo.exporters.plate_to_bokeh_plot
 
+.. autofunction:: plateo.exporters.plate_to_bokeh_plot
 .. autofunction:: plateo.exporters.plate_to_genesift_sequencing_order_spreadsheet
 .. autofunction:: plateo.exporters.plate_to_dataframe
 .. autofunction:: plateo.exporters.plate_to_platemap_spreadsheet

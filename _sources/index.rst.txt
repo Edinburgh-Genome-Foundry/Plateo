@@ -10,14 +10,14 @@ planning, running and checking of laboratory experiments involving microplates.
 
 It can be used to:
 
-- Read and write robotic protocols (picklists) in different formats to
- accomodate different liquid dispensers (Tecan EVO, Labcyte Echo).
+- Read and write robotic protocols (picklists) in different formats to accomodate
+  different liquid dispensers (Tecan EVO, Labcyte Echo).
 - Simulate liquid dispensing runs, taking into account the capacity and dead
- volume of each container, to predict the maps of future plates.
+  volume of each container, to predict the maps of future plates.
 - Parse plate data from common laboratory robots (for kinetic experiments,
- fragment analysis, qPCR, etc.)
+  fragment analysis, qPCR, etc.)
 - Export plate information in various formats (graphics, spreadsheets, HTML,
- JSON, etc.).
+  JSON, etc.).
 
 The following schema shows how Plateo's file parsers, exporters, and protocol
 simulator work together
