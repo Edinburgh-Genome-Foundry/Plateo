@@ -25,6 +25,7 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+
 nosetests.xml
 
 # Translations
@@ -42,3 +43,4 @@ nosetests.xml
 # Pipy codes
 
 .pypirc
+.cache

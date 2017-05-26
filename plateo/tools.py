@@ -23,7 +23,8 @@ def rowname_to_number(name):
 def number_to_rowname(number):
     "Convert 1->A 26->Z 27->AA etc."
     if number > 26:
-        return number_to_rowname(number / 26) + number_to_rowname(number % 26)
+        return number_to_rowname(int(number / 26)) +\
+               number_to_rowname(number % 26)
     return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[number - 1]
 
 
@@ -54,7 +55,8 @@ def wellname_to_index(wellname, num_wells, direction="row"):
 def index_to_row_column(index, num_wells, direction="row"):
     n_rows, n_columns = compute_rows_columns(num_wells)
     if direction == "row":
-        row, column = 1 + int((index-1) / n_columns), 1 + ((index-1) % n_columns)
+        row = 1 + int((index-1) / n_columns)
+        column = 1 + ((index-1) % n_columns)
     elif direction == "column":
         row, column = 1 + ((index-1) % n_rows), 1 + int((index-1) / n_rows)
     else:
