@@ -1,3 +1,5 @@
+import numpy as np
+
 try:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
@@ -51,7 +53,7 @@ class PlatePlotter:
     """
 
     def plot_plate(self, plate, ax=None, well_filter=None,
-                   progress_bar=False, figsize=(10,5)):
+                   progress_bar=False, figsize=(10, 5)):
         """Plot the plate using Matplotlib.
 
         Parameters
@@ -130,19 +132,34 @@ class PlateColorsPlotter(PlatePlotter):
 
     """
 
-    def __init__(self, stat_function, with_colorbar=False):
+    def __init__(self, stat_function, colormap=None, plot_colorbar=False,
+                 well_radius='full', alpha=1.0):
         self.stat_function = stat_function
-        self.with_colorbar = with_colorbar
+        self.colormap = colormap
+        self.plot_colorbar = plot_colorbar
+        self.well_radius = well_radius
+        self.alpha = alpha
 
     def plot_well(self, ax, x, y, well):
         return ((x, y), self.stat_function(well))
 
     def post_process(self, ax, stats):
-        xy, stats = zip(*stats.values())
+        xy, stats_values = zip(*stats.values())
         xx, yy = zip(*xy)
-        scatterplot = ax.scatter(xx, yy, s=120, c=stats)
-        if self.with_colorbar:
-            ax.figure.colorbar(scatterplot)
+        if self.well_radius == 'full':
+            grid = np.zeros((max(yy), max(xx)))
+            for (x, y), stat in stats.values():
+                grid[y-1, x-1] = stat
+            plot = ax.imshow(grid[::-1, :], alpha=self.alpha,
+                             cmap=self.colormap,
+                             extent=[0.5, max(xx)+0.5, 0.5, max(yy)+0.5])
+
+
+        else:
+            plot = ax.scatter(xx, yy, s=self.well_radius, c=stats_values,
+                              alpha=self.alpha, cbar=self.colorbar)
+        if self.plot_colorbar:
+            ax.figure.colorbar(plot)
 
 
 class PlateTextPlotter(PlatePlotter):

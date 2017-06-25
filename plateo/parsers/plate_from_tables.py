@@ -79,6 +79,7 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
 def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
                                     original_filename=None, data_field="info",
                                     num_wells="infer", headers=True,
+                                    sheetname=0,
                                     skiprows=None):
     """Parse spreadsheets representing a plate map.
 
@@ -148,6 +149,7 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
                                 header=index_col, skiprows=skiprows)
     elif file_type == "excel":
         dataframe = pd.read_excel(file_handle, index_col=index_col,
+                                  sheetname=sheetname,
                                   header=index_col, skiprows=skiprows)
     if headers:
         wells_data = {

@@ -10,7 +10,7 @@ setup(name='plateo',
       author='Zulko',
     description='Read/write microplate and picklist data for lab automation',
     long_description=open('README.rst').read(),
-    license='see LICENSE.txt',
+    license='MIT',
     keywords="microplate biology parser converter report",
     packages= find_packages(exclude='docs'),
     install_requires= ['pandas', 'python-box', 'numpy', 'matplotlib', 'tqdm'])

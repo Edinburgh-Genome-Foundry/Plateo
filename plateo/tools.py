@@ -17,7 +17,10 @@ def rowname_to_number(name):
     "Convert A->1 Z->26 AA->27 etc."
     if len(name) == 2:
         return 26 * rowname_to_number(name[0]) + rowname_to_number(name[1])
-    return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.index(name) + 1
+    try:
+        return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.index(name) + 1
+    except:
+        raise ValueError(name + " is not a valid row name.")
 
 
 def number_to_rowname(number):

@@ -3,7 +3,8 @@ import sys
 PYTHON3 = (sys.version_info[0] == 3)
 
 if PYTHON3:
-    from io import StringIO
+    from io import StringIO, BytesIO
+    StringIO = BytesIO
 else:
     from StringIO import StringIO
 
