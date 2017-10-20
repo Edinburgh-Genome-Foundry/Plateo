@@ -30,6 +30,7 @@ def draw_plate_layout(num_wells, ax):
                 verticalalignment="center",
                 horizontalalignment="right")
     ax.plot([n_rows], [n_columns])
+    ax.set_xlim(0, n_columns + 0.6)
 
 
 def place_inset_ax_in_data_coordinates(ax, bbox):
@@ -133,12 +134,16 @@ class PlateColorsPlotter(PlatePlotter):
     """
 
     def __init__(self, stat_function, colormap=None, plot_colorbar=False,
-                 well_radius='full', alpha=1.0):
+                 well_radius='full', vmin=None, vmax=None, alpha=1.0,
+                 edge_width=1):
         self.stat_function = stat_function
         self.colormap = colormap
         self.plot_colorbar = plot_colorbar
         self.well_radius = well_radius
         self.alpha = alpha
+        self.vmin = vmin
+        self.vmax = vmax
+        self.edge_width = edge_width
 
     def plot_well(self, ax, x, y, well):
         return ((x, y), self.stat_function(well))
@@ -147,17 +152,21 @@ class PlateColorsPlotter(PlatePlotter):
         xy, stats_values = zip(*stats.values())
         xx, yy = zip(*xy)
         if self.well_radius == 'full':
-            grid = np.zeros((max(yy), max(xx)))
+            grid = np.zeros((max(yy), max(xx), len(list(stats.values())[0][1])))
             for (x, y), stat in stats.values():
                 grid[y-1, x-1] = stat
             plot = ax.imshow(grid[::-1, :], alpha=self.alpha,
+                             vmin=self.vmin, vmax=self.vmax,
                              cmap=self.colormap,
                              extent=[0.5, max(xx)+0.5, 0.5, max(yy)+0.5])
 
 
         else:
             plot = ax.scatter(xx, yy, s=self.well_radius, c=stats_values,
-                              alpha=self.alpha, cbar=self.colorbar)
+                              vmin=self.vmin, vmax=self.vmax,
+                              linewidths=self.edge_width,
+                              edgecolors='k',
+                              alpha=self.alpha, cmap=self.colormap)
         if self.plot_colorbar:
             ax.figure.colorbar(plot)
 

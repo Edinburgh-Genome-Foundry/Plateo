@@ -54,4 +54,4 @@ def plate_from_nanodrop_xml_file(xml_file=None, xml_string=None, num_wells=96,
     dataframe["wellname"] = dataframe["#"].apply(wellname)
     dataframe["Nucleic Acid"] = [parse_numeric(e)
                                  for e in dataframe["Nucleic Acid"]]
-    return plate_from_dataframe(dataframe)
+    return plate_from_dataframe(dataframe, num_wells=num_wells)

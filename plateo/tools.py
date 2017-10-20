@@ -99,3 +99,10 @@ def dicts_to_columns(dicts):
         key: [d[key] for d in dicts]
         for key in dicts[0]
     }
+
+def replace_nans_in_dict(dictionnary, replace_by='null'):
+    for key, value in dictionnary.items():
+        if isinstance(value, dict):
+            replace_nans_in_dict(value, replace_by=replace_by)
+        elif value == np.nan:
+            dictionnary[key] = replace_by

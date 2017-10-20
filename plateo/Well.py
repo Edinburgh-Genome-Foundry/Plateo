@@ -16,7 +16,9 @@ class WellContent:
         self.volume = volume
         self.quantities = Box(quantities)
 
-    def concentration(self, component):
+    def concentration(self, component, default=0):
+        if component not in self.quantities:
+            return default
         return 1.0 * self.quantities[component] / self.volume
 
     def to_dict(self):
@@ -172,3 +174,6 @@ class Well:
                 ["column", self.column],
             ] + list(self.data.items())
         )
+
+    def index_in_plate(self, direction='row'):
+        return self.plate.wellname_to_index(self.name, direction=direction)

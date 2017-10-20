@@ -13,4 +13,5 @@ setup(name='plateo',
     license='MIT',
     keywords="microplate biology parser converter report",
     packages= find_packages(exclude='docs'),
-    install_requires= ['pandas', 'python-box', 'numpy', 'matplotlib', 'tqdm'])
+    install_requires= ['pandas', 'xlwt', 'xlrd', 'python-box', 'numpy',
+                       'matplotlib', 'tqdm'])

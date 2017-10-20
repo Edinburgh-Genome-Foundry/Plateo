@@ -54,6 +54,10 @@ class Transfer:
                         volume=new_volume,
                         data=self.data)
 
+    def __repr__(self):
+        """Return "xx L from {source_well} into {dest_well}"."""
+        return self.to_plain_string()
+
 
 class PickList:
     """Representation of a list of well-to-well transfers.
@@ -120,7 +124,7 @@ class PickList:
             }
 
             new_transfer_list = []
-            for transfer in self.transfers:
+            for transfer in self.transfers_list:
                 new_source_plate = new_plates[transfer.source_well.plate]
                 new_dest_plate = new_plates[transfer.destination_well.plate]
                 new_source_well = new_source_plate.wells[
