@@ -78,9 +78,8 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
 
 def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
                                     original_filename=None, data_field="info",
-                                    num_wells="infer", headers=True,
-                                    sheetname=0,
-                                    skiprows=None):
+                                    num_wells="infer", plate_class=None,
+                                    headers=True, sheetname=0, skiprows=None):
     """Parse spreadsheets representing a plate map.
 
     Parameters
@@ -166,6 +165,65 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
         }
     if num_wells == "infer":
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
-    plate_class = get_plate_class(num_wells=num_wells)
+    if plate_class is None:
+        plate_class = get_plate_class(num_wells=num_wells)
     return plate_class(wells_data=wells_data,
                        data={"file_source": original_filename})
+
+
+def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
+                                   sheet_names='default'):
+    """Load plate from Excel with 'content', 'volume', 'concentration' sheets.
+
+    The 'content' sheet contains a platemap of the product contained in each
+    well (e.g. a part name or a strain name)
+
+    The 'volume' sheet contains a platemap of the volume contained in each
+    well (e.g. a part name or a strain name) in liter
+
+    The 'concentration' sheet contains a platemap of the concentration
+    contained in each well (e.g. a part name or a strain name) in gram/liter.
+
+
+    Parameters
+    ----------
+    filepath
+      Path to the excel spreadsheet
+
+    headers
+      Set to True if the spreadsheets represent the platemaps using headers
+      ABCDEF... for columns and 123456... for rows
+
+    plate_class
+      Class of the plate returned. If set to None, a generic Plate96 or
+      Plate384 or other is returned depending on the autodetected plate size
+
+    sheet_name
+      A triple of the name of the sheets containing
+    """
+    if sheet_names == 'default':
+        sheet_names = ('content', 'concentration', 'volume')
+
+    plate = plate_from_platemap_spreadsheet(
+        filepath, data_field='part', sheetname=sheet_names[0], headers=headers,
+        plate_class=plate_class)
+    plate.merge_data_from(
+        plate_from_platemap_spreadsheet(
+            filepath, data_field='volume', sheetname=sheet_names[1],
+            headers=headers)
+    )
+    plate.merge_data_from(
+        plate_from_platemap_spreadsheet(
+            filepath, data_field='concentration', sheetname=sheet_names[2],
+            headers=headers)
+    )
+
+    for well in plate.iter_wells():
+        content = str(well.data.part)
+        if content == 'nan':
+            continue
+        volume = well.data.concentration
+        concentration = well.data.concentration
+        well.add_content({content: volume * concentration}, volume=volume)
+
+    return plate

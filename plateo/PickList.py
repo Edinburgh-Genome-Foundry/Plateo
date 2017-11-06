@@ -227,31 +227,27 @@ class PickList:
         if destination_criterion is None:
             destination_criterion = lambda well: True
 
-        def destination_wellnames_generator():
-            for index in range(1, destination_plate.num_wells + 1):
-                destination_wellname = index_to_wellname(
-                    index, destination_plate.num_wells,
-                    direction=destination_direction)
-                destination_well = destination_plate[destination_wellname]
-                if destination_criterion(destination_well):
-                    yield destination_wellname
-
-        destination_wellnames = destination_wellnames_generator()
-
+        destination_wells = (
+            well for well in destination_plate.iter_wells(
+                direction=destination_direction)
+            if destination_criterion(well)
+        )
         transfers_list = []
-        for index in range(1, source_plate.num_wells + 1):
-            source_wellname = index_to_wellname(
-                index, source_plate.num_wells, direction=source_direction)
-            source_well = source_plate[source_wellname]
+        if isinstance(source_plate, (list, tuple)):
+            source_wells = (
+                p.iter_wells(direction=source_direction)
+                for p in source_plate
+            )
+        else:
+            source_wells = source_plate.iter_wells(direction=source_direction)
+        for source_well in source_wells:
             if source_criterion(source_well):
-                destination_wellname = destination_wellnames.next()
+                destination_well = next(destination_wells)
                 transfers_list.append(
                     Transfer(
-                        source_well=source_wellname,
-                        destination_well=destination_wellname,
-                        volume=volume(source_well),
-                        source_plate=source_plate,
-                        destination_plate=destination_plate
+                        source_well=source_well,
+                        destination_well=destination_well,
+                        volume=volume(source_well)
                     )
                 )
 

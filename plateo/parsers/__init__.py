@@ -20,5 +20,6 @@ from .plate_volumes_from_labcyte_echo_files import (
 from .plate_from_tables import (
     plate_from_platemap_spreadsheet,
     plate_from_list_spreadsheet,
-    plate_from_dataframe
+    plate_from_dataframe,
+    plate_from_content_spreadsheet
 )

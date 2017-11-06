@@ -44,6 +44,10 @@ def plate_from_nanodrop_xml_file(xml_file=None, xml_string=None, num_wells=96,
     """
 
     table = parse_excel_xml(xml_file=xml_file, xml_string=xml_string)[0]
+    table = [
+        line for line in table
+        if len(line) == len(table[0])
+    ]
     dataframe = pandas.DataFrame(table[1:], columns=table[0])
     for column in dataframe.columns:
         dataframe[column] = pandas.to_numeric(dataframe[column],
@@ -52,6 +56,11 @@ def plate_from_nanodrop_xml_file(xml_file=None, xml_string=None, num_wells=96,
     def wellname(i):
         return index_to_wellname(int(i), num_wells, direction=direction)
     dataframe["wellname"] = dataframe["#"].apply(wellname)
-    dataframe["Nucleic Acid"] = [parse_numeric(e)
-                                 for e in dataframe["Nucleic Acid"]]
+    conc_label = [
+        label
+        for label in ["Nucleic Acid", "Nucleic Acid Conc."]
+        if label in dataframe
+    ][0]
+    dataframe['concentration'] = [parse_numeric(e)
+                                  for e in dataframe[conc_label]]
     return plate_from_dataframe(dataframe, num_wells=num_wells)

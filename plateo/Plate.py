@@ -160,6 +160,13 @@ class Plate:
     def wells_sorted_by(self, sortkey):
         return (e for e in sorted(self.wells.values(), key=sortkey))
 
+    def last_nonempty_well(self, direction='row'):
+        selected_well = None
+        for well in self.iter_wells(direction=direction):
+            if not well.is_empty:
+                selected_well = well
+        return selected_well
+
     def __iter__(self):
         """Allow to iter through the well dicts using `for well in myplate`"""
         return self.iter_wells()

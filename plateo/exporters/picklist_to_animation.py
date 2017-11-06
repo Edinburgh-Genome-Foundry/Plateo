@@ -1,3 +1,30 @@
+"""Module to produce animations of the picklist (one image per transfer).
+
+
+**Organization:**
+
+.. mermaid::
+
+    graph TD
+    pt[plot_transfer]
+    lsatp[list_source_and_target_plates]
+    mtf[make_transfer_figure]
+    a[animate]
+    wpdf[write_pdf]
+    mf[message_function]
+    mplftnpim[mplfig_to_npimage]
+    pp[plot_plates]
+
+    lsatp --> pp
+    pp --> pt
+    pt -->mtf
+    mf --> mtf
+    mtf --> wpdf
+    mplftnpim --> a
+    mtf --> a
+"""
+
+
 from matplotlib.patches import ConnectionPatch
 from proglog import ProgressBarLogger, TqdmProgressBarLogger
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -43,6 +70,7 @@ class PicklistAnimator:
 
     def __init__(self, plate_plotters, message_function=None,
                  plate_figure_size=(8, 6), logger='bar'):
+        """Initialize."""
         self.plate_plotters = plate_plotters
         if logger is None:
             logger = ProgressBarLogger()
@@ -65,7 +93,12 @@ class PicklistAnimator:
         return image.reshape(h, w, 3)
 
     @staticmethod
-    def list_source_target_plates(picklist):
+    def list_source_and_target_plates(picklist):
+        """Return two lists: plates with resp. source wells and target wells.
+
+        In the final animation, source plates will be on the left and target
+        plates on the right.
+        """
         source_plates = []
         target_plates = []
         seen_plates = set()
@@ -81,6 +114,22 @@ class PicklistAnimator:
         return source_plates, target_plates
 
     def plot_plates(self, source_plates, target_plates, axes=None):
+        """Plot all plates, sources on the left, targets on the right.
+
+        Parameters
+        ----------
+
+        source_plates
+          List of plates with (at least mostly) source wells.
+
+        target_plates
+          List of plates with (at least mostly) destination wells.
+
+        axes
+          (left, right): Two lists of matplotlib axes, one for the source
+          plates on the left, one for the destination plates on the right.
+
+        """
         if axes is None:
             max_rows = max(len(source_plates), len(target_plates))
             w, h = self.plate_figure_size
@@ -111,6 +160,7 @@ class PicklistAnimator:
         return fig, axes, axes_dict
 
     def plot_transfer(self, transfer, source_plates, target_plates, axes=None):
+        """Plot the plates and add and arrow for the transfer"""
         fig, axes, axes_dict = self.plot_plates(source_plates, target_plates,
                                                 axes=axes)
 
@@ -138,7 +188,7 @@ class PicklistAnimator:
         return fig, axes
 
     def _make_transfer_figure(self, picklist, transfer=None, axes=None):
-        sources, targets = self.list_source_target_plates(picklist)
+        sources, targets = self.list_source_and_target_plates(picklist)
         if transfer is not None:
             index = self.logger.bars['transfers']['index']
             self.logger(transfers__index=index + 1)
@@ -155,6 +205,23 @@ class PicklistAnimator:
         return fig, axes
 
     def animate(self, picklist, target, dpi=160, fps=5):
+        """Create a movie of the picklist.
+
+        Parameters
+        ----------
+
+        picklist
+          Picklist to be animated
+
+        target
+          File path or file-like object where to write the movie.
+
+        dpi
+          Resolution of the image. The larger the dpi, the larger the image.
+
+        fps
+          Frames per second
+        """
         self.logger(transfers__total=len(picklist.transfers_list))
         writer = imageio.get_writer(target, fps=fps)
         fig, axes = self._make_transfer_figure(picklist)
@@ -168,6 +235,7 @@ class PicklistAnimator:
         plt.close(fig)
 
     def write_pdf(self, picklist, target):
+        """Create a multi-page PDF animation of the picklist."""
         self.logger(transfers__total=len(picklist.transfers_list))
 
         with PdfPages(target) as pdf:
@@ -176,4 +244,5 @@ class PicklistAnimator:
             def make_frame(picklist, transfer):
                 fig, _ = self._make_transfer_figure(picklist, transfer, axes=axes)
                 pdf.savefig(fig, bbox_inches="tight")
+                plt.close(fig)
             picklist.execute(inplace=False, callback_function=make_frame)

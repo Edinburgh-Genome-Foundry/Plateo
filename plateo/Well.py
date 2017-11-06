@@ -27,6 +27,11 @@ class WellContent:
             "volume": self.volume,
             "quantities": self.quantities
         }
+
+    def make_empty(self):
+        self.volume = 0
+        self.quantities = Box({})
+
     def components_as_string(self, separator=" "):
         """Return a string representation of what's in the well mix"""
         return separator.join(sorted(self.quantities.keys()))
