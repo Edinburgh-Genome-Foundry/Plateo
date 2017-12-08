@@ -209,7 +209,6 @@ class PicklistAnimator:
 
         Parameters
         ----------
-
         picklist
           Picklist to be animated
 
@@ -235,7 +234,13 @@ class PicklistAnimator:
         plt.close(fig)
 
     def write_pdf(self, picklist, target):
-        """Create a multi-page PDF animation of the picklist."""
+        """Create a multi-page PDF animation of the picklist.
+
+        Parameters
+        ----------
+
+
+        """
         self.logger(transfers__total=len(picklist.transfers_list))
 
         with PdfPages(target) as pdf:

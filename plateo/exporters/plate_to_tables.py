@@ -83,10 +83,7 @@ def plate_to_content_spreadsheet(plate, filepath):
     functions = [
         ('content', lambda w: w.content.components_as_string()),
         ('volume', lambda w: w.content.volume),
-        ('concentration',
-         lambda w: 0 if (w.content.volume == 0) else
-                   w.content.quantities[w.content.components_as_string()] /
-                   w.content.volume)
+        ('concentration', lambda w: w.content.concentration())
     ]
     writer = pandas.ExcelWriter(filepath)
     for name, fun in functions:

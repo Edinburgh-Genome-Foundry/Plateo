@@ -1,3 +1,5 @@
+import textwrap
+
 import numpy as np
 
 try:
@@ -185,13 +187,16 @@ class PlateTextPlotter(PlatePlotter):
       alongside the map
     """
 
-    def __init__(self, text_function, fontdict=None):
+    def __init__(self, text_function, line_length=None, fontdict=None):
 
         self.fontdict = {} if fontdict is None else fontdict
         self.text_function = text_function
+        self.line_length = line_length
 
     def plot_well(self, ax, x, y, well):
-        text = self.text_function(well)
+        text = str(self.text_function(well))
+        if self.line_length is not None:
+            text = '\n'.join(textwrap.wrap(text, self.line_length))
         fontdict = self.fontdict
         if not isinstance(fontdict, dict):
             fontdict = fontdict(well)

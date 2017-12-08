@@ -16,7 +16,13 @@ class WellContent:
         self.volume = volume
         self.quantities = Box(quantities)
 
-    def concentration(self, component, default=0):
+    def concentration(self, component=None, default=0):
+        if self.quantities == {}:
+            return default
+        if self.volume == 0:
+            return default
+        if component is None:
+            component = list(self.quantities.keys())[0]
         if component not in self.quantities:
             return default
         return 1.0 * self.quantities[component] / self.volume

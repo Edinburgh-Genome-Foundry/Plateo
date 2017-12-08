@@ -202,11 +202,11 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
       A triple of the name of the sheets containing
     """
     if sheet_names == 'default':
-        sheet_names = ('content', 'concentration', 'volume')
+        sheet_names = ('content', 'volume', 'concentration')
 
     plate = plate_from_platemap_spreadsheet(
-        filepath, data_field='part', sheetname=sheet_names[0], headers=headers,
-        plate_class=plate_class)
+        filepath, data_field='content', sheetname=sheet_names[0],
+        headers=headers, plate_class=plate_class)
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
             filepath, data_field='volume', sheetname=sheet_names[1],
@@ -219,11 +219,13 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
     )
 
     for well in plate.iter_wells():
-        content = str(well.data.part)
+        content = str(well.data.content)
         if content == 'nan':
             continue
-        volume = well.data.concentration
+        volume = well.data.volume
         concentration = well.data.concentration
         well.add_content({content: volume * concentration}, volume=volume)
+        for field in ('content', 'volume', 'concentration'):
+            well.data.pop(field)
 
     return plate

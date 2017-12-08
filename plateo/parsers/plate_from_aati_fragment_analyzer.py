@@ -74,6 +74,7 @@ def plate_from_aati_fragment_analyzer_zip(filename):
     """
     ladder = None
     images_plate = None
+    plate = None
     with zipfile.ZipFile(filename) as f:
         for name in f.namelist():
             if name.endswith('Peak Table.csv'):
@@ -81,9 +82,11 @@ def plate_from_aati_fragment_analyzer_zip(filename):
                 plate = plate_from_aati_fragment_analyzer_peaktable(content)
             if name.endswith('Size Calibration.csv'):
                 ladder = pandas.read_csv(StringIO(f.read(name)))
-            if name.endswith('Gel.PNG'):
+            if name.endswith(('Gel.PNG', 'Gel.JPEG')):
                 content = StringIO(f.read(name))
                 images_plate = plate_from_aati_fa_gel_image(content)
+    if plate is None:
+        raise IOError("No file `Peak Table.csv` found in AATI archive.")
     plate.data["ladder"] = ladder
     if images_plate is not None:
         plate.merge_data_from(images_plate)
