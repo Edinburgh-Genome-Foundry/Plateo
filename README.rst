@@ -1,11 +1,10 @@
-Plateo
-======
 
+.. raw:: html
 
-.. image:: https://raw.githubusercontent.com/Edinburgh-Genome-Foundry/Plateo/master/docs/_static/images/title.png
-   :alt: [logo]
-   :align: center
-   :width: 500px
+    <p align="center">
+    <img alt="DNA Cauldron Logo" title="DNA Cauldron Logo" src="https://raw.githubusercontent.com/Edinburgh-Genome-Foundry/Plateo/master/docs/_static/images/title.png" width="400">
+    <br /><br />
+    </p>
 
 .. image:: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo.svg?branch=master
   :target: https://travis-ci.org/Edinburgh-Genome-Foundry/DnaCauldron
