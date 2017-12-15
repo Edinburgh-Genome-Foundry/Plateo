@@ -154,7 +154,11 @@ class PlateColorsPlotter(PlatePlotter):
         xy, stats_values = zip(*stats.values())
         xx, yy = zip(*xy)
         if self.well_radius == 'full':
-            grid = np.zeros((max(yy), max(xx), len(list(stats.values())[0][1])))
+            values = list(stats.values())
+            colors = [
+                v[1] for v in values if (v[1] is not None)
+            ]
+            grid = np.zeros((max(yy), max(xx), len(colors[0])))
             for (x, y), stat in stats.values():
                 grid[y-1, x-1] = stat
             plot = ax.imshow(grid[::-1, :], alpha=self.alpha,
