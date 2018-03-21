@@ -43,7 +43,7 @@ def plate_from_dataframe(dataframe, wellname_field="wellname",
     return plate_class(wells_data=wells_data, data=data)
 
 
-def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
+def plate_from_list_spreadsheet(filename, sheet_name=0, num_wells="infer",
                                 wellname_field="wellname"):
     """Create a plate from a Pandas dataframe where each row contains the
     name of a well and metadata on the well.
@@ -55,7 +55,7 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
     filename
       Path to the spreadsheet file.
 
-    sheetname
+    sheet_name
       Index or name of the spreadsheet to use.
 
     num_wells
@@ -68,7 +68,7 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
     """
 
     if ".xls" in filename:  # includes xlsx
-        dataframe = pd.read_excel(filename, sheetname=sheetname)
+        dataframe = pd.read_excel(filename, sheet_name=sheet_name)
     elif filename.endswith(".csv"):
         dataframe = pd.read_csv(filename)
     return plate_from_dataframe(dataframe, wellname_field=wellname_field,
@@ -79,7 +79,7 @@ def plate_from_list_spreadsheet(filename, sheetname=0, num_wells="infer",
 def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
                                     original_filename=None, data_field="info",
                                     num_wells="infer", plate_class=None,
-                                    headers=True, sheetname=0, skiprows=None):
+                                    headers=True, sheet_name=0, skiprows=None):
     """Parse spreadsheets representing a plate map.
 
     Parameters
@@ -148,7 +148,7 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
                                 header=index_col, skiprows=skiprows)
     elif file_type == "excel":
         dataframe = pd.read_excel(file_handle, index_col=index_col,
-                                  sheetname=sheetname,
+                                  sheet_name=sheet_name,
                                   header=index_col, skiprows=skiprows)
     if headers:
         wells_data = {
@@ -205,16 +205,16 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
         sheet_names = ('content', 'volume', 'concentration')
 
     plate = plate_from_platemap_spreadsheet(
-        filepath, data_field='content', sheetname=sheet_names[0],
+        filepath, data_field='content', sheet_name=sheet_names[0],
         headers=headers, plate_class=plate_class)
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath, data_field='volume', sheetname=sheet_names[1],
+            filepath, data_field='volume', sheet_name=sheet_names[1],
             headers=headers)
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath, data_field='concentration', sheetname=sheet_names[2],
+            filepath, data_field='concentration', sheet_name=sheet_names[2],
             headers=headers)
     )
 
@@ -224,7 +224,11 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
             continue
         volume = well.data.volume
         concentration = well.data.concentration
-        well.add_content({content: volume * concentration}, volume=volume)
+
+        try:
+            well.add_content({content: volume * concentration}, volume=volume)
+        except Exception as err:
+            raise type(err)("Check your data for well %s" % well.name) from err
         for field in ('content', 'volume', 'concentration'):
             well.data.pop(field)
 

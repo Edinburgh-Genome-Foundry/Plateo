@@ -158,7 +158,9 @@ class PlateColorsPlotter(PlatePlotter):
             colors = [
                 v[1] for v in values if (v[1] is not None)
             ]
-            grid = np.zeros((max(yy), max(xx), len(colors[0])))
+            depth = len(colors[0]) if hasattr(colors[0], '__iter__') else 1
+            my, mx = max(yy), max(xx)
+            grid = np.zeros((my, mx, depth) if depth > 1 else (my, mx))
             for (x, y), stat in stats.values():
                 grid[y-1, x-1] = stat
             plot = ax.imshow(grid[::-1, :], alpha=self.alpha,
