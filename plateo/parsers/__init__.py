@@ -17,6 +17,11 @@ from .plate_volumes_from_labcyte_echo_files import (
     plate_volumes_from_labcyte_echo_logfile,
     plate_volumes_from_labcyte_echo_survey,
 )
+
+from .picklist_from_labcyte_echo_picklist_file import (
+    picklist_from_labcyte_echo_picklist_file
+)
+
 from .plate_from_tables import (
     plate_from_platemap_spreadsheet,
     plate_from_list_spreadsheet,
