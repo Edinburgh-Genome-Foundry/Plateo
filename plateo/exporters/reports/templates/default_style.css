@@ -1,0 +1,43 @@
+.logos {
+  margin: 0 auto;
+}
+
+h1.appendix {
+  page-break-before: always;
+}
+
+h1 {
+  text-align: center;
+}
+
+.ribbon {
+  margin-left: -2.3em !important;
+}
+
+.description {
+  margin-top: 1em;
+}
+
+table {
+  font-size: 0.8em !important;
+}
+
+table img {
+  width: 1.5em;
+  /* height: 1em; */
+  margin-right: 1em;
+  border: 0.5px solid grey;
+}
+
+.ui.label.part-list-item {
+  font-size: 0.8em;
+  margin-bottom: 0.1em;
+  margin-top: 0.2em;
+  background-color: white !important;
+}
+.ui.label img {
+  height: 1.5em;
+  margin-bottom: -0.3em;
+  margin-right: 1em;
+  border: 0.5px solid grey;
+}

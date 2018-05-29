@@ -188,3 +188,6 @@ class Well:
 
     def index_in_plate(self, direction='row'):
         return self.plate.wellname_to_index(self.name, direction=direction)
+
+    def __lt__(self, other):
+        return str(self) < str(other)

@@ -18,3 +18,5 @@ from .plate_to_tables import (plate_to_pandas_dataframe,
 
 from .plate_to_genesift_sequencing_order_spreadsheet import \
     plate_to_genesift_sequencing_order_spreadsheet
+
+from .picklist_to_assembly_mix_report import picklist_to_assembly_mix_report

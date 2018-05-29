@@ -92,7 +92,12 @@ def infer_plate_size_from_wellnames(wellnames):
     else:
         return 96
 
-
+def round_at(value, rounding):
+    """Round value at the nearest rounding"""
+    if rounding is None:
+        return value
+    else:
+        return np.round(value / rounding) * rounding
 
 def dicts_to_columns(dicts):
     return {
