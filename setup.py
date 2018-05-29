@@ -15,4 +15,4 @@ setup(name='plateo',
     packages= find_packages(exclude='docs'),
     install_requires= ['pandas>=0.22', 'xlwt', 'xlrd', 'python-box', 'numpy',
                        'matplotlib', 'tqdm', 'pdf_reports', 'flametree',
-                       'fuzzywuzzy'])
+                       'fuzzywuzzy', 'sequenticon'])
