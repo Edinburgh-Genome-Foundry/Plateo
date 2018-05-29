@@ -14,4 +14,5 @@ setup(name='plateo',
     keywords="microplate biology parser converter report",
     packages= find_packages(exclude='docs'),
     install_requires= ['pandas>=0.22', 'xlwt', 'xlrd', 'python-box', 'numpy',
-                       'matplotlib', 'tqdm'])
+                       'matplotlib', 'tqdm', 'pdf_report', 'flametree',
+                       'fuzzywuzzy'])
