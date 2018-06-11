@@ -184,7 +184,7 @@ class PickList:
         return PickList(sorted(self.transfers_list, key=sorting_method),
                         data={"parent": self})
 
-    def split_by(self, category):
+    def split_by(self, category, sort_key):
         """Split the picklist into a list of picklists, per category.
 
         The returned list if of the form [(cat, subpicklist)] where
@@ -201,7 +201,7 @@ class PickList:
         categories = set([category(tr) for tr in self.transfers_list])
         return [
             (cat, self.restricted_to(lambda tr: category(tr) == cat))
-            for cat in sorted(categories)
+            for cat in sorted(categories, key=sort_key)
         ]
 
     def total_transfered_volume(self):

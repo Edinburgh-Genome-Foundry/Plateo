@@ -1,4 +1,5 @@
-from plateo import PickList
+from ..PickList import PickList
+from ..Well import TransferError
 from fuzzywuzzy import process
 from ..tools import round_at
 
@@ -19,6 +20,11 @@ class AssemblyPicklistGenerator:
 
     def make_picklist(self, assembly_plan, source_wells, destination_wells,
                       buffer_well=None, complement_well=None):
+        if buffer_well.is_empty:
+            raise TransferError("Empty buffer well: %s." % (buffer_well))
+        if complement_well.is_empty:
+            raise TransferError("Empty complement well: %s." % (complement_well))
+
         source_wells = list(source_wells)
         destination_wells = list(destination_wells)
         destination_wells = destination_wells[:len(assembly_plan.assemblies)]
@@ -77,7 +83,10 @@ class AssemblyPicklistGenerator:
 
     @staticmethod
     def get_part_from_well(well):
-        return well.content.components_as_string()
+        if 'part' in well.data:
+            return well.data['part']
+        else:
+            return well.content.components_as_string()
 
     def get_part_molar_weight(self, part_data):
         """Returns the molar weight of the sequence in g/m.

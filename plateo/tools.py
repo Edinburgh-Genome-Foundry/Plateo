@@ -4,6 +4,7 @@ In particulat, methods for converting to and from plate coordinates.
 """
 
 import numpy as np
+from collections import OrderedDict
 import re
 
 def compute_rows_columns(num_wells):
@@ -66,10 +67,12 @@ def index_to_row_column(index, num_wells, direction="row"):
         raise ValueError("`direction` must be in (row, column)")
     return row, column
 
+
 def index_to_wellname(index, num_wells, direction="row"):
     """ Convert e.g. 1..96 into A1..H12"""
     row, column = index_to_row_column(index, num_wells, direction)
     return coordinates_to_wellname((row, column))
+
 
 def shift_wellname(wellname, row_shift=0, column_shift=0):
     letter, number = wellname[0], wellname[1:]
@@ -92,6 +95,7 @@ def infer_plate_size_from_wellnames(wellnames):
     else:
         return 96
 
+
 def round_at(value, rounding):
     """Round value at the nearest rounding"""
     if rounding is None:
@@ -99,11 +103,13 @@ def round_at(value, rounding):
     else:
         return np.round(value / rounding) * rounding
 
+
 def dicts_to_columns(dicts):
     return {
         key: [d[key] for d in dicts]
         for key in dicts[0]
     }
+
 
 def replace_nans_in_dict(dictionnary, replace_by='null'):
     for key, value in dictionnary.items():
@@ -111,3 +117,38 @@ def replace_nans_in_dict(dictionnary, replace_by='null'):
             replace_nans_in_dict(value, replace_by=replace_by)
         elif value == np.nan:
             dictionnary[key] = replace_by
+
+def human_seq_size(n):
+    'Return the given sequence as a human friendly 35b, 1.4k, 15k, etc.'
+    if n < 1000:
+        return '%db' % n
+    elif n < 10000:
+        return '%.1fk' % (n / 1000)
+    else:
+        return '%dk' % np.round(n / 1000)
+
+
+volumes_units = OrderedDict([
+    ('nL', 1e-9),
+    ('µL', 1e-6),
+    ('mL', 1e-3),
+    ('L', 1.0)
+])
+
+
+def find_best_volume_unit(vols):
+    med = np.median(vols)
+    for unit, value in volumes_units.items():
+        if med <= 999 * value:
+            return unit
+    return unit
+
+
+def human_volume(vol, unit='auto'):
+    if unit == 'auto':
+        unit = find_best_volume_unit([vol])
+    vol = np.round(vol / volumes_units[unit], 2)
+    if int(vol) == vol:
+        return "%d %s" % (vol, unit)
+    else:
+        return "%s %s" % (('%.02f' % vol).rstrip('0'), unit)

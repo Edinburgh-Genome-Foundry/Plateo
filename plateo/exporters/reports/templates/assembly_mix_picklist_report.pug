@@ -7,40 +7,43 @@ h1(style="margin-top:0.1em;") Assembly mix picklist report
 
 h2 Parts consumption
 
-table.table.ui.compact.celled.striped.groups.definition
+table.table.ui.compact.celled.striped.groups.definition(
+  style="text-align: center !important;")
   thead
     th Part
     th Well
     th Times used
-    th Volume consumed (L)
-    th Final volume (L)
+    th Volume consumed
+    th Final volume
   tbody
-    each well, pl in picklist.split_by('source_well')
+    each well, pl in picklist.split_by('source_well', sort_key=well_sorter)
       tr
         td= get_part_from_well(well)
         td {{ well.plate.name }} - {{ well.name }}
         td= len(pl.transfers_list)
-        td= ("%.1E" % pl.total_transfered_volume())
-        td=  ("%.1E" % (well.content.volume - pl.total_transfered_volume()))
+        td= human_volume(pl.total_transfered_volume())
+        td= human_volume(well.content.volume - pl.total_transfered_volume())
 
 
 h2 Assemblies
 
-each dest_well, pl in picklist.split_by('destination_well')
+each dest_well, pl in picklist.split_by('destination_well', sort_key=well_sorter)
   
   //- - var name = "${dest_well.plate.name}-${dest_well.name} : ${get_construct_from_well(dest_well)}"
-  - var name = "%s-%s : %s" % (dest_well.plate.name, dest_well.name, get_construct_from_well(dest_well))
+  - var construct = get_construct_from_well(dest_well)
+  - var name = "%s (%s-%s)" % (construct, dest_well.plate.name, dest_well.name)
   h3(id=name)= name
   
-  table.table.ui.compact.celled.striped.groups.definition
+  table.table.ui.compact.celled.striped.groups.definition(
+    style="text-align: center !important;")
     thead
       th Part
       th Well
-      th Volume
+      th Volume 
     tbody
       each transfer in pl.transfers_list
         tr
           td= get_part_from_well(transfer.source_well)
           td {{transfer.source_well.plate.name}} - {{ transfer.source_well.name }}
-          td= transfer.volume
+          td= human_volume(transfer.volume)
   

@@ -90,6 +90,10 @@ class Well:
         yield self
 
     def transfer_to_other_well(self, destination_well, transfer_volume):
+        if self.is_empty:
+            raise TransferError(
+                "Transfer %s => %s impossible: %s is empty" % (
+                 self, destination_well, self))
         factor = float(transfer_volume) / self.volume
 
         #  pre-check in both source and destination wells that transfers

@@ -1,7 +1,11 @@
 from collections import OrderedDict
-from .exporters.reports import template_path, report_writer
+
 import flametree
 from sequenticon import sequenticon_batch
+
+from .exporters.reports import template_path, report_writer
+from .tools import human_seq_size
+
 
 class AssemblyPlan:
 
@@ -65,6 +69,7 @@ class AssemblyPlan:
     def write_report(self, target):
         all_parts_used = self.all_parts_used()
         sequenticon_dict = None
+        parts_length_dict = None
         if 'record' in list(self.parts_data.values())[0]:
             sequenticons = sequenticon_batch([
                 self.parts_data[p]['record']
@@ -72,10 +77,22 @@ class AssemblyPlan:
             ], output_format='html_image')
             sequenticon_dict = OrderedDict([(name, icon)
                                             for (name, icon) in sequenticons])
+            parts_length_dict = {
+                part: human_seq_size(self.get_part_length(part))
+                for part in sequenticon_dict
+            }
         html = report_writer.pug_to_html(
             path=template_path("assembly_plan_report.pug"),
             assembly_plan=self,
             sequenticon_dict=sequenticon_dict,
+            parts_length_dict=parts_length_dict,
             all_parts_used=all_parts_used
         )
         report_writer.write_report(html, target)
+
+    def get_part_length(self, part_name):
+        data = self.parts_data[part_name]
+        if 'size' in data:
+            return data['size']
+        else:
+            return len(data['record'])
