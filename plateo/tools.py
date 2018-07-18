@@ -5,6 +5,7 @@ In particulat, methods for converting to and from plate coordinates.
 
 import numpy as np
 from collections import OrderedDict
+from fuzzywuzzy import process
 import re
 
 def compute_rows_columns(num_wells):
@@ -152,3 +153,7 @@ def human_volume(vol, unit='auto'):
         return "%d %s" % (vol, unit)
     else:
         return "%s %s" % (('%.02f' % vol).rstrip('0'), unit)
+
+def did_you_mean(name, other_names, limit=5, min_score=50):
+    results = process.extract(name, list(other_names), limit=limit)
+    return [e for (e, score) in results if score >= min_score]

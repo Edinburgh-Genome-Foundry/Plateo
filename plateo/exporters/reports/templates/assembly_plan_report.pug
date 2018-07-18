@@ -18,19 +18,23 @@ p: br
       if sequenticon_dict
         span!= sequenticon_dict[name]
       span= name
-      span(style="color: rgb(56, 128, 140)") &nbsp;- #{parts_length_dict[name]}
-    br  
+      span(style="color: rgb(56, 128, 140)") &nbsp;- !{parts_length_dict[name]}
+    br
 
 if sequenticon_dict
   h3 Sequenticon assemblies
 
   table.table.ui.compact.celled.striped.groups
     thead
+      th
       th Assembly
       th Parts sequenticons
-    each name in assembly_plan.assemblies
+    each i, name in enumerate(assembly_plan.assemblies)
       
       tr
+        td
+          center
+            span(style='font-size: 0.8em; color: grey;') !{i+1}
         td(style='text-align: center !important;')= name
         td
           each part in assembly_plan.assemblies[name]

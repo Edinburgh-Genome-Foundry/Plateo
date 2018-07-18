@@ -1,10 +1,10 @@
 from collections import OrderedDict
-
+import pandas
 import flametree
 from sequenticon import sequenticon_batch
 
 from .exporters.reports import template_path, report_writer
-from .tools import human_seq_size
+from .tools import human_seq_size, did_you_mean
 
 
 class AssemblyPlan:
@@ -22,15 +22,34 @@ class AssemblyPlan:
             for part in assembly
         ]))
 
+    def parts_without_data(self):
+        return {
+            part_name: did_you_mean(part_name, self.parts_data)
+            for part_name in self.all_parts_used()
+            if part_name not in self.parts_data
+        }
+
     def assemblies_featuring(self, part):
         return [name for (name, parts) in self.assemblies.items()
                 if part in parts]
 
     def assemblies_with_records(self):
         return OrderedDict([
-            (name, [self.parts_data[p]['record'] for p in parts])
+            (name, [self.get_part_data(p)['record'] for p in parts])
             for name, parts in self.assemblies.items()
         ])
+
+    def get_part_data(self, part_name):
+        if part_name not in self.parts_data:
+            candidates = did_you_mean(part_name, self.parts_data)
+            if len(candidates) == 0:
+                suggestions = ""
+            else:
+                candidates = ", ".join(candidates)
+                suggestions = "Did you mean one of those ? %s" % candidates
+            raise ValueError("Unknown part %s. %s." % (part_name, suggestions))
+        return self.parts_data[part_name]
+
 
     def rename_part(self, part_name, new_name):
         for name, parts in self.assemblies.items():
@@ -42,22 +61,28 @@ class AssemblyPlan:
                 self.parts_data[new_name] = self.parts_data.pop(part_name)
 
     @staticmethod
-    def from_spreadsheet(path):
-
-        if path.endswith('.csv'):
-            with open(path, "r") as f:
-                lines = [
-                    [c.strip() for c in l.split(',') if (c.strip() != '')]
-                    for l in f.read().split("\n")
-                ]
-            return AssemblyPlan(OrderedDict([
-                (line[0], line[1:])
-                for line in lines
-                if line != []
-            ]))
-        else:
-            raise NotImplementedError(
-                "Assembly plan only converts from csv at the moment")
+    def from_spreadsheet(filepath=None, dataframe=None, sheet_name=0,
+                         header=None):
+        if dataframe is None:
+            if filepath.lower().endswith('.csv'):
+                with open(filepath, 'r') as f:
+                    dataframe = pandas.DataFrame([
+                        line.split(',')
+                        for line in f.read().split('\n')
+                    ])
+            else:
+                dataframe = pandas.read_excel(filepath, sheet_name=sheet_name,
+                                              header=header)
+        return AssemblyPlan(OrderedDict([
+            (row[0], [
+                str(e)
+                for e in row[1:]
+                if str(e) not in ['-', 'nan', 'None']
+            ])
+            for i, row in dataframe.iterrows()
+            if str(row[0]).lower() not in ['nan', 'construct name',
+                                           'construct', 'none', '']
+        ]))
 
     def to_spreadsheet(self, path):
         with open(path, "w") as f:
@@ -72,7 +97,7 @@ class AssemblyPlan:
         parts_length_dict = None
         if 'record' in list(self.parts_data.values())[0]:
             sequenticons = sequenticon_batch([
-                self.parts_data[p]['record']
+                self.get_part_data(p)['record']
                 for p in all_parts_used
             ], output_format='html_image')
             sequenticon_dict = OrderedDict([(name, icon)
@@ -91,7 +116,7 @@ class AssemblyPlan:
         report_writer.write_report(html, target)
 
     def get_part_length(self, part_name):
-        data = self.parts_data[part_name]
+        data = self.get_part_data(part_name)
         if 'size' in data:
             return data['size']
         else:

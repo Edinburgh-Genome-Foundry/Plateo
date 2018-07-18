@@ -1,7 +1,6 @@
 from ..PickList import PickList
 from ..Well import TransferError
-from fuzzywuzzy import process
-from ..tools import round_at
+from ..tools import round_at, did_you_mean
 
 
 class AssemblyPicklistGenerator:
@@ -37,9 +36,8 @@ class AssemblyPicklistGenerator:
                     'featured_in': assembly_plan.assemblies_featuring(part),
                     'did_you_mean': [
                         (name, part_wells[name])
-                        for name, score in process.extract(
-                            part, list(part_wells), limit=5)
-                        if score > 50
+                        for name in did_you_mean(
+                            part, part_wells, min_score=50)
                     ]
                 }
                 for part in missing_parts
