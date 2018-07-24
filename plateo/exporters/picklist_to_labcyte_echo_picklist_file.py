@@ -23,9 +23,11 @@ def picklist_to_labcyte_echo_picklist_file(picklist, filename,
 
      max_dispense_volume
        Maximal volume that can be dispensed in one go. For the ECHO it may
-       be 500nL (default value here)
+       be 500nL (default value here). Operations above that limit will be
+       decomposed into several dispensing operations, for instance 1200nL
+       may be decomposed as 500+500+200nL
     """
-    
+
     columns = ["Source Well", "Destination Well", "Transfer Volume"]
     picklist = picklist.enforce_maximum_dispense_volume(max_dispense_volume)
 

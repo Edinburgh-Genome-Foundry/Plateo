@@ -41,3 +41,8 @@ table img {
   margin-right: 1em;
   border: 0.5px solid grey;
 }
+
+.ui.label.horizontal {
+  font-weight: normal;
+  font-size: 0.8em;
+}

@@ -91,27 +91,42 @@ class AssemblyPlan:
                 for asm, parts in self.assemblies.items()
             ]))
 
+    def assemblies_per_part(self):
+        result = {}
+        for assembly, parts in self.assemblies.items():
+            for part in parts:
+                if part not in result:
+                    result[part] = set()
+                result[part].add(assembly)
+        for part, assemblies in result.items():
+            result[part] = sorted(assemblies)
+        return result
+
     def write_report(self, target):
         all_parts_used = self.all_parts_used()
+        assemblies_per_part = self.assemblies_per_part()
         sequenticon_dict = None
         parts_length_dict = None
-        if 'record' in list(self.parts_data.values())[0]:
+        first_part_data = list(self.parts_data.values())[0]
+        if 'record' in first_part_data:
             sequenticons = sequenticon_batch([
                 self.get_part_data(p)['record']
                 for p in all_parts_used
             ], output_format='html_image')
             sequenticon_dict = OrderedDict([(name, icon)
                                             for (name, icon) in sequenticons])
+        if (('record' in first_part_data) or ('size' in first_part_data)):
             parts_length_dict = {
                 part: human_seq_size(self.get_part_length(part))
-                for part in sequenticon_dict
+                for part in all_parts_used
             }
         html = report_writer.pug_to_html(
             path=template_path("assembly_plan_report.pug"),
             assembly_plan=self,
             sequenticon_dict=sequenticon_dict,
             parts_length_dict=parts_length_dict,
-            all_parts_used=all_parts_used
+            all_parts_used=all_parts_used,
+            assemblies_per_part=assemblies_per_part
         )
         report_writer.write_report(html, target)
 

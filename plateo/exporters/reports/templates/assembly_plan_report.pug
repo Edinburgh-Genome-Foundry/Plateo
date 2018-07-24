@@ -10,32 +10,46 @@ h1(style="margin-top:0.1em;") Assembly plan report
   a schematic plan of the assembly.
 
 
-h3 All required parts ({{ len(sequenticon_dict) }})
+h3 All required parts ({{ len(assemblies_per_part) }})
 p: br
 .all-required-parts(style="column-count: 3")
-  each name in sequenticon_dict
+  each name in all_parts_used
     .ui.label.part-list-item
       if sequenticon_dict
         span!= sequenticon_dict[name]
       span= name
-      span(style="color: rgb(56, 128, 140)") &nbsp;- !{parts_length_dict[name]}
+      if parts_length_dict
+        span(style="color: rgb(56, 128, 140)") &nbsp;- !{parts_length_dict[name]}
     br
 
-if sequenticon_dict
-  h3 Sequenticon assemblies
 
-  table.table.ui.compact.celled.striped.groups
-    thead
-      th
-      th Assembly
-      th Parts sequenticons
-    each i, name in enumerate(assembly_plan.assemblies)
-      
-      tr
-        td
-          center
-            span(style='font-size: 0.8em; color: grey;') !{i+1}
-        td(style='text-align: center !important;')= name
-        td
-          each part in assembly_plan.assemblies[name]
-            span!= sequenticon_dict[part]
+h3 Parts in each construct
+
+table.table.ui.compact.celled.striped.groups
+  thead
+    th
+    th Assembly
+    th Parts
+  each i, name in enumerate(assembly_plan.assemblies)
+    
+    tr
+      td
+        center
+          span(style='font-size: 0.8em; color: grey;') !{i+1}
+      td(style='text-align: center !important;')= name
+      td
+        each part in assembly_plan.assemblies[name]
+          .ui.horizontal.label= part
+
+h3 Constructs involving each part
+
+table.table.ui.compact.celled.striped.groups
+  thead
+    th Part
+    th Assemblies
+  each part, assemblies in assemblies_per_part.items()
+    tr
+      td(style='text-align: center !important;')= part
+      td
+        each asm in assemblies
+          .ui.horizontal.label= asm
