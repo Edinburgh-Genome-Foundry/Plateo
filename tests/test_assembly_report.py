@@ -1,4 +1,8 @@
 import os
+
+import matplotlib
+matplotlib.use("Agg")
+
 from plateo import AssemblyPlan
 from plateo.parsers import plate_from_content_spreadsheet
 from plateo.containers.plates import Plate4ti0960
