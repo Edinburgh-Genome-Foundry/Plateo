@@ -206,7 +206,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
 
     plate = plate_from_platemap_spreadsheet(
         filepath, data_field='content', sheet_name=sheet_names[0],
-        headers=headers, plate_class=plate_class)
+        headers=headers, plate_class=plate_class, original_filename='x.xlsx')
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
             filepath, data_field='volume', sheet_name=sheet_names[1],
@@ -215,7 +215,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
             filepath, data_field='concentration', sheet_name=sheet_names[2],
-            headers=headers)
+            headers=headers, original_filename='x.xlsx')
     )
 
     for well in plate.iter_wells():
