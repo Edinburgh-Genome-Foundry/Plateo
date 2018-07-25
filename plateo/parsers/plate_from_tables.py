@@ -210,7 +210,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
             filepath, data_field='volume', sheet_name=sheet_names[1],
-            headers=headers)
+            headers=headers, original_filename='x.xlsx')
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
