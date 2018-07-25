@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use("Agg")
+
 from plateo import AssemblyPlan
 import os
 
