@@ -1,4 +1,4 @@
 include *.txt
-recursive-include plateo/exporters/reports/*
+recursive-include plateo/exporters/reports/templates/*
 include *.rst
 include ez_setup.py
