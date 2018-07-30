@@ -19,12 +19,6 @@ class AssemblyPicklistGenerator:
 
     def make_picklist(self, assembly_plan, source_wells, destination_wells,
                       buffer_well=None, complement_well=None):
-        if buffer_well.is_empty:
-            raise TransferError("Empty buffer well: %s." % (buffer_well))
-        if complement_well.is_empty:
-            raise TransferError("Empty complement well: %s."
-                                % (complement_well))
-
         source_wells = list(source_wells)
         destination_wells = list(destination_wells)
         destination_wells = destination_wells[:len(assembly_plan.assemblies)]
@@ -64,6 +58,9 @@ class AssemblyPicklistGenerator:
                     complement_well = part_wells.get(label, None)
                 if complement_well is None:
                     raise ValueError("Could not identify the complement well.")
+            if complement_well.is_empty:
+                raise TransferError("Empty complement well: %s."
+                                    % (complement_well))
             for well in destination_wells:
                 to_well = picklist.restricted_to(destination_well=well)
                 total_transfer_volume = to_well.total_transfered_volume()
@@ -77,8 +74,10 @@ class AssemblyPicklistGenerator:
                                           destination_well=well,
                                           volume=complement_volume)
         if self.buffer_volume:
-            if complement_well is None:
-                complement_well = part_wells['BUFFER']
+            if buffer_well is None:
+                buffer_well = part_wells.get('BUFFER', None)
+            if buffer_well.is_empty:
+                raise TransferError("Empty buffer well: %s." % (buffer_well))
             buffer_volume = round_at(self.buffer_volume, self.volume_rounding)
             for well in destination_wells:
                 picklist.add_transfer(buffer_well, well, volume=buffer_volume)
