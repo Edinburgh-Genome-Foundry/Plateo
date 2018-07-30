@@ -35,7 +35,7 @@ class AssemblyPicklistGenerator:
                 part: {
                     'featured_in': assembly_plan.assemblies_featuring(part),
                     'did_you_mean': [
-                        (name, part_wells[name])
+                        (name, str(part_wells[name]))
                         for name in did_you_mean(
                             part, part_wells, min_score=50)
                     ]
