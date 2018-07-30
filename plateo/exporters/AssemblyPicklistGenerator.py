@@ -22,7 +22,8 @@ class AssemblyPicklistGenerator:
         if buffer_well.is_empty:
             raise TransferError("Empty buffer well: %s." % (buffer_well))
         if complement_well.is_empty:
-            raise TransferError("Empty complement well: %s." % (complement_well))
+            raise TransferError("Empty complement well: %s."
+                                % (complement_well))
 
         source_wells = list(source_wells)
         destination_wells = list(destination_wells)
