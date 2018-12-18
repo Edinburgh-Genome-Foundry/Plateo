@@ -1,5 +1,5 @@
 from collections import defaultdict
-from ..tools import number_to_rowname
+from ..tools import number_to_rowname, unit_factors
 import pandas
 
 def plate_to_platemap_spreadsheet(plate, wellinfo_function, filepath=None,
@@ -58,7 +58,9 @@ def plate_to_pandas_dataframe(plate, fields=None, direction='row'):
         dataframe = dataframe[fields]
     return dataframe
 
-def plate_to_content_spreadsheet(plate, filepath):
+def plate_to_content_spreadsheet(plate, filepath, content_type=None,
+                                 volume_unit='uL',
+                                 concentration_unit='ng-uL'):
     """Write plate into Excel with 'content', 'volume', 'concentration' sheets.
 
     The 'content' sheet will contain a platemap of the product contained in
@@ -80,10 +82,17 @@ def plate_to_content_spreadsheet(plate, filepath):
       Path to the excel spreadsheet to write. An Excel writer also works.
     """
 
+    volume_factor = unit_factors[volume_unit]
+    c_mass, c_vol = concentration_unit.split('-')
+    concentration_factor = unit_factors[c_mass] / unit_factors[c_vol]
+
     functions = [
-        ('content', lambda w: w.content.components_as_string()),
-        ('volume', lambda w: w.content.volume),
-        ('concentration', lambda w: w.content.concentration())
+        (('content (%s)' % content_type) if content_type else 'content',
+         lambda w: w.content.components_as_string()),
+        ('volume (%s)' % volume_unit,
+        lambda w: w.content.volume / volume_factor),
+        ('concentration (%s)' % concentration_unit,
+        lambda w: w.content.concentration() / concentration_factor)
     ]
     writer = pandas.ExcelWriter(filepath)
     for name, fun in functions:

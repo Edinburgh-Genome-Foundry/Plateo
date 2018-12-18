@@ -50,7 +50,6 @@ class AssemblyPlan:
             raise ValueError("Unknown part %s. %s." % (part_name, suggestions))
         return self.parts_data[part_name]
 
-
     def rename_part(self, part_name, new_name):
         for name, parts in self.assemblies.items():
             for i, part in enumerate(parts):
@@ -77,7 +76,7 @@ class AssemblyPlan:
             (row[0], [
                 str(e)
                 for e in row[1:]
-                if str(e) not in ['-', 'nan', 'None']
+                if str(e) not in ['-', 'nan', 'None', '']
             ])
             for i, row in dataframe.iterrows()
             if str(row[0]).lower() not in ['nan', 'construct name',
@@ -86,7 +85,7 @@ class AssemblyPlan:
 
     def to_spreadsheet(self, path):
         with open(path, "w") as f:
-            f.write("\n".join([
+            f.write("\n".join([("construct,parts")] + [
                 ",".join([asm] + parts)
                 for asm, parts in self.assemblies.items()
             ]))

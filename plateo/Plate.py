@@ -159,8 +159,17 @@ class Plate:
 
     def wells_sorted_by(self, sortkey):
         return (e for e in sorted(self.wells.values(), key=sortkey))
+    
+    def list_data_field_values(self, data_field, include_none=False):
+        return list(set([
+            w.data[data_field]
+            for w in self.iter_wells()
+            if data_field in w.data
+            and (include_none or (w.data[data_field] is not None))
+        ]))
 
     def last_nonempty_well(self, direction='row'):
+        """Return the last non-empty well found when traversing the plate."""
         selected_well = None
         for well in self.iter_wells(direction=direction):
             if not well.is_empty:

@@ -1,6 +1,6 @@
 """Miscellaneous useful functions.
 
-In particulat, methods for converting to and from plate coordinates.
+In particular, methods for converting to and from plate coordinates.
 """
 
 import numpy as np
@@ -11,8 +11,8 @@ import re
 def compute_rows_columns(num_wells):
     """Convert 96->(8,12), 384->(16,24), etc."""
     a = int(np.round(np.sqrt(num_wells / 6)))
-    n_rows = 2*a
-    n_columns = 3*a
+    n_rows = 2 * a
+    n_columns = 3 * a
     return n_rows, n_columns
 
 def rowname_to_number(name):
@@ -128,18 +128,16 @@ def human_seq_size(n):
     else:
         return '%dk' % np.round(n / 1000)
 
-
-volumes_units = OrderedDict([
-    ('nL', 1e-9),
-    ('µL', 1e-6),
-    ('mL', 1e-3),
-    ('L', 1.0)
-])
+unit_factors = {
+    prefix + unit: factor
+    for unit in 'glL'
+    for prefix, factor in [('', 1), ('m', 1e-3), ('u', 1e-6), ('n', 1e-9)]
+}
 
 
 def find_best_volume_unit(vols):
     med = np.median(vols)
-    for unit, value in volumes_units.items():
+    for unit, value in unit_factors.items():
         if med <= 999 * value:
             return unit
     return unit
@@ -148,12 +146,17 @@ def find_best_volume_unit(vols):
 def human_volume(vol, unit='auto'):
     if unit == 'auto':
         unit = find_best_volume_unit([vol])
-    vol = np.round(vol / volumes_units[unit], 2)
+    vol = np.round(vol / unit_factors[unit], 2)
     if int(vol) == vol:
         return "%d %s" % (vol, unit)
     else:
         return "%s %s" % (('%.02f' % vol).rstrip('0'), unit)
 
 def did_you_mean(name, other_names, limit=5, min_score=50):
+    if isinstance(name, (list, tuple)):
+        return {
+            n: did_you_mean(n, other_names, limit=limit, min_score=min_score)
+            for n in name
+        }
     results = process.extract(name, list(other_names), limit=limit)
     return [e for (e, score) in results if score >= min_score]

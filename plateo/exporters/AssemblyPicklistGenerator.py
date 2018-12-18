@@ -22,7 +22,22 @@ class AssemblyPicklistGenerator:
         source_wells = list(source_wells)
         destination_wells = list(destination_wells)
         destination_wells = destination_wells[:len(assembly_plan.assemblies)]
-        part_wells = {self.get_part_from_well(w): w for w in source_wells}
+
+        part_wells = {}
+        duplicates = {}
+        for well in source_wells:
+            well_part = self.get_part_from_well(well)
+            if well_part in part_wells:
+                if well_part not in duplicates:
+                    duplicates[well_part] = []
+                duplicates[well_part].append(well.name)
+                previous_well = part_wells[well_part]
+                previous_concentration = previous_well.content.concentration()
+                if well.content.concentration() > previous_concentration:
+                    part_wells[well_part] = well
+            else:
+                part_wells[well_part] = well
+
         required_parts = set(assembly_plan.all_parts_used())
         missing_parts = required_parts.difference(set(part_wells))
         if missing_parts:
@@ -83,7 +98,14 @@ class AssemblyPicklistGenerator:
                 picklist.add_transfer(buffer_well, well, volume=buffer_volume)
 
         return picklist, {
-            'wells_over_desired_volume': wells_over_desired_volume
+            'wells_over_desired_volume': wells_over_desired_volume,
+            'duplicates': {
+                part_name: {
+                    'wells': wells,
+                    'selected': part_wells[part_name]
+                }
+                for part_name, wells in duplicates.items()
+            }
         }
 
     @staticmethod

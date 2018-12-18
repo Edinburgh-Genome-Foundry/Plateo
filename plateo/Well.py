@@ -108,8 +108,8 @@ class Well:
         if ((destination_well.capacity is not None) and
            (final_destination_volume > destination_well.capacity)):
             raise TransferError(
-                "Transfer of %.2e L to %s brings volume over capacity."
-                % (transfer_volume, destination_well)
+                "Transfer of %.2e L from %s to %s brings volume over capacity."
+                % (transfer_volume, self, destination_well)
             )
 
         #  If you arrive here, it means that the transfer is valid, do it.
@@ -153,13 +153,19 @@ class Well:
                 self.content.quantities.pop(component)
             else:
                 self.content.quantities[component] -= quantity
+    
+    def empty_completely(self):
+        self.content.quantities = {}
+        self.content.volume = 0
 
     @property
     def coordinates(self):
+        """Return (well.row, well.column)"""
         return (self.row, self.column)
 
     @property
     def is_empty(self):
+        """Return true iff the well's volume is 0"""
         return (self.volume == 0)
 
 
@@ -191,7 +197,25 @@ class Well:
         )
 
     def index_in_plate(self, direction='row'):
+        """Return the index of the well in the plate."""
         return self.plate.wellname_to_index(self.name, direction=direction)
+    
+    def is_after(self, other, direction='row'):
+        """Return whether this well is located strictly after the other well.
+        
+        Examples
+        --------
+        To iterate over all free wells after the last non-free well of a plate:
+
+        >>> direction = 'row'
+        >>> last_occupied_well = plate.last_nonempty_well(direction=direction)
+        >>> free_wells = (w for w in plate.iter_wells(direction=direction)
+        >>>               if w.is_after(last_occupied_well))
+        >>> for well in free_wells: ...
+        """
+        well_index = self.index_in_plate(direction=direction)
+        other_index = other.index_in_plate(direction=direction)
+        return well_index > other_index
 
     def __lt__(self, other):
         return str(self) < str(other)
