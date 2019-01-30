@@ -7,7 +7,7 @@
     </p>
 
 .. image:: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo.svg?branch=master
-  :target: https://travis-ci.org/Edinburgh-Genome-Foundry/DnaCauldron
+  :target: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo
   :alt: Travis CI build status
 
 Plateo (pronounced *Plato*, like the planet) is a Python library to assist in the
