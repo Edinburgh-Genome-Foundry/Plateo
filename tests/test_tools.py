@@ -5,7 +5,8 @@ def invert_sublists(l):
     return [sl[::-1] for sl in l]
 
 
-@pytest.mark.parametrize("num_wells, expected", [(96, (8, 12)),
+@pytest.mark.parametrize("num_wells, expected", [(48, (6, 8)),
+                                                 (96, (8, 12)),
                                                  (384, (16, 24)),
                                                  (1536, (32, 48))])
 def test_compute_rows_columns(num_wells, expected):

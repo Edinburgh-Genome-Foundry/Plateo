@@ -10,9 +10,9 @@ import re
 
 def compute_rows_columns(num_wells):
     """Convert 96->(8,12), 384->(16,24), etc."""
-    a = int(np.round(np.sqrt(num_wells / 6)))
-    n_rows = 2 * a
-    n_columns = 3 * a
+    a = np.sqrt(num_wells / 6)
+    n_rows = int(np.round(2 * a))
+    n_columns = int(np.round(3 * a))
     return n_rows, n_columns
 
 def rowname_to_number(name):
