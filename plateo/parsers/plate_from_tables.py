@@ -180,6 +180,7 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
 
 
 def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
+                                   original_filename=None,
                                    sheet_names='default'):
     """Load plate from Excel with 'content', 'volume', 'concentration' sheets.
 
@@ -209,6 +210,11 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
     sheet_name
       A triple of the name of the sheets containing
     """
+    if original_filename is None:
+        if isinstance(filepath, str):
+            original_filename = filepath
+        else:
+            original_filename = 'unknown.xlsx'
 
     sheet_names = pd.ExcelFile(filepath).sheet_names
 
@@ -250,17 +256,19 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
 
     content_field_name = field_data['content']['factor']
     plate = plate_from_platemap_spreadsheet(
-        filepath,  headers=headers, original_filename=filepath,
+        filepath,  headers=headers,
         sheet_name=field_data['content']['sheet_name'],
         data_field=content_field_name,
-        plate_class=plate_class    
+        plate_class=plate_class,
+        original_filename=original_filename
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
             filepath, data_field='volume',
-            headers=headers, original_filename=filepath,
+            headers=headers,
             multiply_by=field_data['volume']['factor'],
-            sheet_name=field_data['volume']['sheet_name']
+            sheet_name=field_data['volume']['sheet_name'],
+            original_filename=original_filename
         )
     )
     plate.merge_data_from(
@@ -268,7 +276,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
             filepath, data_field='concentration', headers=headers,
             sheet_name=field_data['concentration']['sheet_name'],
             multiply_by=field_data['concentration']['factor'],
-            original_filename='x.xlsx'
+            original_filename=original_filename
         )
     )
 

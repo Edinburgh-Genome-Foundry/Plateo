@@ -72,9 +72,11 @@ class AssemblyPicklistGenerator:
                 for label in 'COMPLEMENT', 'WATER':
                     complement_well = part_wells.get(label, None)
                 if complement_well is None:
-                    raise ValueError("Could not identify the complement well.")
+                    raise ValueError("Could not identify the complement well ."
+                                     " in the plate. One well should be marked"
+                                     " as containing WATER or COMPLEMENT.")
             if complement_well.is_empty:
-                raise TransferError("Empty complement well: %s."
+                raise TransferError("Well with COMPLEMENT/WATER is empty: %s."
                                     % (complement_well))
             for well in destination_wells:
                 to_well = picklist.restricted_to(destination_well=well)
