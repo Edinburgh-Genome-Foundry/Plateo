@@ -1,4 +1,5 @@
 import pandas
+import flametree
 from ..containers import Plate96
 
 def parts_ids_from_geneart_records_dir(folder):
