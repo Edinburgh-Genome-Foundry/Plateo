@@ -115,7 +115,7 @@ class AssemblyPicklistGenerator:
         if 'part' in well.data:
             return well.data['part']
         else:
-            return well.content.components_as_string()
+            return well.content.components_as_string().strip(" ")
 
     def get_part_molar_weight(self, part_data):
         """Returns the molar weight of the sequence in g/m.
