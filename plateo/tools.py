@@ -134,10 +134,15 @@ unit_factors = {
     for prefix, factor in [('', 1), ('m', 1e-3), ('u', 1e-6), ('n', 1e-9)]
 }
 
+volume_values_and_units = sorted([
+    (value, unit)
+    for (unit, value) in unit_factors.items()
+    if unit.endswith('L')
+])
 
 def find_best_volume_unit(vols):
     med = np.median(vols)
-    for unit, value in unit_factors.items():
+    for value, unit in volume_values_and_units:
         if (not unit.endswith('g')) and (med <= 999 * value):
             return unit
     return unit
