@@ -138,7 +138,7 @@ unit_factors = {
 def find_best_volume_unit(vols):
     med = np.median(vols)
     for unit, value in unit_factors.items():
-        if med <= 999 * value:
+        if (not unit.endswith('g')) and (med <= 999 * value):
             return unit
     return unit
 
