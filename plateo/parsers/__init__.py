@@ -29,6 +29,6 @@ from .plate_from_tables import (
     plate_from_content_spreadsheet
 )
 
-from .plate_from_geneart_shipment_layout_sheet import (
+from .plates_from_geneart_shipment_layout_sheet import (
     plates_from_geneart_shipment_layout_sheet
 )

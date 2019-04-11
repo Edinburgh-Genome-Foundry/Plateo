@@ -231,7 +231,9 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
     }
 
     field_data = {}
+    print (sheet_names)
     for field, pattern in sheet_name_patterns.items():
+        sheet_name = None
         for sheet_name in sheet_names:
             match = re.fullmatch(pattern, sheet_name)
             if match is not None:
@@ -252,7 +254,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
                 break
         else:
             raise ValueError(("No sheet found for field %s."
-                              "Check your sheet names." % sheet_name))
+                              "Check your sheet names.") % field)
 
     content_field_name = field_data['content']['factor']
     plate = plate_from_platemap_spreadsheet(

@@ -19,7 +19,7 @@ from Bio import SeqIO
 
 
 def test_assembly_report(tmpdir):
-    data_path = os.path.join("tests", "data", "assembly_report")
+    data_path = os.path.join("tests", "test_assembly_report", "data")
     root = flametree.file_tree(data_path)
     df = pandas.read_excel(root.example_picklist_xls.open('rb'), index=0)
     assembly_plan = AssemblyPlan(OrderedDict([

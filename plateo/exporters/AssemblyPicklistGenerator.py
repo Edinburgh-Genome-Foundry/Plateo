@@ -128,6 +128,9 @@ class AssemblyPicklistGenerator:
         return 650 * size
 
     def volume_from_well(self, well, parts_data):
+        if well.content.volume == 0:
+            raise ValueError(("Cannot get anything from well %s " % well) +
+                             "which has a volume of 0")
         part_mol = self.part_mol
         part_g = self.part_g
         part_l = self.part_l
