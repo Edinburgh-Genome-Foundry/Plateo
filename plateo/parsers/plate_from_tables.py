@@ -4,11 +4,16 @@ import os
 import pandas as pd
 
 from plateo.containers import get_plate_class
-from ..tools import (infer_plate_size_from_wellnames, number_to_rowname,
-                     unit_factors)
+from ..tools import (
+    infer_plate_size_from_wellnames,
+    number_to_rowname,
+    unit_factors,
+)
 
-def plate_from_dataframe(dataframe, wellname_field="wellname",
-                         num_wells="infer", data=None):
+
+def plate_from_dataframe(
+    dataframe, wellname_field="wellname", num_wells="infer", data=None
+):
     """Create a plate from a Pandas dataframe where each row contains the
     name of a well and data on the well.
 
@@ -37,18 +42,16 @@ def plate_from_dataframe(dataframe, wellname_field="wellname",
     # TODO: infer plate class automatically ?
 
     dataframe = dataframe.set_index(wellname_field)
-    wells_data = {
-        well: row.to_dict()
-        for well, row in dataframe.iterrows()
-    }
+    wells_data = {well: row.to_dict() for well, row in dataframe.iterrows()}
     if num_wells == "infer":
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     plate_class = get_plate_class(num_wells=num_wells)
     return plate_class(wells_data=wells_data, data=data)
 
 
-def plate_from_list_spreadsheet(filename, sheet_name=0, num_wells="infer",
-                                wellname_field="wellname"):
+def plate_from_list_spreadsheet(
+    filename, sheet_name=0, num_wells="infer", wellname_field="wellname"
+):
     """Create a plate from a Pandas dataframe where each row contains the
     name of a well and metadata on the well.
 
@@ -75,16 +78,26 @@ def plate_from_list_spreadsheet(filename, sheet_name=0, num_wells="infer",
         dataframe = pd.read_excel(filename, sheet_name=sheet_name)
     elif filename.endswith(".csv"):
         dataframe = pd.read_csv(filename)
-    return plate_from_dataframe(dataframe, wellname_field=wellname_field,
-                                num_wells=num_wells,
-                                data={"filename": filename})
+    return plate_from_dataframe(
+        dataframe,
+        wellname_field=wellname_field,
+        num_wells=num_wells,
+        data={"filename": filename},
+    )
 
 
-def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
-                                    original_filename=None, data_field="info",
-                                    num_wells="infer", plate_class=None,
-                                    multiply_by=None,
-                                    headers=True, sheet_name=0, skiprows=None):
+def plate_from_platemap_spreadsheet(
+    file_handle,
+    file_type="auto",
+    original_filename=None,
+    data_field="info",
+    num_wells="infer",
+    plate_class=None,
+    multiply_by=None,
+    headers=True,
+    sheet_name=0,
+    skiprows=None,
+):
     """Parse spreadsheets representing a plate map.
 
     Parameters
@@ -149,25 +162,42 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
 
     index_col = 0 if headers else None
     if file_type == "csv":
-        dataframe = pd.read_csv(file_handle, index_col=index_col,
-                                header=index_col, skiprows=skiprows)
+        dataframe = pd.read_csv(
+            file_handle,
+            index_col=index_col,
+            header=index_col,
+            skiprows=skiprows,
+        )
     elif file_type == "excel":
-        dataframe = pd.read_excel(file_handle, index_col=index_col,
-                                  sheet_name=sheet_name,
-                                  header=index_col, skiprows=skiprows)
+        dataframe = pd.read_excel(
+            file_handle,
+            index_col=index_col,
+            sheet_name=sheet_name,
+            header=index_col,
+            skiprows=skiprows,
+        )
     if headers:
+
+        def compute_value(content, multiply_by, row, column):
+            if multiply_by is None:
+                return content
+            else:
+                try:
+                    return content * multiply_by
+                except Exception as err:
+                    wellname = row + str(column)
+                    raise ValueError(("In well %s: " % wellname) + str(err))
         wells_data = {
             row + str(column): {
-                data_field: content if (multiply_by is None) else
-                            content * multiply_by
+                data_field: compute_value(content, multiply_by, row, column)
             }
             for column, column_content in dataframe.to_dict().items()
             for row, content in column_content.items()
+            if isinstance(row, str)
         }
     else:
         wells_data = {
-            number_to_rowname(row + 1) + str(column + 1):
-                {data_field: content}
+            number_to_rowname(row + 1) + str(column + 1): {data_field: content}
             for column, column_content in dataframe.to_dict().items()
             for row, content in column_content.items()
         }
@@ -175,13 +205,18 @@ def plate_from_platemap_spreadsheet(file_handle, file_type="auto",
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     if plate_class is None:
         plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(wells_data=wells_data,
-                       data={"file_source": original_filename})
+    return plate_class(
+        wells_data=wells_data, data={"file_source": original_filename}
+    )
 
 
-def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
-                                   original_filename=None,
-                                   sheet_names='default'):
+def plate_from_content_spreadsheet(
+    filepath,
+    headers=True,
+    plate_class=None,
+    original_filename=None,
+    sheet_names="default",
+):
     """Load plate from Excel with 'content', 'volume', 'concentration' sheets.
 
     The 'content' sheet contains a platemap of the product contained in each
@@ -214,77 +249,82 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
         if isinstance(filepath, str):
             original_filename = filepath
         else:
-            original_filename = 'unknown.xlsx'
+            original_filename = "unknown.xlsx"
 
     sheet_names = pd.ExcelFile(filepath).sheet_names
 
     sheet_name_patterns = {
-        'concentration': r"[cC]oncentration(| \((\S+)-(\S+)\))",
-        'volume': r"[vV]olume(| \((\S+)\))",
-        'content': r"[cC]ontent(| \((\S+)\))"
+        "concentration": r"[cC]oncentration(| \((\S+)-(\S+)\))",
+        "volume": r"[vV]olume(| \((\S+)\))",
+        "content": r"[cC]ontent(| \((\S+)\))",
     }
 
     default_factors = {
-        'concentration': 1e-3, # default is ng/ul = 0.001 g/l
-        'volume': 1e-6, # default is ul
-        'content': 'content'
+        "concentration": 1e-3,  # default is ng/ul = 0.001 g/l
+        "volume": 1e-6,  # default is ul
+        "content": "content",
     }
 
     field_data = {}
-    print (sheet_names)
     for field, pattern in sheet_name_patterns.items():
         sheet_name = None
         for sheet_name in sheet_names:
             match = re.fullmatch(pattern, sheet_name)
             if match is not None:
-                field_data[field] = data = {'sheet_name': sheet_name}
+                field_data[field] = data = {"sheet_name": sheet_name}
                 groups = list(match.groups())
-                if groups[0] == '':
-                    data['factor'] = default_factors[field]
+                if groups[0] == "":
+                    data["factor"] = default_factors[field]
                 elif len(groups) == 2:
-                    if field == 'content':
-                        data['factor'] = groups[1]
+                    if field == "content":
+                        data["factor"] = groups[1]
                     else:
-                        data['factor'] = unit_factors[groups[1]]
+                        data["factor"] = unit_factors[groups[1]]
                 elif len(groups) == 3:
                     factor = unit_factors[groups[1]] / unit_factors[groups[2]]
-                    data['factor'] = factor
+                    data["factor"] = factor
                 else:
                     raise ValueError("Couldn't parse sheet %s" % sheet_name)
                 break
         else:
-            raise ValueError(("No sheet found for field %s."
-                              "Check your sheet names.") % field)
+            raise ValueError(
+                ("No sheet found for field %s." "Check your sheet names.")
+                % field
+            )
 
-    content_field_name = field_data['content']['factor']
+    content_field_name = field_data["content"]["factor"]
     plate = plate_from_platemap_spreadsheet(
-        filepath,  headers=headers,
-        sheet_name=field_data['content']['sheet_name'],
+        filepath,
+        headers=headers,
+        sheet_name=field_data["content"]["sheet_name"],
         data_field=content_field_name,
         plate_class=plate_class,
-        original_filename=original_filename
+        original_filename=original_filename,
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath, data_field='volume',
+            filepath,
+            data_field="volume",
             headers=headers,
-            multiply_by=field_data['volume']['factor'],
-            sheet_name=field_data['volume']['sheet_name'],
-            original_filename=original_filename
+            multiply_by=field_data["volume"]["factor"],
+            sheet_name=field_data["volume"]["sheet_name"],
+            original_filename=original_filename,
         )
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath, data_field='concentration', headers=headers,
-            sheet_name=field_data['concentration']['sheet_name'],
-            multiply_by=field_data['concentration']['factor'],
-            original_filename=original_filename
+            filepath,
+            data_field="concentration",
+            headers=headers,
+            sheet_name=field_data["concentration"]["sheet_name"],
+            multiply_by=field_data["concentration"]["factor"],
+            original_filename=original_filename,
         )
     )
 
     for well in plate.iter_wells():
         content = well.data[content_field_name]
-        if str(content) == 'nan':
+        if str(content) == "nan":
             well.data[content_field_name] = None
             continue
         volume = well.data.volume
@@ -294,7 +334,7 @@ def plate_from_content_spreadsheet(filepath, headers=True, plate_class=None,
             well.add_content({content: volume * concentration}, volume=volume)
         except Exception as err:
             raise type(err)("Check your data for well %s" % well.name) from err
-        for field in ('volume', 'concentration'):
+        for field in ("volume", "concentration"):
             well.data.pop(field)
 
     return plate
