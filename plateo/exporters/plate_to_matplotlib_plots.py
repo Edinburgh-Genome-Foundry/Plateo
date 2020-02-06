@@ -5,7 +5,7 @@ import numpy as np
 try:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
-    from mpl_toolkits.axes_grid.inset_locator import inset_axes
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False

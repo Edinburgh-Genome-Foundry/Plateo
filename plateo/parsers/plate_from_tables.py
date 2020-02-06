@@ -1,6 +1,6 @@
 import re
 import os
-
+from copy import deepcopy
 import pandas as pd
 
 from plateo.containers import get_plate_class
@@ -211,7 +211,7 @@ def plate_from_platemap_spreadsheet(
 
 
 def plate_from_content_spreadsheet(
-    filepath,
+    spreadsheet_file,
     headers=True,
     plate_class=None,
     original_filename=None,
@@ -231,8 +231,8 @@ def plate_from_content_spreadsheet(
 
     Parameters
     ----------
-    filepath
-      Path to the excel spreadsheet
+    spreadsheet_file
+      Path to the excel spreadsheet, or file-like object.
 
     headers
       Set to True if the spreadsheets represent the platemaps using headers
@@ -245,13 +245,18 @@ def plate_from_content_spreadsheet(
     sheet_name
       A triple of the name of the sheets containing
     """
+
+    # NOTE: We use deepcopy(spreadsheet_file) throughout this function because
+    # Some pandas operations close file-like objects, which prevents from
+    # parsing the spreadsheet several times, as this method requires.
+    
     if original_filename is None:
-        if isinstance(filepath, str):
-            original_filename = filepath
+        if isinstance(spreadsheet_file, str):
+            original_filename = spreadsheet_file
         else:
             original_filename = "unknown.xlsx"
-
-    sheet_names = pd.ExcelFile(filepath).sheet_names
+    excel = pd.ExcelFile(deepcopy(spreadsheet_file))
+    sheet_names = excel.sheet_names
 
     sheet_name_patterns = {
         "concentration": r"[cC]oncentration(| \((\S+)-(\S+)\))",
@@ -294,7 +299,7 @@ def plate_from_content_spreadsheet(
 
     content_field_name = field_data["content"]["factor"]
     plate = plate_from_platemap_spreadsheet(
-        filepath,
+        deepcopy(spreadsheet_file),
         headers=headers,
         sheet_name=field_data["content"]["sheet_name"],
         data_field=content_field_name,
@@ -303,7 +308,7 @@ def plate_from_content_spreadsheet(
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath,
+            deepcopy(spreadsheet_file),
             data_field="volume",
             headers=headers,
             multiply_by=field_data["volume"]["factor"],
@@ -313,7 +318,7 @@ def plate_from_content_spreadsheet(
     )
     plate.merge_data_from(
         plate_from_platemap_spreadsheet(
-            filepath,
+            deepcopy(spreadsheet_file),
             data_field="concentration",
             headers=headers,
             sheet_name=field_data["concentration"]["sheet_name"],
