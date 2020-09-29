@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,56 +11,53 @@
   
 
   
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/main.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   
-
+  
   
 
   
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="../../_static/css/main.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Plateo 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Plateo
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Plateo
           
 
           
             
-            <img src="../../_static/html_logo.png" class="logo" />
+            <img src="../../_static/html_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -86,11 +82,15 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">Plateo Documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
@@ -101,40 +101,59 @@
             
           
         </div>
+        
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Plateo</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Plateo</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>plateo.tools</li>
+        
+      <li>plateo.tools</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -143,24 +162,29 @@
   <h1>Source code for plateo.tools</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Miscellaneous useful functions.</span>
 
-<span class="sd">In particulat, methods for converting to and from plate coordinates.</span>
+<span class="sd">In particular, methods for converting to and from plate coordinates.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">fuzzywuzzy</span> <span class="kn">import</span> <span class="n">process</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <div class="viewcode-block" id="compute_rows_columns"><a class="viewcode-back" href="../../ref.html#plateo.tools.compute_rows_columns">[docs]</a><span class="k">def</span> <span class="nf">compute_rows_columns</span><span class="p">(</span><span class="n">num_wells</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert 96-&gt;(8,12), 384-&gt;(16,24), etc.&quot;&quot;&quot;</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num_wells</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)))</span>
-    <span class="n">n_rows</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span>
-    <span class="n">n_columns</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">a</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num_wells</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
+    <span class="n">n_columns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span></div>
 
 <div class="viewcode-block" id="rowname_to_number"><a class="viewcode-back" href="../../ref.html#plateo.tools.rowname_to_number">[docs]</a><span class="k">def</span> <span class="nf">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="s2">&quot;Convert A-&gt;1 Z-&gt;26 AA-&gt;27 etc.&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">26</span> <span class="o">*</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">rowname_to_number</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; is not a valid row name.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="number_to_rowname"><a class="viewcode-back" href="../../ref.html#plateo.tools.number_to_rowname">[docs]</a><span class="k">def</span> <span class="nf">number_to_rowname</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
@@ -206,10 +230,12 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`direction` must be in (row, column)&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span>
 
+
 <div class="viewcode-block" id="index_to_wellname"><a class="viewcode-back" href="../../ref.html#plateo.tools.index_to_wellname">[docs]</a><span class="k">def</span> <span class="nf">index_to_wellname</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert e.g. 1..96 into A1..H12&quot;&quot;&quot;</span>
     <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">index_to_row_column</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">num_wells</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">coordinates_to_wellname</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">))</span></div>
+
 
 <span class="k">def</span> <span class="nf">shift_wellname</span><span class="p">(</span><span class="n">wellname</span><span class="p">,</span> <span class="n">row_shift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column_shift</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="n">letter</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="n">wellname</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wellname</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -233,15 +259,78 @@
         <span class="k">return</span> <span class="mi">96</span></div>
 
 
+<div class="viewcode-block" id="round_at"><a class="viewcode-back" href="../../ref.html#plateo.tools.round_at">[docs]</a><span class="k">def</span> <span class="nf">round_at</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rounding</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Round value at the nearest rounding&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rounding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">rounding</span><span class="p">)</span> <span class="o">*</span> <span class="n">rounding</span></div>
+
 
 <span class="k">def</span> <span class="nf">dicts_to_columns</span><span class="p">(</span><span class="n">dicts</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="n">key</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dicts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">replace_nans_in_dict</span><span class="p">(</span><span class="n">dictionnary</span><span class="p">,</span> <span class="n">replace_by</span><span class="o">=</span><span class="s1">&#39;null&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">replace_nans_in_dict</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">replace_by</span><span class="o">=</span><span class="n">replace_by</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+            <span class="n">dictionnary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_by</span>
+
+<div class="viewcode-block" id="human_seq_size"><a class="viewcode-back" href="../../ref.html#plateo.tools.human_seq_size">[docs]</a><span class="k">def</span> <span class="nf">human_seq_size</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s1">&#39;Return the given sequence as a human friendly 35b, 1.4k, 15k, etc.&#39;</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">b&#39;</span> <span class="o">%</span> <span class="n">n</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1">k&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">k&#39;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span></div>
+
+<span class="n">unit_factors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">prefix</span> <span class="o">+</span> <span class="n">unit</span><span class="p">:</span> <span class="n">factor</span>
+    <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="s1">&#39;glL&#39;</span>
+    <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">factor</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">)]</span>
+<span class="p">}</span>
+
+<span class="n">volume_values_and_units</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
+    <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unit_factors</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">find_best_volume_unit</span><span class="p">(</span><span class="n">vols</span><span class="p">):</span>
+    <span class="n">med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">vols</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">volume_values_and_units</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">unit</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">med</span> <span class="o">&lt;=</span> <span class="mi">999</span> <span class="o">*</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">unit</span>
+    <span class="k">return</span> <span class="n">unit</span>
+
+
+<span class="k">def</span> <span class="nf">human_volume</span><span class="p">(</span><span class="n">vol</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">find_best_volume_unit</span><span class="p">([</span><span class="n">vol</span><span class="p">])</span>
+    <span class="n">vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">vol</span> <span class="o">/</span> <span class="n">unit_factors</span><span class="p">[</span><span class="n">unit</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span> <span class="o">==</span> <span class="n">vol</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vol</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">((</span><span class="s1">&#39;</span><span class="si">%.02f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">vol</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">),</span> <span class="n">unit</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">did_you_mean</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">other_names</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">min_score</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">n</span><span class="p">:</span> <span class="n">did_you_mean</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">other_names</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">min_score</span><span class="o">=</span><span class="n">min_score</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span>
+        <span class="p">}</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">other_names</span><span class="p">),</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="n">min_score</span><span class="p">]</span>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -250,11 +339,19 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Edinburgh Genome Foundry.
+        
+        &copy; Copyright 2017, Edinburgh Genome Foundry
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -266,36 +363,15 @@
   </div>
   
 
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

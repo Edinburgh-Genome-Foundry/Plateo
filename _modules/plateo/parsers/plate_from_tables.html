@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,56 +11,53 @@
   
 
   
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/main.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   
-
+  
   
 
   
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-
-  
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="../../../_static/css/main.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../../genindex.html"/>
-        <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Plateo 0.1.0 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Plateo
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Plateo
           
 
           
             
-            <img src="../../../_static/html_logo.png" class="logo" />
+            <img src="../../../_static/html_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -86,11 +82,15 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../index.html">Plateo Documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
@@ -101,53 +101,81 @@
             
           
         </div>
+        
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">Plateo</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Plateo</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>plateo.parsers.plate_from_tables</li>
+        
+      <li>plateo.parsers.plate_from_tables</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for plateo.parsers.plate_from_tables</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..tools</span> <span class="k">import</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">,</span> <span class="n">number_to_rowname</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">plateo.containers</span> <span class="k">import</span> <span class="n">get_plate_class</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<div class="viewcode-block" id="plate_from_dataframe"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_dataframe">[docs]</a><span class="k">def</span> <span class="nf">plate_from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span><span class="p">,</span>
-                         <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">plateo.containers</span> <span class="kn">import</span> <span class="n">get_plate_class</span>
+<span class="kn">from</span> <span class="nn">..tools</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">infer_plate_size_from_wellnames</span><span class="p">,</span>
+    <span class="n">number_to_rowname</span><span class="p">,</span>
+    <span class="n">unit_factors</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="plate_from_dataframe"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_dataframe">[docs]</a><span class="k">def</span> <span class="nf">plate_from_dataframe</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span><span class="p">,</span> <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a plate from a Pandas dataframe where each row contains the</span>
 <span class="sd">    name of a well and data on the well.</span>
 
@@ -176,18 +204,16 @@
     <span class="c1"># TODO: infer plate class automatically ?</span>
 
     <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">wellname_field</span><span class="p">)</span>
-    <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">well</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">well</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
-    <span class="p">}</span>
+    <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">well</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">well</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()}</span>
     <span class="k">if</span> <span class="n">num_wells</span> <span class="o">==</span> <span class="s2">&quot;infer&quot;</span><span class="p">:</span>
         <span class="n">num_wells</span> <span class="o">=</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">(</span><span class="n">wells_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">plate_class</span> <span class="o">=</span> <span class="n">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">plate_class</span><span class="p">(</span><span class="n">wells_data</span><span class="o">=</span><span class="n">wells_data</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plate_from_list_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_list_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_list_spreadsheet</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheetname</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span>
-                                <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="plate_from_list_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_list_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_list_spreadsheet</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="s2">&quot;wellname&quot;</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a plate from a Pandas dataframe where each row contains the</span>
 <span class="sd">    name of a well and metadata on the well.</span>
 
@@ -198,7 +224,7 @@
 <span class="sd">    filename</span>
 <span class="sd">      Path to the spreadsheet file.</span>
 
-<span class="sd">    sheetname</span>
+<span class="sd">    sheet_name</span>
 <span class="sd">      Index or name of the spreadsheet to use.</span>
 
 <span class="sd">    num_wells</span>
@@ -211,18 +237,29 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="s2">&quot;.xls&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>  <span class="c1"># includes xlsx</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheetname</span><span class="o">=</span><span class="n">sheetname</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet_name</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
         <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">plate_from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">wellname_field</span><span class="o">=</span><span class="n">wellname_field</span><span class="p">,</span>
-                                <span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">,</span>
-                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">plate_from_dataframe</span><span class="p">(</span>
+        <span class="n">dataframe</span><span class="p">,</span>
+        <span class="n">wellname_field</span><span class="o">=</span><span class="n">wellname_field</span><span class="p">,</span>
+        <span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">},</span>
+    <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plate_from_platemap_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_platemap_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_platemap_spreadsheet</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-                                    <span class="n">original_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_field</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span>
-                                    <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                    <span class="n">skiprows</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="plate_from_platemap_spreadsheet"><a class="viewcode-back" href="../../../ref.html#plateo.parsers.plate_from_platemap_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">plate_from_platemap_spreadsheet</span><span class="p">(</span>
+    <span class="n">file_handle</span><span class="p">,</span>
+    <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">original_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_field</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="n">num_wells</span><span class="o">=</span><span class="s2">&quot;infer&quot;</span><span class="p">,</span>
+    <span class="n">plate_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">multiply_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sheet_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">skiprows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse spreadsheets representing a plate map.</span>
 
 <span class="sd">    Parameters</span>
@@ -287,32 +324,191 @@
 
     <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">headers</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
-                                <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">file_handle</span><span class="p">,</span>
+            <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+            <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+            <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
-                                  <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span>
+            <span class="n">file_handle</span><span class="p">,</span>
+            <span class="n">index_col</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+            <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet_name</span><span class="p">,</span>
+            <span class="n">header</span><span class="o">=</span><span class="n">index_col</span><span class="p">,</span>
+            <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">headers</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">compute_value</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">multiply_by</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">multiply_by</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">content</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">content</span> <span class="o">*</span> <span class="n">multiply_by</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">wellname</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s2">&quot;In well </span><span class="si">%s</span><span class="s2">: &quot;</span> <span class="o">%</span> <span class="n">wellname</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
         <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">row</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">):</span> <span class="p">{</span><span class="n">data_field</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
+            <span class="n">row</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">):</span> <span class="p">{</span>
+                <span class="n">data_field</span><span class="p">:</span> <span class="n">compute_value</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">multiply_by</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
+            <span class="p">}</span>
             <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">column_content</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">column_content</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">wells_data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="p">{</span><span class="n">data_field</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
+            <span class="n">number_to_rowname</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span><span class="n">data_field</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">column_content</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">column_content</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
     <span class="k">if</span> <span class="n">num_wells</span> <span class="o">==</span> <span class="s2">&quot;infer&quot;</span><span class="p">:</span>
         <span class="n">num_wells</span> <span class="o">=</span> <span class="n">infer_plate_size_from_wellnames</span><span class="p">(</span><span class="n">wells_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">plate_class</span> <span class="o">=</span> <span class="n">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">plate_class</span><span class="p">(</span><span class="n">wells_data</span><span class="o">=</span><span class="n">wells_data</span><span class="p">,</span>
-                       <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file_source&quot;</span><span class="p">:</span> <span class="n">original_filename</span><span class="p">})</span></div>
+    <span class="k">if</span> <span class="n">plate_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plate_class</span> <span class="o">=</span> <span class="n">get_plate_class</span><span class="p">(</span><span class="n">num_wells</span><span class="o">=</span><span class="n">num_wells</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plate_class</span><span class="p">(</span>
+        <span class="n">wells_data</span><span class="o">=</span><span class="n">wells_data</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file_source&quot;</span><span class="p">:</span> <span class="n">original_filename</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">plate_from_content_spreadsheet</span><span class="p">(</span>
+    <span class="n">spreadsheet_file</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">plate_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">original_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sheet_names</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load plate from Excel with &#39;content&#39;, &#39;volume&#39;, &#39;concentration&#39; sheets.</span>
+
+<span class="sd">    The &#39;content&#39; sheet contains a platemap of the product contained in each</span>
+<span class="sd">    well (e.g. a part name or a strain name)</span>
+
+<span class="sd">    The &#39;volume&#39; sheet contains a platemap of the volume contained in each</span>
+<span class="sd">    well (e.g. a part name or a strain name) in liter</span>
+
+<span class="sd">    The &#39;concentration&#39; sheet contains a platemap of the concentration</span>
+<span class="sd">    contained in each well (e.g. a part name or a strain name) in gram/liter.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spreadsheet_file</span>
+<span class="sd">      Path to the excel spreadsheet, or file-like object.</span>
+
+<span class="sd">    headers</span>
+<span class="sd">      Set to True if the spreadsheets represent the platemaps using headers</span>
+<span class="sd">      ABCDEF... for columns and 123456... for rows</span>
+
+<span class="sd">    plate_class</span>
+<span class="sd">      Class of the plate returned. If set to None, a generic Plate96 or</span>
+<span class="sd">      Plate384 or other is returned depending on the autodetected plate size</span>
+
+<span class="sd">    sheet_name</span>
+<span class="sd">      A triple of the name of the sheets containing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># NOTE: We use deepcopy(spreadsheet_file) throughout this function because</span>
+    <span class="c1"># Some pandas operations close file-like objects, which prevents from</span>
+    <span class="c1"># parsing the spreadsheet several times, as this method requires.</span>
+    
+    <span class="k">if</span> <span class="n">original_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spreadsheet_file</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">original_filename</span> <span class="o">=</span> <span class="n">spreadsheet_file</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">original_filename</span> <span class="o">=</span> <span class="s2">&quot;unknown.xlsx&quot;</span>
+    <span class="n">excel</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">spreadsheet_file</span><span class="p">))</span>
+    <span class="n">sheet_names</span> <span class="o">=</span> <span class="n">excel</span><span class="o">.</span><span class="n">sheet_names</span>
+
+    <span class="n">sheet_name_patterns</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;concentration&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[cC]oncentration(| \((\S+)-(\S+)\))&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[vV]olume(| \((\S+)\))&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[cC]ontent(| \((\S+)\))&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">default_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;concentration&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="c1"># default is ng/ul = 0.001 g/l</span>
+        <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>  <span class="c1"># default is ul</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;content&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">field_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">sheet_name_patterns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">sheet_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">sheet_name</span> <span class="ow">in</span> <span class="n">sheet_names</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">sheet_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">field_data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sheet_name&quot;</span><span class="p">:</span> <span class="n">sheet_name</span><span class="p">}</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_factors</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit_factors</span><span class="p">[</span><span class="n">groups</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">factor</span> <span class="o">=</span> <span class="n">unit_factors</span><span class="p">[</span><span class="n">groups</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">/</span> <span class="n">unit_factors</span><span class="p">[</span><span class="n">groups</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">factor</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t parse sheet </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sheet_name</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;No sheet found for field </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="s2">&quot;Check your sheet names.&quot;</span><span class="p">)</span>
+                <span class="o">%</span> <span class="n">field</span>
+            <span class="p">)</span>
+
+    <span class="n">content_field_name</span> <span class="o">=</span> <span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span>
+    <span class="n">plate</span> <span class="o">=</span> <span class="n">plate_from_platemap_spreadsheet</span><span class="p">(</span>
+        <span class="n">deepcopy</span><span class="p">(</span><span class="n">spreadsheet_file</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="n">sheet_name</span><span class="o">=</span><span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="s2">&quot;sheet_name&quot;</span><span class="p">],</span>
+        <span class="n">data_field</span><span class="o">=</span><span class="n">content_field_name</span><span class="p">,</span>
+        <span class="n">plate_class</span><span class="o">=</span><span class="n">plate_class</span><span class="p">,</span>
+        <span class="n">original_filename</span><span class="o">=</span><span class="n">original_filename</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plate</span><span class="o">.</span><span class="n">merge_data_from</span><span class="p">(</span>
+        <span class="n">plate_from_platemap_spreadsheet</span><span class="p">(</span>
+            <span class="n">deepcopy</span><span class="p">(</span><span class="n">spreadsheet_file</span><span class="p">),</span>
+            <span class="n">data_field</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="n">multiply_by</span><span class="o">=</span><span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;volume&quot;</span><span class="p">][</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+            <span class="n">sheet_name</span><span class="o">=</span><span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;volume&quot;</span><span class="p">][</span><span class="s2">&quot;sheet_name&quot;</span><span class="p">],</span>
+            <span class="n">original_filename</span><span class="o">=</span><span class="n">original_filename</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">plate</span><span class="o">.</span><span class="n">merge_data_from</span><span class="p">(</span>
+        <span class="n">plate_from_platemap_spreadsheet</span><span class="p">(</span>
+            <span class="n">deepcopy</span><span class="p">(</span><span class="n">spreadsheet_file</span><span class="p">),</span>
+            <span class="n">data_field</span><span class="o">=</span><span class="s2">&quot;concentration&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="n">sheet_name</span><span class="o">=</span><span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;concentration&quot;</span><span class="p">][</span><span class="s2">&quot;sheet_name&quot;</span><span class="p">],</span>
+            <span class="n">multiply_by</span><span class="o">=</span><span class="n">field_data</span><span class="p">[</span><span class="s2">&quot;concentration&quot;</span><span class="p">][</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+            <span class="n">original_filename</span><span class="o">=</span><span class="n">original_filename</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="n">plate</span><span class="o">.</span><span class="n">iter_wells</span><span class="p">():</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">content_field_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;nan&quot;</span><span class="p">:</span>
+            <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">content_field_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">continue</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">volume</span>
+        <span class="n">concentration</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">concentration</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">well</span><span class="o">.</span><span class="n">add_content</span><span class="p">({</span><span class="n">content</span><span class="p">:</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">concentration</span><span class="p">},</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)(</span><span class="s2">&quot;Check your data for well </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">well</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="s2">&quot;concentration&quot;</span><span class="p">):</span>
+            <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plate</span>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -321,11 +517,19 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Edinburgh Genome Foundry.
+        
+        &copy; Copyright 2017, Edinburgh Genome Foundry
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -337,36 +541,15 @@
   </div>
   
 
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
