@@ -2,9 +2,10 @@ language: python
 python:
   - "3.6"
 # command to install dependencies
+before_install:
+  - pip install --upgrade pip
+  - pip install --upgrade pytest coveralls pytest-cov
 install:
-  - pip install pytest
-  - pip install coveralls pytest-cov==2.6 pytest==3.2.3
   - pip install -e .
 # command to run tests
 script:
