@@ -11,7 +11,7 @@ setup(
     version=__version__,
     author="Zulko",
     description="Read/write microplate and picklist data for lab automation",
-    long_description=open("README.rst").read(),
+    long_description=open("pypi-readme.rst").read(),
     license="MIT",
     keywords="microplate biology parser converter report",
     packages=find_packages(exclude="docs"),
