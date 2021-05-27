@@ -25,8 +25,21 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     ``{peak_id: {attrs}}`` where the ``peak_id`` is a number (>1) and the attrs
     attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
     ``ng/ul``, ``RFU``.
+
+    Note that the concentration column name must be either ``% (Conc.)`` or
+    ``% (Conc.) (ng/uL)``.
     """
     df = pandas.read_csv(filename)
+    # Compatibility with old and new ProSize format:
+    if not ("% (Conc.) (ng/uL)" in df.columns or "% (Conc.)" in df.columns):
+        raise Exception(
+            "The concentration column name must be either '% (Conc.)' or "
+            "'% (Conc.) (ng/uL)'!"
+        )
+
+    # Make into standard format for the loop in the next block:
+    if "% (Conc.) (ng/uL)" in df.columns:
+        df = df.rename(columns={"% (Conc.) (ng/uL)": "% (Conc.)"})
     wells = {
         name: {
             "bands": {
