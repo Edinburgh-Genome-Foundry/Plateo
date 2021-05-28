@@ -255,7 +255,11 @@ def plate_from_content_spreadsheet(
             original_filename = spreadsheet_file
         else:
             original_filename = "unknown.xlsx"
-    excel = pd.ExcelFile(deepcopy(spreadsheet_file))
+    if spreadsheet_file.lower().endswith(".xls"):
+        excel = pd.ExcelFile(deepcopy(spreadsheet_file), engine="xlrd")
+    else:  # xlsx
+        excel = pd.ExcelFile(deepcopy(spreadsheet_file), engine="openpyxl")
+
     sheet_names = excel.sheet_names
 
     sheet_name_patterns = {
