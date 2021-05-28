@@ -112,8 +112,8 @@ def plate_from_platemap_spreadsheet(
       "original_filename".
 
     file_type
-      Either "csv" or "excel" or "auto" (at which case the type is determined
-      based on the provided file path in ``file_handle`` or
+      Either "csv", "xls", "xlsx" or "auto" (in which case the type is
+      determined based on the provided file path in ``file_handle`` or
       ``original_filename``)
 
     original_filename
@@ -160,21 +160,37 @@ def plate_from_platemap_spreadsheet(
         ext = ext.lower()
         if ext == ".csv":
             file_type = "csv"
-        elif ext in [".xls", ".xlsx"]:
-            file_type = "excel"
+        elif ext == ".xls":
+            file_type = "xls"
+        elif ext == ".xlsx":
+            file_type = "xlsx"
+        else:
+            raise Exception(
+                "Error: file type cannot be inferred from the extension: '%s'" % ext
+            )
 
     index_col = 0 if headers else None
     if file_type == "csv":
         dataframe = pd.read_csv(
             file_handle, index_col=index_col, header=index_col, skiprows=skiprows,
         )
-    elif file_type == "excel":
+    elif file_type == "xls":
         dataframe = pd.read_excel(
             file_handle,
             index_col=index_col,
             sheet_name=sheet_name,
             header=index_col,
             skiprows=skiprows,
+            engine="xlrd",
+        )
+    elif file_type == "xlsx":
+        dataframe = pd.read_excel(
+            file_handle,
+            index_col=index_col,
+            sheet_name=sheet_name,
+            header=index_col,
+            skiprows=skiprows,
+            engine="openpyxl",
         )
     if headers:
 
