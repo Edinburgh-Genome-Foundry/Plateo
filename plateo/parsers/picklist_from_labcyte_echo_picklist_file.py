@@ -3,9 +3,10 @@ from ..tools import infer_plate_size_from_wellnames
 from ..containers import get_plate_class
 from ..PickList import PickList, Transfer
 
-def picklist_from_labcyte_echo_picklist_file(filename=None, dataframe=None,
-                                             source_plate="auto",
-                                             dest_plate="auto"):
+
+def picklist_from_labcyte_echo_picklist_file(
+    filename=None, dataframe=None, source_plate="auto", dest_plate="auto"
+):
     """Return a Picklist from an ECHO picklist file.
 
     Parameters
@@ -36,9 +37,13 @@ def picklist_from_labcyte_echo_picklist_file(filename=None, dataframe=None,
         nwells = infer_plate_size_from_wellnames(dataframe["Destination Well"])
         dest_plate = get_plate_class(nwells)()
         dest_plate.name = "Destination"
-    return PickList([
-        Transfer(source_plate.wells[row["Source Well"]],
-                 dest_plate.wells[row["Destination Well"]],
-                 1e-9 * row["Volume"])
-        for i, row in dataframe.iterrows()
-    ])
+    return PickList(
+        [
+            Transfer(
+                source_plate.wells[row["Source Well"]],
+                dest_plate.wells[row["Destination Well"]],
+                1e-9 * row["Volume"],
+            )
+            for i, row in dataframe.iterrows()
+        ]
+    )

@@ -163,10 +163,7 @@ def plate_from_platemap_spreadsheet(
     index_col = 0 if headers else None
     if file_type == "csv":
         dataframe = pd.read_csv(
-            file_handle,
-            index_col=index_col,
-            header=index_col,
-            skiprows=skiprows,
+            file_handle, index_col=index_col, header=index_col, skiprows=skiprows,
         )
     elif file_type == "excel":
         dataframe = pd.read_excel(
@@ -187,8 +184,10 @@ def plate_from_platemap_spreadsheet(
                 except Exception as err:
                     wellname = row + str(column)
                     raise ValueError(("In well %s: " % wellname) + str(err))
+
         wells_data = {
-            row + str(column): {
+            row
+            + str(column): {
                 data_field: compute_value(content, multiply_by, row, column)
             }
             for column, column_content in dataframe.to_dict().items()
@@ -205,9 +204,7 @@ def plate_from_platemap_spreadsheet(
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     if plate_class is None:
         plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(
-        wells_data=wells_data, data={"file_source": original_filename}
-    )
+    return plate_class(wells_data=wells_data, data={"file_source": original_filename})
 
 
 def plate_from_content_spreadsheet(
@@ -249,7 +246,7 @@ def plate_from_content_spreadsheet(
     # NOTE: We use deepcopy(spreadsheet_file) throughout this function because
     # Some pandas operations close file-like objects, which prevents from
     # parsing the spreadsheet several times, as this method requires.
-    
+
     if original_filename is None:
         if isinstance(spreadsheet_file, str):
             original_filename = spreadsheet_file
@@ -293,8 +290,7 @@ def plate_from_content_spreadsheet(
                 break
         else:
             raise ValueError(
-                ("No sheet found for field %s." "Check your sheet names.")
-                % field
+                ("No sheet found for field %s." "Check your sheet names.") % field
             )
 
     content_field_name = field_data["content"]["factor"]
