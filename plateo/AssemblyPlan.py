@@ -65,7 +65,11 @@ class AssemblyPlan:
                     dataframe = pandas.DataFrame(
                         [line.split(",") for line in f.read().split("\n")]
                     )
-            else:
+            elif filepath.lower().endswith(".xls"):
+                dataframe = pandas.read_excel(
+                    filepath, sheet_name=sheet_name, header=header, engine="xlrd"
+                )
+            else:  # xlsx
                 dataframe = pandas.read_excel(
                     filepath, sheet_name=sheet_name, header=header, engine="openpyxl"
                 )

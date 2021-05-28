@@ -46,7 +46,8 @@ def plates_from_geneart_shipment_layout_sheet(
     """
     if geneart_parts_dir is not None:
         parts_ids_dict = parts_ids_from_geneart_records_dir(geneart_parts_dir)
-    plates_data = pandas.read_excel(filepath, skiprows=2)
+    # The first 4 rows (0-indexed) are the title + 2 empty rows + header:
+    plates_data = pandas.read_excel(filepath, skiprows=3, engine="openpyxl")  # xlsx
     plates_indices = sorted(set(plates_data.Plate))
     plates = {index: Plate96(name="Plate %d" % index) for index in plates_indices}
     for index, plate in plates.items():

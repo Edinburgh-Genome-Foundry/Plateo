@@ -74,10 +74,13 @@ def plate_from_list_spreadsheet(
       Name of the column of the spreadsheet giving the well names
     """
 
-    if ".xls" in filename:  # includes xlsx
-        dataframe = pd.read_excel(filename, sheet_name=sheet_name)
-    elif filename.endswith(".csv"):
+    if filename.lower().endswith(".csv"):
         dataframe = pd.read_csv(filename)
+    elif filename.lower().endswith(".xls"):
+        dataframe = pd.read_excel(filename, sheet_name=sheet_name, engine="xlrd")
+    else:  # xlsx
+        dataframe = pd.read_excel(filename, sheet_name=sheet_name, engine="openpyxl")
+
     return plate_from_dataframe(
         dataframe,
         wellname_field=wellname_field,

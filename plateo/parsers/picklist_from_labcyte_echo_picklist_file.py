@@ -27,8 +27,11 @@ def picklist_from_labcyte_echo_picklist_file(
     if dataframe is None:
         if filename.lower().endswith(".csv"):
             dataframe = pandas.read_csv(filename)
-        else:
-            dataframe = pandas.read_excel(filename)
+        elif filename.lower().endswith(".xls"):
+            dataframe = pandas.read_excel(filename, engine="xlrd")
+        else:  # xlsx
+            dataframe = pandas.read_excel(filename, engine="openpyxl")
+
     if source_plate == "auto":
         nwells = infer_plate_size_from_wellnames(dataframe["Source Well"])
         source_plate = get_plate_class(nwells)()

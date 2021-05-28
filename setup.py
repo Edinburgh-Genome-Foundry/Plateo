@@ -20,6 +20,7 @@ setup(
         "pandas>=0.22,<1.1",
         "xlwt",
         "xlrd",
+        "openpyxl",
         "python-box",
         "numpy",
         "matplotlib",
