@@ -17,7 +17,7 @@ setup(
     packages=find_packages(exclude="docs"),
     include_package_data=True,
     install_requires=[
-        "pandas>=0.22,<1.1",
+        "pandas>=0.22",
         "xlwt",
         "xlrd",
         "openpyxl",
