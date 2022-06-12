@@ -4,11 +4,13 @@ ez_setup.use_setuptools()
 
 from setuptools import setup, find_packages
 
-exec(open("plateo/version.py").read())  # loads __version__
+version = {}
+with open("plateo/version.py") as fp:
+    exec(fp.read(), version)
 
 setup(
     name="plateo",
-    version=__version__,
+    version=version["__version__"],
     author="Zulko",
     description="Read/write microplate and picklist data for lab automation",
     long_description=open("pypi-readme.rst").read(),
