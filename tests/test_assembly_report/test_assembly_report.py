@@ -1,3 +1,4 @@
+import filecmp
 import os
 
 import matplotlib
@@ -15,27 +16,19 @@ from plateo.exporters import (
 )
 from plateo.tools import human_volume
 import flametree
-from pandas import pandas
-from collections import OrderedDict
 import matplotlib.pyplot as plt
 from Bio import SeqIO
 
+data_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), os.path.join("data"),
+)
 
+# Note results.zip was manually validated
 def test_assembly_report(tmpdir):
-    data_path = os.path.join("tests", "test_assembly_report", "data")
+    asm_plan_xls = os.path.join(data_path, "example_assembly_plan.xls")
+    assembly_plan = AssemblyPlan.from_spreadsheet(asm_plan_xls)
+
     root = flametree.file_tree(data_path)
-    df = pandas.read_excel(
-        root.example_picklist_xls.open("rb"), index_col=0, engine="xlrd"
-    )
-    assembly_plan = AssemblyPlan(
-        OrderedDict(
-            [
-                (row[0], [e for e in row[1:] if str(e) not in ["-", "nan"]])
-                for i, row in df.iterrows()
-                if row[0] not in ["nan", "Construct name"]
-            ]
-        )
-    )
     parts_zip = flametree.file_tree(root.emma_parts_zip._path)
 
     def read(f):
@@ -74,6 +67,14 @@ def test_assembly_report(tmpdir):
     )
     future_plates = picklist.execute(inplace=False)
 
+    picklist_to_labcyte_echo_picklist_file(
+        picklist, os.path.join(tmpdir, "ECHO_picklist.csv")
+    )
+    assert filecmp.cmp(
+        os.path.join(tmpdir, "ECHO_picklist.csv"),
+        os.path.join(data_path, "ECHO_picklist.csv"),
+    )
+
     def text(w):
         txt = human_volume(w.content.volume)
         if "construct" in w.data:
@@ -83,7 +84,7 @@ def test_assembly_report(tmpdir):
     plotter = PlateTextPlotter(text)
     ax, _ = plotter.plot_plate(future_plates[destination_plate], figsize=(20, 8))
 
-    ziproot = flametree.file_tree(os.path.join(str(tmpdir), "a.zip"))
+    ziproot = flametree.file_tree(os.path.join(str(tmpdir), "results.zip"))
     ax.figure.savefig(
         ziproot._file("final_mixplate.pdf").open("wb"),
         format="pdf",
@@ -95,6 +96,7 @@ def test_assembly_report(tmpdir):
         ziproot._file("assembly_mix_picklist_report.pdf").open("wb"),
         data=data,
     )
+
     assembly_plan.write_report(ziproot._file("assembly_plan_summary.pdf").open("wb"))
     picklist_to_labcyte_echo_picklist_file(
         picklist, ziproot._file("ECHO_picklist.csv").open("w")
