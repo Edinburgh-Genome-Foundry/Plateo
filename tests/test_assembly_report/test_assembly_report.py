@@ -1,5 +1,6 @@
 import filecmp
 import os
+import pytest
 
 import matplotlib
 
@@ -102,3 +103,31 @@ def test_assembly_report(tmpdir):
         picklist, ziproot._file("ECHO_picklist.csv").open("w")
     )
     ziproot._close()
+
+    # test too many assemblies
+    too_many_assembly_plan_path = os.path.join(data_path, "too_many_assembly_plan.csv")
+    too_many_assembly_plan = AssemblyPlan.from_spreadsheet(too_many_assembly_plan_path)
+
+    source_plate = plate_from_content_spreadsheet(root.example_echo_plate_xlsx._path)
+    source_plate.name = "Source"
+    for well in source_plate.iter_wells():
+        if not well.is_empty:
+            content = well.content.components_as_string()
+    destination_plate = Plate4ti0960("Mixplate")
+
+    picklist_generator = AssemblyPicklistGenerator(
+        part_mol=1.3e-15,
+        complement_to=1e-6,
+        buffer_volume=300e-9,
+        volume_rounding=2.5e-9,
+        minimal_dispense_volume=5e-9,
+    )
+
+    with pytest.raises(ValueError):
+        picklist_generator.make_picklist(
+            too_many_assembly_plan,
+            source_wells=source_plate.iter_wells(),
+            destination_wells=destination_plate.iter_wells(direction="column"),
+            complement_well=source_plate.wells.O24,
+            buffer_well=source_plate.wells.P24,
+        )
