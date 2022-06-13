@@ -1,8 +1,10 @@
 from ..containers import Plate96
 import pandas
 
-def plate_from_nanoquant_reads(nanoquant_files, plate_class=Plate96,
-                               direction="column"):
+
+def plate_from_nanoquant_reads(
+    nanoquant_files, plate_class=Plate96, direction="column"
+):
     """Return a plate of DNA concentrations and qualities from NanoQuant reads.
 
     Parameters

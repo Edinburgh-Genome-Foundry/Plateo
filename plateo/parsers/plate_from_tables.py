@@ -74,10 +74,13 @@ def plate_from_list_spreadsheet(
       Name of the column of the spreadsheet giving the well names
     """
 
-    if ".xls" in filename:  # includes xlsx
-        dataframe = pd.read_excel(filename, sheet_name=sheet_name)
-    elif filename.endswith(".csv"):
+    if filename.lower().endswith(".csv"):
         dataframe = pd.read_csv(filename)
+    elif filename.lower().endswith(".xls"):
+        dataframe = pd.read_excel(filename, sheet_name=sheet_name, engine="xlrd")
+    else:  # xlsx
+        dataframe = pd.read_excel(filename, sheet_name=sheet_name, engine="openpyxl")
+
     return plate_from_dataframe(
         dataframe,
         wellname_field=wellname_field,
@@ -109,8 +112,8 @@ def plate_from_platemap_spreadsheet(
       "original_filename".
 
     file_type
-      Either "csv" or "excel" or "auto" (at which case the type is determined
-      based on the provided file path in ``file_handle`` or
+      Either "csv", "xls", "xlsx" or "auto" (in which case the type is
+      determined based on the provided file path in ``file_handle`` or
       ``original_filename``)
 
     original_filename
@@ -157,24 +160,37 @@ def plate_from_platemap_spreadsheet(
         ext = ext.lower()
         if ext == ".csv":
             file_type = "csv"
-        elif ext in [".xls", ".xlsx"]:
-            file_type = "excel"
+        elif ext == ".xls":
+            file_type = "xls"
+        elif ext == ".xlsx":
+            file_type = "xlsx"
+        else:
+            raise Exception(
+                "Error: file type cannot be inferred from the extension: '%s'" % ext
+            )
 
     index_col = 0 if headers else None
     if file_type == "csv":
         dataframe = pd.read_csv(
-            file_handle,
-            index_col=index_col,
-            header=index_col,
-            skiprows=skiprows,
+            file_handle, index_col=index_col, header=index_col, skiprows=skiprows,
         )
-    elif file_type == "excel":
+    elif file_type == "xls":
         dataframe = pd.read_excel(
             file_handle,
             index_col=index_col,
             sheet_name=sheet_name,
             header=index_col,
             skiprows=skiprows,
+            engine="xlrd",
+        )
+    elif file_type == "xlsx":
+        dataframe = pd.read_excel(
+            file_handle,
+            index_col=index_col,
+            sheet_name=sheet_name,
+            header=index_col,
+            skiprows=skiprows,
+            engine="openpyxl",
         )
     if headers:
 
@@ -187,8 +203,10 @@ def plate_from_platemap_spreadsheet(
                 except Exception as err:
                     wellname = row + str(column)
                     raise ValueError(("In well %s: " % wellname) + str(err))
+
         wells_data = {
-            row + str(column): {
+            row
+            + str(column): {
                 data_field: compute_value(content, multiply_by, row, column)
             }
             for column, column_content in dataframe.to_dict().items()
@@ -205,9 +223,7 @@ def plate_from_platemap_spreadsheet(
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     if plate_class is None:
         plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(
-        wells_data=wells_data, data={"file_source": original_filename}
-    )
+    return plate_class(wells_data=wells_data, data={"file_source": original_filename})
 
 
 def plate_from_content_spreadsheet(
@@ -249,13 +265,17 @@ def plate_from_content_spreadsheet(
     # NOTE: We use deepcopy(spreadsheet_file) throughout this function because
     # Some pandas operations close file-like objects, which prevents from
     # parsing the spreadsheet several times, as this method requires.
-    
+
     if original_filename is None:
         if isinstance(spreadsheet_file, str):
             original_filename = spreadsheet_file
         else:
             original_filename = "unknown.xlsx"
-    excel = pd.ExcelFile(deepcopy(spreadsheet_file))
+    if spreadsheet_file.lower().endswith(".xls"):
+        excel = pd.ExcelFile(deepcopy(spreadsheet_file), engine="xlrd")
+    else:  # xlsx
+        excel = pd.ExcelFile(deepcopy(spreadsheet_file), engine="openpyxl")
+
     sheet_names = excel.sheet_names
 
     sheet_name_patterns = {
@@ -293,8 +313,7 @@ def plate_from_content_spreadsheet(
                 break
         else:
             raise ValueError(
-                ("No sheet found for field %s." "Check your sheet names.")
-                % field
+                ("No sheet found for field %s." "Check your sheet names.") % field
             )
 
     content_field_name = field_data["content"]["factor"]

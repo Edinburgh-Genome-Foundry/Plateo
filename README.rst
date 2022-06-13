@@ -6,9 +6,9 @@
     <br /><br />
     </p>
 
-.. image:: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo.svg?branch=master
-  :target: https://travis-ci.org/Edinburgh-Genome-Foundry/Plateo
-  :alt: Travis CI build status
+.. image:: https://github.com/Edinburgh-Genome-Foundry/Plateo/actions/workflows/build.yml/badge.svg
+    :target: https://github.com/Edinburgh-Genome-Foundry/Plateo/actions/workflows/build.yml
+    :alt: GitHub CI build status
 
 .. image:: https://coveralls.io/repos/github/Edinburgh-Genome-Foundry/Plateo/badge.svg?branch=master
   :target: https://coveralls.io/github/Edinburgh-Genome-Foundry/Plateo?branch=master
@@ -49,13 +49,13 @@ robot, we may be able to help too!
 Installation
 ------------
 
-Plateo can be installed by unzipping the source code in one directory and using this command: ::
+Plateo can be installed from the Python Package Index with PIP: ::
 
-    (sudo) python setup.py install
+    pip install plateo
 
-You can also install it directly from the Python Package Index with this command: ::
+It can also be installed by unzipping the source code in one directory and using this command: ::
 
-    (sudo) pip install plateo
+    python setup.py install
 
 
 Code organization

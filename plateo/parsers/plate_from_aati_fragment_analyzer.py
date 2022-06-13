@@ -1,9 +1,11 @@
 import zipfile
 import sys
-PYTHON3 = (sys.version_info[0] == 3)
+
+PYTHON3 = sys.version_info[0] == 3
 
 if PYTHON3:
     from io import StringIO, BytesIO
+
     StringIO = BytesIO
 else:
     from StringIO import StringIO
@@ -12,6 +14,7 @@ import pandas
 import matplotlib.image as mpimg
 import numpy as np
 from ..containers import Plate96
+
 
 def plate_from_aati_fragment_analyzer_peaktable(filename):
     """"Return a Plate96 object with a data field for the ``bands``.
@@ -23,20 +26,35 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     attribute has fields such as ``Size (bp)``, ``% (Conc.)``, ``nmole/L``,
     ``ng/ul``, ``RFU``.
 
+    Note that the concentration column name must be either ``% (Conc.)`` or
+    ``% (Conc.) (ng/uL)``.
     """
     df = pandas.read_csv(filename)
+    # Compatibility with old and new ProSize format:
+    if not ("% (Conc.) (ng/uL)" in df.columns or "% (Conc.)" in df.columns):
+        raise Exception(
+            "The concentration column name must be either '% (Conc.)' or "
+            "'% (Conc.) (ng/uL)'!"
+        )
+
+    # Make into standard format for the loop in the next block:
+    if "% (Conc.) (ng/uL)" in df.columns:
+        df = df.rename(columns={"% (Conc.) (ng/uL)": "% (Conc.)"})
     wells = {
-        name: {"bands": {
-            peak_id: row.to_dict()
-            for peak_id, row in d.set_index("Peak ID").iterrows()
-            if row["% (Conc.)"] > 0
-        }}
+        name: {
+            "bands": {
+                peak_id: row.to_dict()
+                for peak_id, row in d.set_index("Peak ID").iterrows()
+                if row["% (Conc.)"] > 0
+            }
+        }
         for name, d in df.groupby(["Well"])
     }
     return Plate96(wells_data=wells)
 
+
 def plate_from_aati_fa_gel_image(filename):
-    """Return a Plate96 where each well stores an image of the gel migration
+    """Return a Plate96 where each well stores an image of the gel migration.
 
     Each well has a ``data["migration_image"]`` which is a WxH
     array, a greyscale version of the image.
@@ -77,12 +95,12 @@ def plate_from_aati_fragment_analyzer_zip(filename):
     plate = None
     with zipfile.ZipFile(filename) as f:
         for name in f.namelist():
-            if name.endswith('Peak Table.csv'):
+            if name.endswith("Peak Table.csv"):
                 content = StringIO(f.read(name))
                 plate = plate_from_aati_fragment_analyzer_peaktable(content)
-            if name.endswith('Size Calibration.csv'):
+            if name.endswith("Size Calibration.csv"):
                 ladder = pandas.read_csv(StringIO(f.read(name)))
-            if name.endswith(('Gel.PNG', 'Gel.JPEG')):
+            if name.endswith(("Gel.PNG", "Gel.JPEG")):
                 content = StringIO(f.read(name))
                 images_plate = plate_from_aati_fa_gel_image(content)
     if plate is None:

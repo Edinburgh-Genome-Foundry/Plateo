@@ -57,6 +57,10 @@ class AssemblyPicklistGenerator:
     ):
         source_wells = list(source_wells)
         destination_wells = list(destination_wells)
+
+        # The second statement would quietly discard assemblies, so we check for length:
+        if len(assembly_plan.assemblies) > len(destination_wells):
+            raise ValueError("There are more assemblies than destination wells!")
         destination_wells = destination_wells[: len(assembly_plan.assemblies)]
 
         part_wells = {}
@@ -82,14 +86,10 @@ class AssemblyPicklistGenerator:
                 {
                     "missing_parts": {
                         part: {
-                            "featured_in": assembly_plan.assemblies_featuring(
-                                part
-                            ),
+                            "featured_in": assembly_plan.assemblies_featuring(part),
                             "did_you_mean": [
                                 (name, str(part_wells[name]))
-                                for name in did_you_mean(
-                                    part, part_wells, min_score=50
-                                )
+                                for name in did_you_mean(part, part_wells, min_score=50)
                             ],
                         }
                         for part in missing_parts
@@ -103,14 +103,10 @@ class AssemblyPicklistGenerator:
             destination_well.data.construct = construct_name
             for part in parts:
                 source_well = part_wells[part]
-                volume = self.volume_from_well(
-                    source_well, assembly_plan.parts_data
-                )
+                volume = self.volume_from_well(source_well, assembly_plan.parts_data)
                 volume = round_at(volume, self.volume_rounding)
                 volume = max(volume, self.minimal_dispense_volume)
-                picklist.add_transfer(
-                    source_well, destination_well, volume=volume
-                )
+                picklist.add_transfer(source_well, destination_well, volume=volume)
 
         wells_over_desired_volume = []
         if self.complement_to is not None:
@@ -125,16 +121,13 @@ class AssemblyPicklistGenerator:
                     )
             if complement_well.is_empty:
                 raise TransferError(
-                    "Well with COMPLEMENT/WATER is empty: %s."
-                    % (complement_well)
+                    "Well with COMPLEMENT/WATER is empty: %s." % (complement_well)
                 )
             for well in destination_wells:
                 to_well = picklist.restricted_to(destination_well=well)
                 total_transfer_volume = to_well.total_transfered_volume()
                 complement_volume = (
-                    self.complement_to
-                    - total_transfer_volume
-                    - self.buffer_volume
+                    self.complement_to - total_transfer_volume - self.buffer_volume
                 )
                 if complement_volume < 0:
                     wells_over_desired_volume.append(well)
@@ -158,10 +151,7 @@ class AssemblyPicklistGenerator:
             {
                 "wells_over_desired_volume": wells_over_desired_volume,
                 "duplicates": {
-                    part_name: {
-                        "wells": wells,
-                        "selected": part_wells[part_name],
-                    }
+                    part_name: {"wells": wells, "selected": part_wells[part_name],}
                     for part_name, wells in duplicates.items()
                 },
             },
@@ -187,8 +177,7 @@ class AssemblyPicklistGenerator:
     def volume_from_well(self, well, parts_data):
         if well.content.volume == 0:
             raise ValueError(
-                ("Cannot get anything from well %s " % well)
-                + "which has a volume of 0"
+                ("Cannot get anything from well %s " % well) + "which has a volume of 0"
             )
         part_mol = self.part_mol
         part_g = self.part_g
