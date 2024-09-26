@@ -43,30 +43,31 @@ Code organization
 
 - Plateo is organised around various lab containers and liquid transfers between them.
 - The ``containers`` folder has the ``Well`` and ``WellContent`` classes, which
-model microplate wells and their contents. The ``Plate`` class models laboratory
-microplates. Built-in plates with predefined dimensions, capacity, dead volume, etc.
-are also stored in this folder.
+  model microplate wells and their contents. The ``Plate`` class models laboratory
+  microplates. Built-in plates with predefined dimensions, capacity, dead volume, etc.
+  are also stored in this folder.
 - The ``transfers`` folder contents simulate liquid transfers (``Transfer``) and lists 
-of transfers (``PickList``).
+  of transfers (``PickList``).
 - The ``parsers`` folder contains all methods for generating Plates or Picklists
   from machine files and data.
 - The ``exporters`` folder contains all methods for exporting Plates or PickLists
   into human- or machine-readable formats.
 - The ``applications`` folder contains complex procedures with input/output operations;
-such as creating a DNA assembly picklist and related documentation.
+  such as creating a DNA assembly picklist and related documentation.
 
 
 Versioning
 ----------
 
-Plateo uses the [semantic versioning](https://semver.org) scheme.
+Plateo uses the `semantic versioning <https://semver.org>`_ scheme.
 
 
 License = MIT
 -------------
 
-Plateo is [free software](https://www.gnu.org/philosophy/free-sw.en.html), which means
+Plateo is `free software <https://www.gnu.org/philosophy/free-sw.en.html>`_, which means
 the users have the freedom to run, copy, distribute, study, change and improve the software.
 
-Plateo was originally written at the `Edinburgh Genome Foundry <http://www.genomefoundry.io>`_ by `Zulko <https://github.com/Zulko>`_ and is currently developed by 
-by `Peter Vegh <https://github.com/veghp>`_. It is released under the MIT license (Copyright 2017 Edinburgh Genome Foundry).
+Plateo was originally written at the `Edinburgh Genome Foundry <http://www.genomefoundry.io>`_
+by `Zulko <https://github.com/Zulko>`_ and is currently developed by `Peter Vegh <https://github.com/veghp>`_.
+It is released under the MIT license (Copyright 2017 Edinburgh Genome Foundry).
