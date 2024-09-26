@@ -1,3 +1,4 @@
+# pylint: disable=C0114,E0401,C0103,C0116,W0621
 from plateo.containers.Well import WellContent
 
 wellcontent = WellContent(

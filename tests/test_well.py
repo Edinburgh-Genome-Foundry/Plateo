@@ -1,11 +1,13 @@
+# pylint: disable=C0114,E0401,C0103,C0116,W0621
 import pytest
 
-from plateo.containers.plates import Plate96
-from plateo.containers.Well import TransferError, Well
+from plateo.containers.builtin_containers import Plate96
+from plateo.transfers.Transfer import TransferError
+from plateo.containers.Well import Well
 
 
 plate = Plate96()
-well = plate.well_at_index(1)
+well = plate.get_well_at_index(1)
 
 
 def test_volume():
@@ -19,11 +21,15 @@ def test_iterate_sources_tree():
 
 def test_add_content():
     plate = Plate96()
-    well = plate.well_at_index(1)
+    well = plate.get_well_at_index(1)
     components_quantities = {"Compound_1": 5}
     volume = 20 * 10 ** (-6)  # 20 uL
     well.add_content(components_quantities, volume=volume)
     assert well.content.quantities == {"Compound_1": 5}
+
+    well2 = plate.get_well_at_index(2)
+    well2.add_content(components_quantities, volume=20, unit_volume="uL")
+    assert well2.content.concentration() == 250000.00000000003
 
 
 def test_subtract_content():
@@ -65,7 +71,7 @@ def test_index_in_plate():
     assert result == expected
 
 
-other_well = plate.well_at_index(2)
+other_well = plate.get_well_at_index(2)
 
 
 def test_is_after():

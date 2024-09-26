@@ -1,6 +1,7 @@
+# pylint: disable=C0114,E0401,C0103,C0116,W0621
 import pytest
 
-from plateo.containers.plates import Plate96
+from plateo.containers.builtin_containers import Plate96
 from plateo.containers.Well import Well
 
 
@@ -22,19 +23,30 @@ def test_list_well_data_fields():
     assert Plate96().list_well_data_fields() == []
 
 
-def test_wells_in_column():
-    assert isinstance(Plate96().wells_in_column(5)[0], Well)
+# def test_return_column():
+#     assert isinstance(Plate96().return_column(5)[0], Well)
+#     assert len(Plate96().return_column(5)) == 8
+
+
+def test_list_wells_in_column():
+    assert isinstance(Plate96().list_wells_in_column(5)[0], Well)
+
+
+# def test_return_row():
+#     assert isinstance(Plate96().return_row("A")[0], Well)
+#     assert isinstance(Plate96().return_row(1)[0], Well)
+#     assert len(Plate96().return_row("A")) == 12
 
 
 def test_wells_in_row():
-    assert isinstance(Plate96().wells_in_row(5)[0], Well)
+    assert isinstance(Plate96().list_wells_in_row(5)[0], Well)
 
 
-def test_wells_satisfying():
+def test_list_filtered_wells():
     def condition(well):
         return well.volume > 50
 
-    assert type(Plate96().wells_satisfying(condition)) == filter
+    assert Plate96().list_filtered_wells(condition) == []
 
 
 def test_wells_grouped_by():
@@ -42,7 +54,7 @@ def test_wells_grouped_by():
 
 
 def test_get_well_at_index():
-    well = Plate96().well_at_index(5)
+    well = Plate96().get_well_at_index(5)
     assert well.name == "A5"
 
 

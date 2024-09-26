@@ -24,7 +24,6 @@
     mtf --> a
 """
 
-
 from matplotlib.patches import ConnectionPatch
 from proglog import ProgressBarLogger, TqdmProgressBarLogger
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -68,21 +67,26 @@ class PicklistAnimator:
 
     """
 
-    def __init__(self, plate_plotters, message_function=None,
-                 plate_figure_size=(8, 6), logger='bar'):
+    def __init__(
+        self,
+        plate_plotters,
+        message_function=None,
+        plate_figure_size=(8, 6),
+        logger="bar",
+    ):
         """Initialize."""
         self.plate_plotters = plate_plotters
         if logger is None:
             logger = ProgressBarLogger()
-        elif logger == 'bar':
-            logger = TqdmProgressBarLogger(bars=['transfers'])
+        elif logger == "bar":
+            logger = TqdmProgressBarLogger(bars=["transfers"])
         self.logger = logger
         self.message_function = message_function
         self.plate_figure_size = plate_figure_size
 
     @staticmethod
     def mplfig_to_npimage(fig):
-        """ Converts a matplotlib figure to a RGB array"""
+        """Converts a matplotlib figure to a RGB array"""
         #  only the Agg backend now supports the tostring_rgb function
         canvas = FigureCanvasAgg(fig)
         canvas.draw()
@@ -133,19 +137,18 @@ class PicklistAnimator:
         if axes is None:
             max_rows = max(len(source_plates), len(target_plates))
             w, h = self.plate_figure_size
-            fig, axes = plt.subplots(max_rows, 2,
-                                     figsize=(2 * w, h * max_rows))
+            fig, axes = plt.subplots(max_rows, 2, figsize=(2 * w, h * max_rows))
             if max_rows == 1:
                 axes = np.array([axes])
             for ax in axes.flatten():
-                ax.axis('off')
-                ax.set_aspect('equal')
+                ax.axis("off")
+                ax.set_aspect("equal")
         else:
             fig = axes[0][0].figure
             for ax in axes.flatten():
                 ax.clear()
-                ax.axis('off')
-                ax.set_aspect('equal')
+                ax.axis("off")
+                ax.set_aspect("equal")
 
         axes_dict = {}
         for c, plates in enumerate([target_plates, source_plates]):
@@ -161,8 +164,7 @@ class PicklistAnimator:
 
     def plot_transfer(self, transfer, source_plates, target_plates, axes=None):
         """Plot the plates and add and arrow for the transfer"""
-        fig, axes, axes_dict = self.plot_plates(source_plates, target_plates,
-                                                axes=axes)
+        fig, axes, axes_dict = self.plot_plates(source_plates, target_plates, axes=axes)
 
         source_well = transfer.source_well
         source_plate = source_well.plate
@@ -178,22 +180,27 @@ class PicklistAnimator:
 
         target_ax.set_zorder(source_ax.get_zorder() - 1)
         arrow = ConnectionPatch(
-            xyA=source_coord, xyB=target_coord,
-            coordsA="data", coordsB="data",
-            axesA=source_ax, axesB=target_ax,
-            shrinkB=5.0, lw=2,
-            facecolor='black',
-            arrowstyle="wedge", zorder=1000)
+            xyA=source_coord,
+            xyB=target_coord,
+            coordsA="data",
+            coordsB="data",
+            axesA=source_ax,
+            axesB=target_ax,
+            shrinkB=5.0,
+            lw=2,
+            facecolor="black",
+            arrowstyle="wedge",
+            zorder=1000,
+        )
         source_ax.add_artist(arrow)
         return fig, axes
 
     def _make_transfer_figure(self, picklist, transfer=None, axes=None):
         sources, targets = self.list_source_and_target_plates(picklist)
         if transfer is not None:
-            index = self.logger.bars['transfers']['index']
+            index = self.logger.bars["transfers"]["index"]
             self.logger(transfers__index=index + 1)
-            fig, axes = self.plot_transfer(transfer, sources, targets,
-                                           axes=axes)
+            fig, axes = self.plot_transfer(transfer, sources, targets, axes=axes)
         else:
             fig, axes, _ = self.plot_plates(sources, targets)
 
@@ -229,7 +236,8 @@ class PicklistAnimator:
             fig, _ = self._make_transfer_figure(picklist, transfer, axes=axes)
             fig.dpi = dpi
             writer.append_data(self.mplfig_to_npimage(fig))
-        picklist.execute(inplace=False, callback_function=make_frame)
+
+        picklist.simulate(inplace=False, callback_function=make_frame)
         writer.close()
         plt.close(fig)
 
@@ -250,4 +258,5 @@ class PicklistAnimator:
                 fig, _ = self._make_transfer_figure(picklist, transfer, axes=axes)
                 pdf.savefig(fig, bbox_inches="tight")
                 plt.close(fig)
+
             picklist.execute(inplace=False, callback_function=make_frame)

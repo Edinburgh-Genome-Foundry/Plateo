@@ -1,7 +1,7 @@
 """Read a .gwl picklist"""
 
 import pandas
-from ..tools import index_to_wellname
+from ..containers.helper_functions import index_to_wellname
 from ..transfers.PickList import PickList
 
 

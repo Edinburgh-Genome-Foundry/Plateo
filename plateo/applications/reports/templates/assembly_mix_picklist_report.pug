@@ -21,8 +21,8 @@ table.table.ui.compact.celled.striped.groups.definition(
         td= get_part_from_well(well)
         td {{ well.plate.name }} - {{ well.name }}
         td= len(pl.transfers_list)
-        td= human_volume(pl.total_transfered_volume())
-        td= human_volume(well.content.volume - pl.total_transfered_volume())
+        td= human_volume(pl.total_transferred_volume())
+        td= human_volume(well.content.volume - pl.total_transferred_volume())
 
 
 h2 Assemblies

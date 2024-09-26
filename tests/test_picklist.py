@@ -1,8 +1,10 @@
+# pylint: disable=C0114,E0401,C0103,C0116
 import os
+
 import pytest
 
 from plateo import Transfer, PickList
-from plateo.containers.plates import Plate96
+from plateo.containers.builtin_containers import Plate96
 
 
 source = Plate96(name="Source")
@@ -20,7 +22,10 @@ def test_add_transfer():
 
 
 def test_to_plain_string():
-    assert picklist.to_plain_string() == "2.50E-05L from Source A1 into Destination B2"
+    assert (
+        picklist.to_plain_string()
+        == "Transfer 2.50E-05L from Source A1 into Destination B2"
+    )
 
 
 def test_to_plain_textfile(tmpdir):
@@ -29,9 +34,9 @@ def test_to_plain_textfile(tmpdir):
     assert os.path.exists(path)
 
 
-def test_execute():
+def test_simulate():
     with pytest.raises(ValueError):
-        picklist.execute(inplace=False)
+        picklist.simulate(inplace=False)
 
 
 def test_restricted_to():
@@ -50,8 +55,8 @@ def test_sorted_by():
     assert isinstance(PickList().sorted_by(), PickList)
 
 
-def test_total_transfered_volume():
-    assert picklist.total_transfered_volume() == 25 * 10 ** (-6)
+def test_total_transferred_volume():
+    assert picklist.total_transferred_volume() == 25 * 10 ** (-6)
 
 
 def test_enforce_maximum_dispense_volume():

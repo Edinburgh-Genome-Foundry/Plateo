@@ -1,22 +1,16 @@
-"""Classes to represent picklists and liquid transfers in general"""
+# pylint: disable=C0330,C0103,E0102,R1705,R0913
+"""Classes to represent picklists and liquid transfers in general."""
 
 from copy import deepcopy
 from .Transfer import Transfer
-from ..tools import compute_rows_columns, wellname_to_index, index_to_wellname
 
 
 class PickList:
     """Representation of a list of well-to-well transfers.
 
-    Parameters
-    -----------
-
-    transfers_list
-      A list of Transfer objects that will be part of a same dispensing
-      operation, in the order in which they are meant to be executed.
-
-    data
-      A dict with some infos on the picklist.
+    :param transfers_list: A list of Transfer objects that will be part of the same
+        dispensing operation, in the order in which they are meant to be simulated.
+    :param data: A dict with information on the picklist.
     """
 
     def __init__(self, transfers_list=(), data=None):
@@ -35,9 +29,7 @@ class PickList:
         """Add a transfer to the picklist's tranfers list.
 
         You can either provide a ``Transfer`` object with the ``transfer``
-        parameter, or the parameters
-
-
+        parameter, or the parameters.
         """
         if transfer is None:
             transfer = Transfer(
@@ -49,16 +41,16 @@ class PickList:
         self.transfers_list.append(transfer)
 
     def to_plain_string(self):
-        """Return the list of transfers in human readable format"""
+        """Return the list of transfers in human readable format."""
         return "\n".join(transfer.to_plain_string() for transfer in self.transfers_list)
 
     def to_plain_textfile(self, filename):
-        """Write the picklist in a file in a human reable format."""
+        """Write the picklist in a file in a human readable format."""
         with open(filename, "w+") as f:
             f.write(self.to_plain_string())
 
-    def execute(self, content_field="content", inplace=True, callback_function=None):
-        """Simulate the execution of the picklist"""
+    def simulate(self, content_field="content", inplace=True):
+        """Simulate the execution of the picklist."""
 
         if not inplace:
             all_plates = set(
@@ -86,21 +78,16 @@ class PickList:
                 )
 
             new_picklist = PickList(transfers_list=new_transfer_list)
-            new_picklist.execute(
+            new_picklist.simulate(
                 content_field=content_field,
                 inplace=True,
-                callback_function=callback_function,
             )
             return new_plates
 
         else:
             for transfer in self.transfers_list:
-                transfer.source_well.transfer_to_other_well(
-                    destination_well=transfer.destination_well,
-                    transfer_volume=transfer.volume,
-                )
-                if callback_function is not None:
-                    callback_function(self, transfer)
+                transfer.apply()
+            return None
 
     def restricted_to(
         self, transfer_filter=None, source_well=None, destination_well=None
@@ -112,7 +99,6 @@ class PickList:
         alternatively just a function ``transfer_filter`` with signature
         (transfer)=>True/False that will be used to filter out transfers
         (for which it returns false).
-
         """
         if transfer_filter is None:
 
@@ -143,6 +129,10 @@ class PickList:
             sorted(self.transfers_list, key=sorting_method), data={"parent": self}
         )
 
+    def total_transferred_volume(self):
+        """Return the sum of all volumes from all transfers."""
+        return sum([transfer.volume for transfer in self.transfers_list])
+
     def split_by(self, category, sort_key):
         """Split the picklist into a list of picklists, per category.
 
@@ -165,58 +155,9 @@ class PickList:
             for cat in sorted(categories, key=sort_key)
         ]
 
-    def total_transfered_volume(self):
+    def total_transferred_volume(self):
         """Return the sum of all volumes from all transfers."""
         return sum([transfer.volume for transfer in self.transfers_list])
-
-    @staticmethod
-    def from_plates(
-        source_plate,
-        destination_plate,
-        volume,
-        source_criterion=None,
-        destination_criterion=None,
-        source_direction="row",
-        destination_direction="row",
-    ):
-        """Create a PickList object based on plates and conditions.
-
-        BROKEN due to changes in picklists. TODO: Fix.
-        """
-
-        if not hasattr(volume, "__call__"):
-            constant_volume = volume
-            volume = lambda source_well: constant_volume
-
-        if source_criterion is None:
-            source_criterion = lambda well: True
-        if destination_criterion is None:
-            destination_criterion = lambda well: True
-
-        destination_wells = (
-            well
-            for well in destination_plate.iter_wells(direction=destination_direction)
-            if destination_criterion(well)
-        )
-        transfers_list = []
-        if isinstance(source_plate, (list, tuple)):
-            source_wells = (
-                p.iter_wells(direction=source_direction) for p in source_plate
-            )
-        else:
-            source_wells = source_plate.iter_wells(direction=source_direction)
-        for source_well in source_wells:
-            if source_criterion(source_well):
-                destination_well = next(destination_wells)
-                transfers_list.append(
-                    Transfer(
-                        source_well=source_well,
-                        destination_well=destination_well,
-                        volume=volume(source_well),
-                    )
-                )
-
-        return PickList(transfers_list)
 
     def enforce_maximum_dispense_volume(self, max_dispense_volume):
         """Return a new picklist were every too-large dispense is broken down
@@ -225,10 +166,10 @@ class PickList:
         for trf in self.transfers_list:
             n_additional_dispense = int(trf.volume / max_dispense_volume)
             rest = trf.volume - n_additional_dispense * max_dispense_volume
-            for i in range(n_additional_dispense):
-                transfers.append(trf.change_volume(max_dispense_volume))
+            for _ in range(n_additional_dispense):
+                transfers.append(trf.with_new_volume(max_dispense_volume))
             if rest > 0:
-                transfers.append(trf.change_volume(rest))
+                transfers.append(trf.with_new_volume(rest))
         return PickList(transfers_list=transfers)
 
     def __add__(self, other):
@@ -239,7 +180,7 @@ class PickList:
         """Merge the list of picklists into a single picklist.
 
         The transfers in the final picklist are the concatenation of the
-        tranfers in the different picklists, in the order in which they appear
+        transfers in the different picklists, in the order in which they appear
         in the list.
         """
         return sum(picklists_list, PickList([]))

@@ -1,4 +1,5 @@
-from box import Box
+# pylint: disable=C0103
+"""This module contains a class to represent the volume and quantities of a well."""
 
 
 class WellContent:
@@ -12,9 +13,10 @@ class WellContent:
         if quantities is None:
             quantities = {}
         self.volume = volume
-        self.quantities = Box(quantities)
+        self.quantities = quantities
 
     def concentration(self, component=None, default=0):
+        """Return concentration of component."""
         if self.quantities == {}:
             return default
         if self.volume == 0:
@@ -26,13 +28,14 @@ class WellContent:
         return 1.0 * self.quantities[component] / self.volume
 
     def to_dict(self):
-        """Return a dict {volume: 0.0001, quantities: {...:...}}"""
+        """Return a dict {volume: 0.0001, quantities: {...:...}}."""
         return {"volume": self.volume, "quantities": self.quantities}
 
     def make_empty(self):
+        """Empty the well."""
         self.volume = 0
-        self.quantities = Box({})
+        self.quantities = {}
 
     def components_as_string(self, separator=" "):
-        """Return a string representation of what's in the well mix"""
+        """Return a string representation of what's in the well mix."""
         return separator.join(sorted(self.quantities.keys()))

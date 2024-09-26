@@ -8,7 +8,7 @@ matplotlib.use("Agg")
 
 from plateo import AssemblyPlan
 from plateo.parsers import plate_from_content_spreadsheet
-from plateo.containers.plates import Plate4ti0960
+from plateo.containers.builtin_containers import Plate4ti0960
 from plateo.exporters import (
     picklist_to_labcyte_echo_picklist_file,
     PlateTextPlotter,
@@ -21,8 +21,10 @@ import matplotlib.pyplot as plt
 from Bio import SeqIO
 
 data_path = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), os.path.join("data"),
+    os.path.dirname(os.path.realpath(__file__)),
+    os.path.join("data"),
 )
+
 
 # Note results.zip was manually validated
 def test_assembly_report(tmpdir):
@@ -63,10 +65,10 @@ def test_assembly_report(tmpdir):
         assembly_plan,
         source_wells=source_plate.iter_wells(),
         destination_wells=destination_plate.iter_wells(direction="column"),
-        complement_well=source_plate.wells.O24,
-        buffer_well=source_plate.wells.P24,
+        complement_well=source_plate.wells["O24"],
+        buffer_well=source_plate.wells["P24"],
     )
-    future_plates = picklist.execute(inplace=False)
+    future_plates = picklist.simulate(inplace=False)
 
     picklist_to_labcyte_echo_picklist_file(
         picklist, os.path.join(tmpdir, "ECHO_picklist.csv")
@@ -79,7 +81,7 @@ def test_assembly_report(tmpdir):
     def text(w):
         txt = human_volume(w.content.volume)
         if "construct" in w.data:
-            txt = "\n".join([w.data.construct, txt])
+            txt = "\n".join([w.data["construct"], txt])
         return txt
 
     plotter = PlateTextPlotter(text)
@@ -128,6 +130,6 @@ def test_assembly_report(tmpdir):
             too_many_assembly_plan,
             source_wells=source_plate.iter_wells(),
             destination_wells=destination_plate.iter_wells(direction="column"),
-            complement_well=source_plate.wells.O24,
-            buffer_well=source_plate.wells.P24,
+            complement_well=source_plate.wells["O24"],
+            buffer_well=source_plate.wells["P24"],
         )

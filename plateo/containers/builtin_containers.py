@@ -1,3 +1,5 @@
+"""Classes to represent plates"""
+
 from .Plate import Plate
 from .Well import Well
 
@@ -38,34 +40,58 @@ class Plate2x4(Plate):
     num_columns = 4
 
 
-class Plate4ti0960(Plate96):
-    """96-well plate from from 4titude"""
+# Plate4ti0960
+class Plate4ti0960Well(Well):
+    """Well for 96-well plate from 4titude"""
 
-    class PlateWell(Well):
-        capacity = 150e-6
+    capacity = 150e-6
+
+
+class Plate4ti0960(Plate96):
+    """96-well plate from 4titude"""
+
+    well_class = Plate4ti0960Well
+
+
+# Plate4ti0130
+class Plate4ti0130Well(Well):
+    """Well for 96-well plate with 2ml deepwells from 4titude"""
+
+    capacity = 1900e-6
 
 
 class Plate4ti0130(Plate96):
     """96-well plate with 2ml deepwells from 4titude"""
 
-    class PlateWell(Well):
-        capacity = 1900e-6
+    well_class = Plate4ti0130Well
+
+
+# PlateLabcyteEchoLp0200Ldv
+class PlateLabcyteEchoLp0200LdvWell(Well):
+    """Well for low dead volume 384-well Echo plate"""
+
+    capacity = 12e-6
+    echo_dead_volume = 3e-6
 
 
 class PlateLabcyteEchoLp0200Ldv(Plate384):
     """Low dead volume 384-well Echo plate"""
 
-    class PlateWell(Well):
-        capacity = 12e-6
-        echo_dead_volume = 3e-6
+    well_class = PlateLabcyteEchoLp0200LdvWell
+
+
+# PlateLabcyteEchoP05525Pp
+class PlateLabcyteEchoP05525PpWell(Well):
+    """Well for polypropylene 384-well ECHO plate"""
+
+    capacity = 50e-6
+    echo_dead_volume = 15e-6
 
 
 class PlateLabcyteEchoP05525Pp(Plate384):
     """Polypropylene 384-well ECHO plate"""
 
-    class PlateWell(Well):
-        capacity = 50e-6
-        echo_dead_volume = 15e-6
+    well_class = PlateLabcyteEchoP05525PpWell
 
 
 class Trough8x1(Plate):
@@ -74,7 +100,7 @@ class Trough8x1(Plate):
     num_rows = 8
     num_columns = 1
 
-    def __init__(self, name, data=None):
-        Plate.__init__(self, name=name, data=data)
+    def __init__(self, name, wells_data=None, plate_data=None):
+        Plate.__init__(self, name=name, wells_data=None, plate_data=None)
         for well in self:
             well.content = self["A1"].content

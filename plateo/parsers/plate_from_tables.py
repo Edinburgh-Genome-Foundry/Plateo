@@ -4,9 +4,12 @@ from copy import deepcopy
 import pandas as pd
 
 from plateo.containers import get_plate_class
-from ..tools import (
+from plateo.containers.helper_functions import (
     infer_plate_size_from_wellnames,
     number_to_rowname,
+)
+
+from ..tools import (
     unit_factors,
 )
 
@@ -172,7 +175,10 @@ def plate_from_platemap_spreadsheet(
     index_col = 0 if headers else None
     if file_type == "csv":
         dataframe = pd.read_csv(
-            file_handle, index_col=index_col, header=index_col, skiprows=skiprows,
+            file_handle,
+            index_col=index_col,
+            header=index_col,
+            skiprows=skiprows,
         )
     elif file_type == "xls":
         dataframe = pd.read_excel(
@@ -223,7 +229,9 @@ def plate_from_platemap_spreadsheet(
         num_wells = infer_plate_size_from_wellnames(wells_data.keys())
     if plate_class is None:
         plate_class = get_plate_class(num_wells=num_wells)
-    return plate_class(wells_data=wells_data, data={"file_source": original_filename})
+    return plate_class(
+        wells_data=wells_data, plate_data={"file_source": original_filename}
+    )
 
 
 def plate_from_content_spreadsheet(
@@ -351,8 +359,8 @@ def plate_from_content_spreadsheet(
         if str(content) == "nan":
             well.data[content_field_name] = None
             continue
-        volume = well.data.volume
-        concentration = well.data.concentration
+        volume = well.data["volume"]
+        concentration = well.data["concentration"]
 
         try:
             well.add_content({content: volume * concentration}, volume=volume)

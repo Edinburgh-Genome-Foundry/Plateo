@@ -6,17 +6,15 @@ try:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
     from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
 from tqdm import tqdm
 
-from ..tools import (
-    compute_rows_columns,
-    number_to_rowname
-)
+from ..containers.helper_functions import compute_rows_columns, number_to_rowname
 
-letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def draw_plate_layout(num_wells, ax):
@@ -28,9 +26,13 @@ def draw_plate_layout(num_wells, ax):
         ax.text(i, 1.075 * n_rows, str(i), horizontalalignment="center")
     ax.set_ylim(0, n_rows + 2)
     for i in range(n_rows):
-        ax.text(0.3, n_rows - i, number_to_rowname(i + 1),
-                verticalalignment="center",
-                horizontalalignment="right")
+        ax.text(
+            0.3,
+            n_rows - i,
+            number_to_rowname(i + 1),
+            verticalalignment="center",
+            horizontalalignment="right",
+        )
     ax.plot([n_rows], [n_columns])
     ax.set_xlim(0, n_columns + 0.6)
 
@@ -44,19 +46,21 @@ def place_inset_ax_in_data_coordinates(ax, bbox):
     pixels_data_wh = ax.transData.transform([width, height])
     iwidth, iheight = (pixels_data_wh - pixels_data_00) / ax.figure.dpi
     return inset_axes(
-        ax, iwidth, iheight,
+        ax,
+        iwidth,
+        iheight,
         loc=10,  # means "center"
         bbox_to_anchor=[bottom, left, width, height],
-        bbox_transform=ax.transData
+        bbox_transform=ax.transData,
     )
 
 
 class PlatePlotter:
-    """Base class for all matplotlib-based plate plotters
-    """
+    """Base class for all matplotlib-based plate plotters"""
 
-    def plot_plate(self, plate, ax=None, well_filter=None,
-                   progress_bar=False, figsize=(10, 5)):
+    def plot_plate(
+        self, plate, ax=None, well_filter=None, progress_bar=False, figsize=(10, 5)
+    ):
         """Plot the plate using Matplotlib.
 
         Parameters
@@ -93,7 +97,7 @@ class PlatePlotter:
         if ax is None:
             fig, ax = plt.subplots(1, facecolor="white", figsize=figsize)
         if well_filter is None:
-            well_filter = lambda well:  True
+            well_filter = lambda well: True
 
         draw_plate_layout(plate.num_wells, ax)
 
@@ -104,6 +108,7 @@ class PlatePlotter:
                 return tqdm(plate, total=plate.num_wells)
             else:
                 return plate
+
         for well in progress(plate):
             if not well_filter(well):
                 continue
@@ -135,9 +140,17 @@ class PlateColorsPlotter(PlatePlotter):
 
     """
 
-    def __init__(self, stat_function, colormap=None, plot_colorbar=False,
-                 well_radius='full', vmin=None, vmax=None, alpha=1.0,
-                 edge_width=1):
+    def __init__(
+        self,
+        stat_function,
+        colormap=None,
+        plot_colorbar=False,
+        well_radius="full",
+        vmin=None,
+        vmax=None,
+        alpha=1.0,
+        edge_width=1,
+    ):
         self.stat_function = stat_function
         self.colormap = colormap
         self.plot_colorbar = plot_colorbar
@@ -153,28 +166,36 @@ class PlateColorsPlotter(PlatePlotter):
     def post_process(self, ax, stats):
         xy, stats_values = zip(*stats.values())
         xx, yy = zip(*xy)
-        if self.well_radius == 'full':
+        if self.well_radius == "full":
             values = list(stats.values())
-            colors = [
-                v[1] for v in values if (v[1] is not None)
-            ]
-            depth = len(colors[0]) if hasattr(colors[0], '__iter__') else 1
+            colors = [v[1] for v in values if (v[1] is not None)]
+            depth = len(colors[0]) if hasattr(colors[0], "__iter__") else 1
             my, mx = max(yy), max(xx)
             grid = np.zeros((my, mx, depth) if depth > 1 else (my, mx))
             for (x, y), stat in stats.values():
-                grid[y-1, x-1] = stat
-            plot = ax.imshow(grid[::-1, :], alpha=self.alpha,
-                             vmin=self.vmin, vmax=self.vmax,
-                             cmap=self.colormap,
-                             extent=[0.5, max(xx)+0.5, 0.5, max(yy)+0.5])
-
+                grid[y - 1, x - 1] = stat
+            plot = ax.imshow(
+                grid[::-1, :],
+                alpha=self.alpha,
+                vmin=self.vmin,
+                vmax=self.vmax,
+                cmap=self.colormap,
+                extent=[0.5, max(xx) + 0.5, 0.5, max(yy) + 0.5],
+            )
 
         else:
-            plot = ax.scatter(xx, yy, s=self.well_radius, c=stats_values,
-                              vmin=self.vmin, vmax=self.vmax,
-                              linewidths=self.edge_width,
-                              edgecolors='k',
-                              alpha=self.alpha, cmap=self.colormap)
+            plot = ax.scatter(
+                xx,
+                yy,
+                s=self.well_radius,
+                c=stats_values,
+                vmin=self.vmin,
+                vmax=self.vmax,
+                linewidths=self.edge_width,
+                edgecolors="k",
+                alpha=self.alpha,
+                cmap=self.colormap,
+            )
         if self.plot_colorbar:
             ax.figure.colorbar(plot)
 
@@ -202,15 +223,19 @@ class PlateTextPlotter(PlatePlotter):
     def plot_well(self, ax, x, y, well):
         text = str(self.text_function(well))
         if self.line_length is not None:
-            text = '\n'.join(textwrap.wrap(text, self.line_length))
+            text = "\n".join(textwrap.wrap(text, self.line_length))
         fontdict = self.fontdict
         if not isinstance(fontdict, dict):
             fontdict = fontdict(well)
 
-        ax.text(x, y, str(text),
-                fontdict=fontdict,
-                horizontalalignment="center",
-                verticalalignment="center")
+        ax.text(
+            x,
+            y,
+            str(text),
+            fontdict=fontdict,
+            horizontalalignment="center",
+            verticalalignment="center",
+        )
         return ((x, y), text)
 
 
@@ -240,10 +265,12 @@ class PlateGraphsPlotter(PlatePlotter):
         self.subplot_height = float(subplot_size[1])
 
     def plot_well(self, ax, x, y, well):
-        bbox = (x - self.subplot_width / 2.0,
-                y - self.subplot_height / 2.0,
-                self.subplot_width,
-                self.subplot_height)
+        bbox = (
+            x - self.subplot_width / 2.0,
+            y - self.subplot_height / 2.0,
+            self.subplot_width,
+            self.subplot_height,
+        )
         well_ax = place_inset_ax_in_data_coordinates(ax, bbox)
         self.plot_function(well, well_ax)
         return well_ax

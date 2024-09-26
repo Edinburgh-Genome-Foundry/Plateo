@@ -8,7 +8,7 @@ if PYTHON3:
 
     StringIO = BytesIO
 else:
-    from StringIO import StringIO
+    from io import StringIO
 
 import pandas
 import matplotlib.image as mpimg
@@ -17,7 +17,7 @@ from ..containers import Plate96
 
 
 def plate_from_aati_fragment_analyzer_peaktable(filename):
-    """"Return a Plate96 object with a data field for the ``bands``.
+    """ "Return a Plate96 object with a data field for the ``bands``.
 
     Provided a ``filename`` of an AATI fragment analyzer Peak table
     (these are generally named ``{DATE} Peak Table.csv``), it generates a
@@ -76,7 +76,7 @@ def plate_from_aati_fa_gel_image(filename):
 
 
 def plate_from_aati_fragment_analyzer_zip(filename):
-    """"Return a Plate96 object with data for bands and migration image.
+    """ "Return a Plate96 object with data for bands and migration image.
 
     Provided a zip output of an AATI fragment analyzer, it will find the
     relevant files and extract band sizes and gel images, and store these in

@@ -97,7 +97,7 @@ class AssemblyPicklistGenerator:
         picklist = PickList()
         iterator = zip(assembly_plan.assemblies.items(), destination_wells)
         for (construct_name, parts), destination_well in iterator:
-            destination_well.data.construct = construct_name
+            destination_well.data["construct"] = construct_name
             for part in parts:
                 source_well = part_wells[part]
                 volume = self.volume_from_well(source_well, assembly_plan.parts_data)
@@ -122,7 +122,7 @@ class AssemblyPicklistGenerator:
                 )
             for well in destination_wells:
                 to_well = picklist.restricted_to(destination_well=well)
-                total_transfer_volume = to_well.total_transfered_volume()
+                total_transfer_volume = to_well.total_transferred_volume()
                 complement_volume = (
                     self.complement_to - total_transfer_volume - self.buffer_volume
                 )

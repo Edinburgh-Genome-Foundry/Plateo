@@ -105,7 +105,7 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None, plates_dic
                 plates_dict[plate] = Plate(
                     num_wells=num_wells,
                     name=plate,
-                    data={
+                    plate_data={
                         "plate_barcode": metadata["%s Plate Barcode" % role],
                         "plate_type": plate_type,
                     },
