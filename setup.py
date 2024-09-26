@@ -23,7 +23,6 @@ setup(
         "xlwt",
         "xlrd",
         "openpyxl",
-        "python-box",
         "numpy",
         "matplotlib",
         "tqdm",

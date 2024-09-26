@@ -1,6 +1,5 @@
 # pylint: disable=C0330,C0103,R0913
 """This module contains a generic class for a well."""
-from box import Box
 from .WellContent import WellContent
 from ..transfers.Transfer import TransferError
 from ..tools import unit_factors
