@@ -1,17 +1,18 @@
-from ..PickList import PickList, Transfer
-from ..Plate import Plate
+from ..transfers.PickList import PickList, Transfer
+from ..containers.Plate import Plate
 from ..containers import Plate96, Plate384, Plate1536
 import pandas as pd
 import sys
-PYTHON3 = (sys.version_info[0] == 3)
+
+PYTHON3 = sys.version_info[0] == 3
 
 if PYTHON3:
     from io import StringIO
 else:
     from StringIO import StringIO
 
-def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
-                                       plates_dict=None):
+
+def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None, plates_dict=None):
     """Return a picklist of what was actually dispensed in the ECHO, based
     on the log file.
 
@@ -69,7 +70,7 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
                         data={
                             "plate_barcode": row["%s Plate Barcode" % role],
                             "plate_type": plate_type,
-                        }
+                        },
                     )
 
         for row in dataframe.to_dict(orient="records"):
@@ -78,12 +79,14 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
             dest_plate = plates_dict[row["Destination Plate Name"]]
             dest_well = dest_plate.wells[row.pop("Destination Well")]
             volume = float(row.pop("Actual Volume"))
-            transfers.append(Transfer(
-                volume=(1e-9)*volume,
-                source_well=source_well,
-                destination_well=dest_well,
-                data=row
-            ))
+            transfers.append(
+                Transfer(
+                    volume=(1e-9) * volume,
+                    source_well=source_well,
+                    destination_well=dest_well,
+                    data=row,
+                )
+            )
 
         return transfers
 
@@ -105,14 +108,10 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
                     data={
                         "plate_barcode": metadata["%s Plate Barcode" % role],
                         "plate_type": plate_type,
-                    }
+                    },
                 )
 
-    blocks = [
-        block
-        for block in logcontent.split("\r\n\r\n")
-        if block != ""
-    ]
+    blocks = [block for block in logcontent.split("\r\n\r\n") if block != ""]
 
     picklist_metadata = {"logfile": logfile}
     for block in blocks:
@@ -138,12 +137,11 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
     for transfer in all_transfers:
         meta = transfer.data
         transfer.source_plate = plates_dict[meta["Source Plate Name"]]
-        transfer.destination_plate = plates_dict[
-            meta["Destination Plate Name"]]
+        transfer.destination_plate = plates_dict[meta["Destination Plate Name"]]
         obsolete_fields = [
-            field for field in meta
-            if any(e in field for e in ("Plate Name", "Plate Type",
-                                        "Plate Barcode"))
+            field
+            for field in meta
+            if any(e in field for e in ("Plate Name", "Plate Type", "Plate Barcode"))
         ]
         for field in obsolete_fields:
             meta.pop(field)
@@ -151,7 +149,4 @@ def picklist_from_labcyte_echo_logfile(logfile=None, logcontent=None,
     picklist_metadata["exceptions"] = PickList(transfers_exceptions_list)
     picklist_metadata["plates_dict"] = plates_dict
 
-    return PickList(
-        transfers_list=transfers_list,
-        data=picklist_metadata
-    )
+    return PickList(transfers_list=transfers_list, data=picklist_metadata)

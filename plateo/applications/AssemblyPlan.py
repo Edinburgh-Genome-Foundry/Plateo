@@ -1,10 +1,9 @@
 from collections import OrderedDict
 import pandas
-import flametree
 from sequenticon import sequenticon_batch
 
-from .exporters.reports import template_path, report_writer
-from .tools import human_seq_size, did_you_mean
+from ..applications.reports import template_path, report_writer
+from ..tools import human_seq_size, did_you_mean
 
 
 class AssemblyPlan:

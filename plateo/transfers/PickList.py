@@ -1,62 +1,8 @@
 """Classes to represent picklists and liquid transfers in general"""
-from collections import OrderedDict
+
 from copy import deepcopy
-import json
-
-import pandas
-
-#import parsers
-#import exporters
-from .tools import compute_rows_columns, wellname_to_index, index_to_wellname
-
-
-
-class Transfer:
-    """A tranfer from a source to a destination
-
-    Parameters
-    ----------
-
-    source_well
-      A Well object representing the plate well from which to transfer
-
-    destination_well
-      A Well object representing the plate well to which to transfer.
-
-    volume
-      Volume to be transfered, expressed in liters.
-
-    data
-      A dict containing any useful information on the transfer, this
-      information can be used later e.g. as parameters for the transfer
-      when exporting a picklist.
-    """
-    def __init__(self, source_well, destination_well, volume, data=None):
-
-        self.volume = volume
-        self.source_well = source_well
-        self.destination_well = destination_well
-        self.data = data
-
-    def to_plain_string(self):
-        """Return "xx L from {source_well} into {dest_well}"."""
-        return ("{self.volume:.02E}L from {self.source_well.plate.name} "
-                "{self.source_well.name} into "
-                "{self.destination_well.plate.name} "
-                "{self.destination_well.name}").format(
-                    self=self
-        )
-
-    def change_volume(self, new_volume):
-        """Return a version of the transfer with a new volume."""
-        return Transfer(source_well=self.source_well,
-                        destination_well=self.destination_well,
-                        volume=new_volume,
-                        data=self.data)
-
-    def __repr__(self):
-        """Return "xx L from {source_well} into {dest_well}"."""
-        return self.to_plain_string()
+from .Transfer import Transfer
+from ..tools import compute_rows_columns, wellname_to_index, index_to_wellname
 
 
 class PickList:
@@ -71,7 +17,6 @@ class PickList:
 
     data
       A dict with some infos on the picklist.
-
     """
 
     def __init__(self, transfers_list=(), data=None):
@@ -79,8 +24,14 @@ class PickList:
         self.transfers_list = list(transfers_list)
         self.data = {} if data is None else data
 
-    def add_transfer(self, source_well=None, destination_well=None,
-                     volume=None,  data=None, transfer=None):
+    def add_transfer(
+        self,
+        source_well=None,
+        destination_well=None,
+        volume=None,
+        data=None,
+        transfer=None,
+    ):
         """Add a transfer to the picklist's tranfers list.
 
         You can either provide a ``Transfer`` object with the ``transfer``
@@ -89,69 +40,71 @@ class PickList:
 
         """
         if transfer is None:
-            transfer = Transfer(source_well=source_well,
-                                destination_well=destination_well,
-                                volume=volume,
-                                data=data)
+            transfer = Transfer(
+                source_well=source_well,
+                destination_well=destination_well,
+                volume=volume,
+                data=data,
+            )
         self.transfers_list.append(transfer)
 
     def to_plain_string(self):
         """Return the list of transfers in human readable format"""
-        return "\n".join(
-            transfer.to_plain_string()
-            for transfer in self.transfers_list
-        )
+        return "\n".join(transfer.to_plain_string() for transfer in self.transfers_list)
 
     def to_plain_textfile(self, filename):
         """Write the picklist in a file in a human reable format."""
         with open(filename, "w+") as f:
             f.write(self.to_plain_string())
 
-    def execute(self, content_field="content", inplace=True,
-                callback_function=None):
+    def execute(self, content_field="content", inplace=True, callback_function=None):
         """Simulate the execution of the picklist"""
 
         if not inplace:
             all_plates = set(
                 plate
                 for transfer in self.transfers_list
-                for plate in [transfer.source_well.plate,
-                              transfer.destination_well.plate]
+                for plate in [
+                    transfer.source_well.plate,
+                    transfer.destination_well.plate,
+                ]
             )
-            new_plates = {
-                plate: deepcopy(plate)
-                for plate in all_plates
-            }
+            new_plates = {plate: deepcopy(plate) for plate in all_plates}
 
             new_transfer_list = []
             for transfer in self.transfers_list:
                 new_source_plate = new_plates[transfer.source_well.plate]
                 new_dest_plate = new_plates[transfer.destination_well.plate]
-                new_source_well = new_source_plate.wells[
-                    transfer.source_well.name]
-                new_dest_well = new_dest_plate.wells[
-                    transfer.destination_well.name]
-                new_transfer_list.append(Transfer(
-                    volume=transfer.volume,
-                    source_well=new_source_well,
-                    destination_well=new_dest_well
-                ))
+                new_source_well = new_source_plate.wells[transfer.source_well.name]
+                new_dest_well = new_dest_plate.wells[transfer.destination_well.name]
+                new_transfer_list.append(
+                    Transfer(
+                        volume=transfer.volume,
+                        source_well=new_source_well,
+                        destination_well=new_dest_well,
+                    )
+                )
 
             new_picklist = PickList(transfers_list=new_transfer_list)
-            new_picklist.execute(content_field=content_field, inplace=True,
-                                 callback_function=callback_function)
+            new_picklist.execute(
+                content_field=content_field,
+                inplace=True,
+                callback_function=callback_function,
+            )
             return new_plates
 
         else:
             for transfer in self.transfers_list:
                 transfer.source_well.transfer_to_other_well(
                     destination_well=transfer.destination_well,
-                    transfer_volume=transfer.volume)
+                    transfer_volume=transfer.volume,
+                )
                 if callback_function is not None:
                     callback_function(self, transfer)
 
-    def restricted_to(self, transfer_filter=None, source_well=None,
-                      destination_well=None):
+    def restricted_to(
+        self, transfer_filter=None, source_well=None, destination_well=None
+    ):
         """Return a version of the picklist restricted to transfers with the
         right source/destination well.
 
@@ -162,12 +115,15 @@ class PickList:
 
         """
         if transfer_filter is None:
+
             def transfer_filter(tr):
-                source_well_is_ok = ((source_well is None) or
-                                     (source_well == tr.source_well))
-                dest_well_is_ok = ((destination_well is None) or
-                                   (destination_well == tr.destination_well))
-                return (source_well_is_ok and dest_well_is_ok)
+                source_well_is_ok = (source_well is None) or (
+                    source_well == tr.source_well
+                )
+                dest_well_is_ok = (destination_well is None) or (
+                    destination_well == tr.destination_well
+                )
+                return source_well_is_ok and dest_well_is_ok
 
         transfers = [tr for tr in self.transfers_list if transfer_filter(tr)]
         return PickList(transfers, data={"parent": self})
@@ -179,10 +135,13 @@ class PickList:
         transfers, such as "source_well", or a function f(transfer) -> value.
         """
         if not hasattr(sorting_method, "__call__"):
+
             def sorting_method(transfer):
                 return transfer.__dict__[sorting_method]
-        return PickList(sorted(self.transfers_list, key=sorting_method),
-                        data={"parent": self})
+
+        return PickList(
+            sorted(self.transfers_list, key=sorting_method), data={"parent": self}
+        )
 
     def split_by(self, category, sort_key):
         """Split the picklist into a list of picklists, per category.
@@ -196,8 +155,10 @@ class PickList:
         """
         if isinstance(category, str):
             str_category = category
+
             def category(t):
                 return t.__dict__[str_category]
+
         categories = set([category(tr) for tr in self.transfers_list])
         return [
             (cat, self.restricted_to(lambda tr: category(tr) == cat))
@@ -209,10 +170,15 @@ class PickList:
         return sum([transfer.volume for transfer in self.transfers_list])
 
     @staticmethod
-    def from_plates(source_plate, destination_plate, volume,
-                    source_criterion=None,
-                    destination_criterion=None, source_direction="row",
-                    destination_direction="row"):
+    def from_plates(
+        source_plate,
+        destination_plate,
+        volume,
+        source_criterion=None,
+        destination_criterion=None,
+        source_direction="row",
+        destination_direction="row",
+    ):
         """Create a PickList object based on plates and conditions.
 
         BROKEN due to changes in picklists. TODO: Fix.
@@ -228,15 +194,14 @@ class PickList:
             destination_criterion = lambda well: True
 
         destination_wells = (
-            well for well in destination_plate.iter_wells(
-                direction=destination_direction)
+            well
+            for well in destination_plate.iter_wells(direction=destination_direction)
             if destination_criterion(well)
         )
         transfers_list = []
         if isinstance(source_plate, (list, tuple)):
             source_wells = (
-                p.iter_wells(direction=source_direction)
-                for p in source_plate
+                p.iter_wells(direction=source_direction) for p in source_plate
             )
         else:
             source_wells = source_plate.iter_wells(direction=source_direction)
@@ -247,7 +212,7 @@ class PickList:
                     Transfer(
                         source_well=source_well,
                         destination_well=destination_well,
-                        volume=volume(source_well)
+                        volume=volume(source_well),
                     )
                 )
 

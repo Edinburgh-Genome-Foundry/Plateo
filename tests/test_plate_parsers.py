@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from plateo.Plate import Plate
+from plateo.containers.Plate import Plate
 from plateo.parsers import (
     plate_from_platemap_spreadsheet,
     plate_from_list_spreadsheet,

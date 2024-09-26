@@ -3,21 +3,26 @@
 See plateo.container for more specific plate subclasses, with
 set number of wells, well format, etc.
 """
+
 from collections import OrderedDict
 import json
 from .Well import Well
-from .tools import (index_to_wellname, wellname_to_index,
-                    coordinates_to_wellname, rowname_to_number,
-                    replace_nans_in_dict)
+from ..tools import (
+    index_to_wellname,
+    wellname_to_index,
+    coordinates_to_wellname,
+    rowname_to_number,
+    replace_nans_in_dict,
+)
 from box import Box
+
 
 class Plate:
     """Base class for all wells."""
 
     PlateWell = Well
 
-    def __init__(self, name=None, wells_data=None,
-                 data=None):
+    def __init__(self, name=None, wells_data=None, data=None):
 
         self.name = name
         self.data = Box({} if data is None else data)
@@ -29,8 +34,9 @@ class Plate:
             for column in range(1, self.num_columns + 1):
                 wellname = coordinates_to_wellname((row, column))
                 data = self.wells_data.get(wellname, {})
-                well = self.PlateWell(plate=self, row=row, column=column,
-                                      name=wellname, data=data)
+                well = self.PlateWell(
+                    plate=self, row=row, column=column, name=wellname, data=data
+                )
                 self.wells[wellname] = well
 
     def __getitem__(self, k):
@@ -47,8 +53,9 @@ class Plate:
                 other_well = other_plate[well.name]
                 other_data = other_well.data
                 if not overwrite:
-                    other_data = {k: v for (k, v) in other_data.items()
-                                      if k not in well.data}
+                    other_data = {
+                        k: v for (k, v) in other_data.items() if k not in well.data
+                    }
                 well.data.update(other_data)
 
     def apply_to_wells(self, fun):
@@ -64,13 +71,11 @@ class Plate:
 
     def find_unique_well(self, content_includes=None, condition=None):
         if content_includes is not None:
+
             def condition(well):
-                return (content_includes in well.content.quantities.keys())
-        wells = [
-            well
-            for name, well in self.wells.items()
-            if condition(well)
-        ]
+                return content_includes in well.content.quantities.keys()
+
+        wells = [well for name, well in self.wells.items() if condition(well)]
         if len(wells) > 1:
             raise ValueError("Query returned several wells: %s" % wells)
         elif len(wells) == 0:
@@ -81,19 +86,12 @@ class Plate:
         return json.dumps(self[well_name], indent=indent)
 
     def list_well_data_fields(self):
-        return sorted(list(set(
-            field
-            for well in self
-            for field in well.data.keys()
-        )))
+        return sorted(list(set(field for well in self for field in well.data.keys())))
 
     def wells_in_column(self, column_number):
         """Return the list of all wells of the plate in the given column."""
         # TODO: at some point, avoid iterating over all wells, make it smarter
-        return [
-            well for well in self
-            if well.column == column_number
-        ]
+        return [well for well in self if well.column == column_number]
 
     def wells_in_row(self, row):
         """Return the list of all wells of the plate in the given row.
@@ -102,10 +100,7 @@ class Plate:
         """
         if isinstance(row, str):
             row = rowname_to_number(row)
-        return [
-            well for well in self
-            if well.row == row
-        ]
+        return [well for well in self if well.row == row]
 
     def wells_satisfying(self, condition):
         """
@@ -119,11 +114,19 @@ class Plate:
         """
         return filter(condition, self.wells.values())
 
-    def wells_grouped_by(self, data_field=None, key=None, sort_keys=False,
-                         ignore_none=False, direction_of_occurence="row"):
+    def wells_grouped_by(
+        self,
+        data_field=None,
+        key=None,
+        sort_keys=False,
+        ignore_none=False,
+        direction_of_occurence="row",
+    ):
         if key is None:
+
             def key(well):
                 return well.data.get(data_field, None)
+
         dct = OrderedDict()
         for well in self.iter_wells(direction=direction_of_occurence):
             well_key = key(well)
@@ -159,16 +162,20 @@ class Plate:
 
     def wells_sorted_by(self, sortkey):
         return (e for e in sorted(self.wells.values(), key=sortkey))
-    
-    def list_data_field_values(self, data_field, include_none=False):
-        return list(set([
-            w.data[data_field]
-            for w in self.iter_wells()
-            if data_field in w.data
-            and (include_none or (w.data[data_field] is not None))
-        ]))
 
-    def last_nonempty_well(self, direction='row'):
+    def list_data_field_values(self, data_field, include_none=False):
+        return list(
+            set(
+                [
+                    w.data[data_field]
+                    for w in self.iter_wells()
+                    if data_field in w.data
+                    and (include_none or (w.data[data_field] is not None))
+                ]
+            )
+        )
+
+    def last_nonempty_well(self, direction="row"):
         """Return the last non-empty well found when traversing the plate."""
         selected_well = None
         for well in self.iter_wells(direction=direction):
@@ -180,14 +187,8 @@ class Plate:
         """Allow to iter through the well dicts using `for well in myplate`"""
         return self.iter_wells()
 
-    def to_dict(self, replace_nans_by='null'):
-        dct = {
-            "data": self.data,
-            "wells": {
-                well.name: well.to_dict()
-                for well in self
-            }
-        }
+    def to_dict(self, replace_nans_by="null"):
+        dct = {"data": self.data, "wells": {well.name: well.to_dict() for well in self}}
         if replace_nans_by is not None:
             replace_nans_in_dict(dct, replace_by=replace_nans_by)
         return dct

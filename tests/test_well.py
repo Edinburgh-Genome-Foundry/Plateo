@@ -1,7 +1,7 @@
 import pytest
 
 from plateo.containers.plates import Plate96
-from plateo.Well import TransferError, Well
+from plateo.containers.Well import TransferError, Well
 
 
 plate = Plate96()

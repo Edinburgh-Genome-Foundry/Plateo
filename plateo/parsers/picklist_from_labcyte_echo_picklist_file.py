@@ -1,7 +1,7 @@
 import pandas
 from ..tools import infer_plate_size_from_wellnames
 from ..containers import get_plate_class
-from ..PickList import PickList, Transfer
+from ..transfers.PickList import PickList, Transfer
 
 
 def picklist_from_labcyte_echo_picklist_file(

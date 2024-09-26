@@ -2,7 +2,7 @@ import pytest
 
 from plateo import Transfer
 from plateo.containers.plates import Plate96
-from plateo.Well import TransferError
+from plateo.containers.Well import TransferError
 
 
 def test_TransferError():

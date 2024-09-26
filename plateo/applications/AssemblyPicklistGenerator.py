@@ -1,5 +1,5 @@
-from ..PickList import PickList
-from ..Well import TransferError
+from ..transfers.PickList import PickList
+from ..containers.Well import TransferError
 from ..tools import round_at, did_you_mean
 
 
@@ -7,14 +7,14 @@ class AssemblyPicklistGenerator:
     """Class to generate robot picklists to mix genetic parts for DNA assembly.
 
     (for TECAN EVO, Labcyte ECHO, etc.)
-    
+
     Parameters
     ----------
 
     part_mol, part_l, part_g
       Amount of each DNA part that an assembly mix should contain (provide
       either one of these). Parameter ``part_mol`` indicates a amount of
-      molecules in mol, e.g. 13e-12 to specify "13 pico-mol of each DNA part". 
+      molecules in mol, e.g. 13e-12 to specify "13 pico-mol of each DNA part".
 
     complement_to
 
@@ -23,9 +23,6 @@ class AssemblyPicklistGenerator:
     volume_rounding
 
     minimal_dispense_volume
-
-
-
     """
 
     def __init__(
@@ -99,7 +96,7 @@ class AssemblyPicklistGenerator:
 
         picklist = PickList()
         iterator = zip(assembly_plan.assemblies.items(), destination_wells)
-        for ((construct_name, parts), destination_well) in iterator:
+        for (construct_name, parts), destination_well in iterator:
             destination_well.data.construct = construct_name
             for part in parts:
                 source_well = part_wells[part]
@@ -151,7 +148,10 @@ class AssemblyPicklistGenerator:
             {
                 "wells_over_desired_volume": wells_over_desired_volume,
                 "duplicates": {
-                    part_name: {"wells": wells, "selected": part_wells[part_name],}
+                    part_name: {
+                        "wells": wells,
+                        "selected": part_wells[part_name],
+                    }
                     for part_name, wells in duplicates.items()
                 },
             },

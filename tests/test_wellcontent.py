@@ -1,4 +1,4 @@
-from plateo.Well import WellContent
+from plateo.containers.Well import WellContent
 
 wellcontent = WellContent(
     quantities={"Compound_1": 5, "Compound_2": 10}, volume=25

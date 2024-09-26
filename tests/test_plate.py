@@ -1,7 +1,7 @@
 import pytest
 
 from plateo.containers.plates import Plate96
-from plateo.Well import Well
+from plateo.containers.Well import Well
 
 
 def condition(well):
