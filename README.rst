@@ -14,11 +14,11 @@
   :target: https://coveralls.io/github/Edinburgh-Genome-Foundry/Plateo?branch=master
 
 
-Plateo (pronounced *Plato*, like the planet) is a Python library to assist in the
-planning, running and checking of laboratory experiments involving microplates.
+Plateo is a Python library that assists in the planning of laboratory experiments involving microplates.
 
 It can be used to:
 
+- Model laboratory microplates, well contents and liquid transfers.
 - Read and write robotic protocols (picklists) in different formats to
   accomodate different liquid dispensers (Tecan EVO, Labcyte Echo).
 - Simulate liquid dispensing runs, taking into account the capacity and dead
@@ -27,45 +27,46 @@ It can be used to:
   fragment analysis, qPCR, etc.)
 - Export plate information in various formats (graphics, spreadsheets, HTML,
   JSON, etc.).
+- Create detailed report on various complex operations.
 
 
-Work in progress - contribute !
--------------------------------
+Install
+-------
 
-Plateo is an open-source software originally written at the `Edinburgh Genome Foundry
-<http://www.genomefoundry.io>`_ (an academic platform) by `Zulko <https://github.com/Zulko>`_
-and `released on Github <https://github.com/Edinburgh-Genome-Foundry/plateo>`_
-under the MIT licence (Copyright 2017 Edinburgh Genome Foundry).
-
-It was released in the hope that it will be as useful for other automated labs as it is for use,
-but keep in mind that it is still under development, the features and docs will get better.
-
-Plateo aims at collecting parsers and export routines to speak to any kind of
-automated equipment. If you have written parsers that don't appear in Plateo,
-we are happy to hear about it. If you need help writing parsers for your favorite
-robot, we may be able to help too!
-
-
-Installation
-------------
-
-Plateo can be installed from the Python Package Index with PIP: ::
+Plateo can be installed from the Python Package Index: ::
 
     pip install plateo
-
-It can also be installed by unzipping the source code in one directory and using this command: ::
-
-    python setup.py install
 
 
 Code organization
 -----------------
 
-- ``Plate.py``, ``Well.py`` and ``Picklist.py`` implement the central objects
-  ``Plate``, ``Well``, and ``Picklist``.
-- The ``containers`` folder contains specific classes of ``Plate`` and ``Well``
-  will predefined dimensions, capacity, dead volume, etc.
-- The ``parsers`` folder contains all methods to generate Plates or Picklists
+- Plateo is organised around various lab containers and liquid transfers between them.
+- The ``containers`` folder has the ``Well`` and ``WellContent`` classes, which
+model microplate wells and their contents. The ``Plate`` class models laboratory
+microplates. Built-in plates with predefined dimensions, capacity, dead volume, etc.
+are also stored in this folder.
+- The ``transfers`` folder contents simulate liquid transfers (``Transfer``) and lists 
+of transfers (``PickList``).
+- The ``parsers`` folder contains all methods for generating Plates or Picklists
   from machine files and data.
-- The ``exporters`` folder contains all methods to export plates in picklists
-  in human- or machine-readable format.
+- The ``exporters`` folder contains all methods for exporting Plates or PickLists
+  into human- or machine-readable formats.
+- The ``applications`` folder contains complex procedures with input/output operations;
+such as creating a DNA assembly picklist and related documentation.
+
+
+Versioning
+----------
+
+Plateo uses the [semantic versioning](https://semver.org) scheme.
+
+
+License = MIT
+-------------
+
+Plateo is [free software](https://www.gnu.org/philosophy/free-sw.en.html), which means
+the users have the freedom to run, copy, distribute, study, change and improve the software.
+
+Plateo was originally written at the `Edinburgh Genome Foundry <http://www.genomefoundry.io>`_ by `Zulko <https://github.com/Zulko>`_ and is currently developed by 
+by `Peter Vegh <https://github.com/veghp>`_. It is released under the MIT license (Copyright 2017 Edinburgh Genome Foundry).
