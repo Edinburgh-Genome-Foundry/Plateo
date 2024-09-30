@@ -50,3 +50,11 @@ def dataframe_from_volume_table(volumetable, source_plate, dest_plate):
     dataframe = pandas.DataFrame(columns=columnnames, data=transfer_list)
 
     return dataframe
+
+
+def volumetable_from_csv_file(filename=None, unit=1e-6):
+    # 1 microliter = 1e-6 L
+    volumetable = pandas.read_csv(filename, index_col=0)
+    volumetable = volumetable * unit
+
+    return volumetable
