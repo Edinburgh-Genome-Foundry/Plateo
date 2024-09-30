@@ -7,6 +7,8 @@ from .plate_from_aati_fragment_analyzer import (
 
 from .picklist_from_labcyte_echo_logfile import picklist_from_labcyte_echo_logfile
 
+from .picklist_from_tables import picklist_from_dataframe, picklist_from_csv_file
+
 from .picklist_from_tecan_evo_picklist_file import picklist_from_tecan_evo_picklist_file
 
 from .plate_volumes_from_labcyte_echo_files import (
