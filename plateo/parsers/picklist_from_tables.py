@@ -5,16 +5,12 @@ from ..containers import get_plate_class
 from ..transfers.PickList import PickList
 from ..transfers.Transfer import Transfer
 
-DF_COLUMNS = {
-    "source_plate": "source_plate",
-    "source_well": "source_well",
-    "dest_plate": "dest_plate",
-    "dest_well": "dest_well",
-    "volume": "volume",
-}
+columnnames = ["source_plate", "source_well", "dest_plate", "dest_well", "volume"]
+DF_COLUMNS = {name: name for name in columnnames}
 
 
 def picklist_from_dataframe(dataframe, source_plates, dest_plates, df_columns=None):
+    """Create a picklist from a table specifying the transfers."""
     if df_columns == None:
         df_columns = DF_COLUMNS
     # For matching the plates:
