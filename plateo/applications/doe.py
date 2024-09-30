@@ -4,18 +4,18 @@ import pandas
 from ..parsers.picklist_from_tables import columnnames
 
 
-def volumetable_from_valuetable(valuetable, source_plate):
+def convert_valuetable_to_volumetable(valuetable, source_plate):
     # 1 microliter = 1e-6 L
     pass
 
 
-def valuetable_from_csv(filename):
+def import_valuetable_from_csv(filename):
     valuetable = pandas.read_csv(filename, index_col=0)
 
     return valuetable
 
 
-def dataframe_from_volume_table(volumetable, source_plate, dest_plate):
+def convert_volumetable_to_actiontable(volumetable, source_plate, dest_plate):
     """Convert a volume-based transfer table into an action-based format."""
 
     factor_wells_dict = {}
@@ -58,12 +58,12 @@ def dataframe_from_volume_table(volumetable, source_plate, dest_plate):
             ]
             transfer_list += [transfer]
 
-    dataframe = pandas.DataFrame(columns=columnnames, data=transfer_list)
+    actiontable = pandas.DataFrame(columns=columnnames, data=transfer_list)
 
-    return dataframe
+    return actiontable
 
 
-def volumetable_from_csv_file(filename, unit=1e-6):
+def import_volumetable_from_csv_file(filename, unit=1e-6):
     # 1 microliter = 1e-6 L
     volumetable = pandas.read_csv(filename, index_col=0)
     volumetable = volumetable * unit
