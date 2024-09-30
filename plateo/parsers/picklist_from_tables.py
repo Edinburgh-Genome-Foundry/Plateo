@@ -45,19 +45,23 @@ def picklist_from_csv_file(
     dataframe = pandas.read_csv(filename)
 
     if source_plates == "auto":
+        source_plate_column = DF_COLUMNS["source_plate"]
         source_plates = []
-        for name in dataframe["source_plate"].unique():
+        for name in dataframe[source_plate_column].unique():
             nwells = infer_plate_size_from_wellnames(
-                dataframe[dataframe["source_plate"] == name]["source_well"]
+                dataframe[dataframe[source_plate_column] == name][
+                    DF_COLUMNS["source_well"]
+                ]
             )
             source_plate = get_plate_class(nwells)()
             source_plate.name = name
             source_plates += [source_plate]
     if dest_plates == "auto":
+        dest_plate_column = DF_COLUMNS["dest_plate"]
         dest_plates = []
-        for name in dataframe["dest_plate"].unique():
+        for name in dataframe[dest_plate_column].unique():
             nwells = infer_plate_size_from_wellnames(
-                dataframe[dataframe["dest_plate"] == name]["dest_well"]
+                dataframe[dataframe[dest_plate_column] == name][DF_COLUMNS["dest_well"]]
             )
             dest_plate = get_plate_class(nwells)()
             dest_plate.name = name
