@@ -4,9 +4,60 @@ import pandas
 from ..parsers.picklist_from_tables import columnnames
 
 
-def convert_valuetable_to_volumetable(valuetable, source_plate):
+def convert_valuetable_to_volumetable(valuetable, source_plate=None):
+    # If all values are volumes, then a source plate is not required.
     # 1 microliter = 1e-6 L
-    pass
+    # 'units' is the default name for a special line in the valuetable
+    unit_line = "units"
+    unit_dict = {index: value for index, value in valuetable.loc[unit_line].iteritems()}
+    # SI unit: (multiplier, type)
+    unit_interpreter = {
+        "L": (1, "volume"),
+        "mL": (1e-3, "volume"),
+        "uL": (1e-6, "volume"),
+        "nL": (1e-9, "volume"),
+        "g": (1, "mass"),
+        "g/L": (1, "concentration"),
+    }
+    volume_list = []  # collect "series" to construct the final dataframe
+
+    # Get rows to subset df to actual values (factor levels):
+    # 'final_volume' and 'complement' are special columns in the valuetable
+    factor_columns = [
+        factor
+        for factor in valuetable.columns
+        if factor not in ["complement", "final_volume"]
+    ]
+    expunit_rows = [
+        expunit for expunit in valuetable.index if expunit not in [unit_line]
+    ]
+    for index, row in valuetable.loc[expunit_rows, factor_columns].iterrows():
+        if index == unit_line:
+            continue
+        volumes = []  # collect calculated volumes for an experimental unit
+        for factor in factor_columns:
+            # VOLUME
+            unit_type = unit_interpreter[unit_dict[factor]][1]
+            if unit_type == "volume":
+                volumes += [float(row[factor])]  # no calculation necessary
+            # MASS
+            elif unit_type == "mass":
+                pass
+            # CONCENTRATION
+            elif unit_type == "concentration":
+                pass
+
+        complement_volume = unit_dict["final_volume"] - sum(volumes)
+        volumes += [complement_volume]
+
+        volume_list += [volumes]
+
+    columnnames = factor_columns + ["complement"]
+    volumetable = pandas.DataFrame(
+        columns=columnnames, index=expunit_rows, data=volume_list
+    )
+
+    return volumetable
 
 
 def import_valuetable_from_csv(filename):
