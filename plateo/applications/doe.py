@@ -9,7 +9,7 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
     # 1 microliter = 1e-6 L
     # 'units' is the default name for a special line in the valuetable
     unit_line = "units"
-    unit_dict = {index: value for index, value in valuetable.loc[unit_line].iteritems()}
+    unit_dict = {index: value for index, value in valuetable.loc[unit_line].items()}
     # SI unit: (multiplier, type)
     unit_interpreter = {
         "L": (1, "volume"),
