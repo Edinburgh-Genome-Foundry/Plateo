@@ -28,8 +28,11 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
         "mg": (1e-3, "mass"),
         "ug": (1e-6, "mass"),
         "ng": (1e-9, "mass"),
-        "g/L": (1, "concentration"),
+        "g-L": (1, "concentration"),
+        "ng-uL": (1e-3, "concentration"),
     }
+    # we use "-" as the division sign; see plate_to_content_spreadsheet()
+
     volume_list = []  # collect "series" to construct the final dataframe
 
     # Get rows to subset df to actual values (factor levels):
@@ -62,12 +65,18 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
                 volumes += [volume]
             # CONCENTRATION
             elif unit_type == "concentration":
-                pass
+                multiplier = unit_interpreter[unit_dict[factor]][0]
+                final_concentration = float(row[factor]) * multiplier
+                mass = final_concentration * unit_dict["final_volume"] * 1e-6
+                concentration = factor_wells_dict[factor].content.concentration()
+                volume = mass / concentration
+                volumes += [volume]
 
         complement_volume = unit_dict["final_volume"] * 1e-6 - sum(volumes)
         # 'final_volume' is in uL, need to convert to L
 
         volumes += [complement_volume]
+        print(volumes)
 
         volume_list += [volumes]
 
