@@ -14,7 +14,7 @@ from plateo.containers import Plate96
 
 valuetable_path = os.path.join("tests", "data", "applications", "valuetable.csv")
 volumetable_out_path = os.path.join(
-    "tests", "data", "applications", "volumetable_out.csv"
+    "tests", "data", "applications", "volumetable_out_in_L.csv"
 )
 
 volumetable_path = os.path.join("tests", "data", "applications", "volumetable.csv")
@@ -22,8 +22,11 @@ source_plate_path = os.path.join("tests", "data", "applications", "Source_Plate.
 
 
 def test_convert_valuetable_to_volumetable(tmpdir):
+    source_plate = plate_from_content_spreadsheet(source_plate_path)
     valuetable = import_valuetable_from_csv(valuetable_path)
-    volumetable = convert_valuetable_to_volumetable(valuetable)
+    volumetable = convert_valuetable_to_volumetable(
+        valuetable, source_plate=source_plate
+    )
     volumetable.to_csv(
         path_or_buf=os.path.join(tmpdir, "volumetable_out.csv"),
         sep=",",

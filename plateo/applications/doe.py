@@ -8,10 +8,11 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
     # If all values are volumes, then a source plate is not required.
 
     factor_wells_dict = {}
-    source_wells = list(source_plate.iter_wells())
-    for well in source_wells:
-        # assumed there is only 1 component in each source well:
-        factor_wells_dict[well.content.components_as_string()] = well
+    if source_plate is not None:
+        source_wells = list(source_plate.iter_wells())
+        for well in source_wells:
+            # assumed there is only 1 component in each source well:
+            factor_wells_dict[well.content.components_as_string()] = well
 
     # 1 microliter = 1e-6 L
     # 'units' is the default name for a special line in the valuetable
