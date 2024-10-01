@@ -6,6 +6,13 @@ from ..parsers.picklist_from_tables import columnnames
 
 def convert_valuetable_to_volumetable(valuetable, source_plate=None):
     # If all values are volumes, then a source plate is not required.
+
+    factor_wells_dict = {}
+    source_wells = list(source_plate.iter_wells())
+    for well in source_wells:
+        # assumed there is only 1 component in each source well:
+        factor_wells_dict[well.content.components_as_string()] = well
+
     # 1 microliter = 1e-6 L
     # 'units' is the default name for a special line in the valuetable
     unit_line = "units"
@@ -17,12 +24,16 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
         "uL": (1e-6, "volume"),
         "nL": (1e-9, "volume"),
         "g": (1, "mass"),
+        "mg": (1e-3, "mass"),
+        "ug": (1e-6, "mass"),
+        "ng": (1e-9, "mass"),
         "g/L": (1, "concentration"),
     }
     volume_list = []  # collect "series" to construct the final dataframe
 
     # Get rows to subset df to actual values (factor levels):
     # 'final_volume' and 'complement' are special columns in the valuetable
+    # 'final_volume' is in uL
     factor_columns = [
         factor
         for factor in valuetable.columns
@@ -39,15 +50,22 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
             # VOLUME
             unit_type = unit_interpreter[unit_dict[factor]][1]
             if unit_type == "volume":
-                volumes += [float(row[factor])]  # no calculation necessary
+                multiplier = unit_interpreter[unit_dict[factor]][0]
+                volumes += [float(row[factor]) * multiplier]
             # MASS
             elif unit_type == "mass":
-                pass
+                multiplier = unit_interpreter[unit_dict[factor]][0]
+                mass = float(row[factor]) * multiplier
+                concentration = factor_wells_dict[factor].content.concentration()
+                volume = mass / concentration
+                volumes += [volume]
             # CONCENTRATION
             elif unit_type == "concentration":
                 pass
 
-        complement_volume = unit_dict["final_volume"] - sum(volumes)
+        complement_volume = unit_dict["final_volume"] * 1e-6 - sum(volumes)
+        # 'final_volume' is in uL, need to convert to L
+
         volumes += [complement_volume]
 
         volume_list += [volumes]
