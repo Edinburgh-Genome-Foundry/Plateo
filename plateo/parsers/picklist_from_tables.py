@@ -11,7 +11,7 @@ DF_COLUMNS = {name: name for name in columnnames}
 
 def picklist_from_dataframe(dataframe, source_plates, dest_plates, df_columns=None):
     """Create a picklist from a table specifying the transfers."""
-    if df_columns == None:
+    if df_columns is None:
         df_columns = DF_COLUMNS
     # For matching the plates:
     source_plate_lookup = {plate.name: plate for plate in source_plates}
@@ -41,7 +41,7 @@ def picklist_from_csv_file(
     # microliter = 1e-6
     # nanoliter = 1e-9
     dataframe = pandas.read_csv(filename)
-    if df_columns == None:
+    if df_columns is None:
         df_columns = DF_COLUMNS
 
     if source_plates == "auto":

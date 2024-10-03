@@ -76,11 +76,10 @@ def convert_valuetable_to_volumetable(valuetable, source_plate=None):
         # 'final_volume' is in uL, need to convert to L
 
         volumes += [complement_volume]
-        print(volumes)
 
         volume_list += [volumes]
 
-    columnnames = factor_columns + ["complement"]
+    columnnames = factor_columns + [unit_dict["complement"]]
     volumetable = pandas.DataFrame(
         columns=columnnames, index=expunit_rows, data=volume_list
     )
@@ -131,9 +130,9 @@ def convert_volumetable_to_actiontable(volumetable, source_plate, dest_plate):
             transfer = [
                 source_plate.name,
                 factor_wells_dict[factor].name,
-                transfer_volume,
                 dest_plate.name,
                 expunit_dest_well_dict[expunit].name,
+                transfer_volume,
             ]
             transfer_list += [transfer]
 

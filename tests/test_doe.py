@@ -33,6 +33,7 @@ def test_convert_valuetable_to_volumetable(tmpdir):
         columns=None,
         header=True,
         index=True,
+        float_format="%.7f",
     )
     assert filecmp.cmp(
         os.path.join(volumetable_out_path),
