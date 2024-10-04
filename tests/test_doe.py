@@ -54,3 +54,4 @@ def test_convert_volumetable_to_actiontable():
     )
 
     assert type(dataframe) is pandas.DataFrame
+    assert dest_plate.wells["A1"].data["expunit"] == "unit_1"

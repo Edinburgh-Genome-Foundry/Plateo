@@ -95,6 +95,7 @@ def import_valuetable_from_csv(filename):
 
 def convert_volumetable_to_actiontable(volumetable, source_plate, dest_plate):
     """Convert a volume-based transfer table into an action-based format."""
+    # This also labels the destination plate wells with the experimental unit names.
 
     factor_wells_dict = {}
     source_wells = list(source_plate.iter_wells())
@@ -120,6 +121,7 @@ def convert_volumetable_to_actiontable(volumetable, source_plate, dest_plate):
     iterator = zip(volumetable.index, dest_plate.iter_wells(direction="column"))
     for expunit, destination_well in iterator:
         expunit_dest_well_dict[expunit] = destination_well
+        destination_well.data["expunit"] = expunit  # for exporting the plate
 
     transfer_list = []
     volumetable_columns = volumetable.columns.tolist()
