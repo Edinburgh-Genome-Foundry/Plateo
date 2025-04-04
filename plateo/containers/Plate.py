@@ -33,6 +33,8 @@ class Plate:
     :param plate_data: plate data
     """
 
+    num_rows = None
+    num_columns = None
     well_class = Well
 
     def __init__(self, name=None, wells_data=None, plate_data=None):
