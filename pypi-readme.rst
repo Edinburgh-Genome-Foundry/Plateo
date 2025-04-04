@@ -25,19 +25,15 @@ Infos
 
   pip install plateo
 
-**Web documentation:**
+**Web documentation:** `<https://edinburgh-genome-foundry.github.io/Plateo/>`_
 
-`<https://edinburgh-genome-foundry.github.io/Plateo/>`_
+**Github Page:** `<https://github.com/Edinburgh-Genome-Foundry/Plateo>`_
 
-**Github Page:**
+**Live demo:** `<https://cuba.genomefoundry.org/create_assembly_picklists>`_
 
-`<https://github.com/Edinburgh-Genome-Foundry/Plateo>`_
+**License:** MIT
 
-**Live demo:**
-
-`<https://cuba.genomefoundry.org/create_assembly_picklists>`_
-
-**License:** MIT, Copyright Edinburgh Genome Foundry
+Copyright 2017 Edinburgh Genome Foundry, University of Edinburgh
 
 
 More biology software

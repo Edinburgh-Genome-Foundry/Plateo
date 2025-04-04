@@ -9,7 +9,6 @@
 .. image:: https://github.com/Edinburgh-Genome-Foundry/Plateo/actions/workflows/build.yml/badge.svg
     :target: https://github.com/Edinburgh-Genome-Foundry/Plateo/actions/workflows/build.yml
     :alt: GitHub CI build status
-
 .. image:: https://coveralls.io/repos/github/Edinburgh-Genome-Foundry/Plateo/badge.svg?branch=master
   :target: https://coveralls.io/github/Edinburgh-Genome-Foundry/Plateo?branch=master
 
@@ -68,6 +67,5 @@ License = MIT
 Plateo is `free software <https://www.gnu.org/philosophy/free-sw.en.html>`_, which means
 the users have the freedom to run, copy, distribute, study, change and improve the software.
 
-Plateo was originally written at the `Edinburgh Genome Foundry <http://www.genomefoundry.io>`_
-by `Zulko <https://github.com/Zulko>`_ and is currently developed by `Peter Vegh <https://github.com/veghp>`_.
-It is released under the MIT license (Copyright 2017 Edinburgh Genome Foundry).
+Plateo was originally written by `Zulko <https://github.com/Zulko>`_ at the `Edinburgh Genome Foundry <http://www.genomefoundry.io>`_ and is currently being developed by `Peter Vegh <https://github.com/veghp>`_.
+It is released under the MIT license (Copyright 2017 Edinburgh Genome Foundry, University of Edinburgh).
