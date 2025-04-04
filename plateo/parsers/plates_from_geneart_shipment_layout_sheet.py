@@ -15,7 +15,7 @@ def plates_from_geneart_shipment_layout_sheet(
     filepath, parts_ids_dict=None, geneart_parts_dir=None
 ):
     """Return a list of all plates (Plate96) in the shipment layout sheet.
-    
+
     Example
     -------
 
@@ -27,22 +27,22 @@ def plates_from_geneart_shipment_layout_sheet(
     >>>     plate_to_content_spreadsheet(plate, "./%s.xlsx" % plate.name)
     Parameters
     ----------
-    
+
     filepath
       Path to the Geneart excel spreadsheet or a filelike.
-    
+
     parts_ids_dict
       Optional. dictionnary {geneart_id: part_name}. If provided, the content
       of the wells will be indicated using your custom part_name, if not
       provided, the genart_id will be used.
-    
+
     geneart_parts_dir
       Optional path to a folder, zip file, or Flametree-compatible dir, from
       which to read filenames like "18AFY2AC_p9_EGFP" from which the
       association between geneart IDs(here, 18AFY2AC) and your part names
       (p9_EGFP) will be read.
 
-    
+
     """
     if geneart_parts_dir is not None:
         parts_ids_dict = parts_ids_from_geneart_records_dir(geneart_parts_dir)

@@ -94,7 +94,7 @@ class AssemblyPlan:
         with open(path, "w") as f:
             f.write(
                 "\n".join(
-                    [("construct,parts")]
+                    ["construct,parts"]
                     + [
                         ",".join([asm] + parts)
                         for asm, parts in self.assemblies.items()
