@@ -1,0 +1,34 @@
+[project]
+name = "plateo"
+version = "0.2.7"
+license = "MIT"
+authors = [{ name = "Zulko" }]
+description = "Read/write microplate and picklist data for lab automation"
+readme = "pypi-readme.rst"
+keywords = ["microplate", "biology", "parser", "converter", "experiment"]
+dependencies = [
+  "pandas",
+  "xlwt",
+  "xlrd",
+  "openpyxl",
+  "numpy",
+  "matplotlib",
+  "tqdm",
+  "pdf_reports",
+  "flametree",
+  "fuzzywuzzy",
+  "sequenticon",
+]
+
+[project.urls]
+Homepage = "https://github.com/Edinburgh-Genome-Foundry/Plateo"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["docs"]

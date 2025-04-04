@@ -45,15 +45,11 @@ robot, we may be able to help too !
 
 
 Installation
---------------
+------------
 
-Plateo can be installed by unzipping the source code in one directory and using this command: ::
+Plateo can be installed from the Python Package Index with this command ::
 
-   (sudo) python setup.py install
-
-You can also install it directly from the Python Package Index with this command: ::
-
-   (sudo) pip install plateo
+   pip install plateo
 
 
 .. raw:: html
