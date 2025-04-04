@@ -1,5 +1,5 @@
 body, h1, h2, h3 {
-    font-family: Raleway;
+    font-family: Ubuntu;
 }
 
 .wy-nav-content-wrap {
@@ -15,10 +15,10 @@ body, h1, h2, h3 {
 }
 
 .wy-menu-vertical a:hover {
-    background-color: #dad5e5
+    background-color: #a790d4
 }
 
 .wy-side-nav-search, .wy-nav-top {
-    background-color: #f2eefc;
+    background-color: #d5c9f4;
     color: #fcfcfc
 }

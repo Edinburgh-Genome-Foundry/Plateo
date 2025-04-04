@@ -139,7 +139,9 @@ class Well:
     def is_after(self, other, direction="row"):
         """Return whether this well is located strictly after the other well.
 
-        Example: iterate over all free wells after the last non-free well:
+        Examples
+        --------
+        Iterate over all free wells after the last non-free well:
 
         >>> direction = 'row'
         >>> last_occupied_well = plate.last_nonempty_well(direction=direction)

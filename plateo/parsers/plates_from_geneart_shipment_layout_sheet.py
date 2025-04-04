@@ -16,9 +16,8 @@ def plates_from_geneart_shipment_layout_sheet(
 ):
     """Return a list of all plates (Plate96) in the shipment layout sheet.
 
-    Example
-    -------
-
+    Examples
+    --------
     >>> plates = plates_from_geneart_shipment_layout_spreadsheet(
     >>>     filepath="2018AAMOBC_layout_shipment.xlsx",
     >>>     geneart_parts_dir="./tfcdownload(4).zip")

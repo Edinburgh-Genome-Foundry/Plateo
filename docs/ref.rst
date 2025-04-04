@@ -1,28 +1,29 @@
-
-Reference
-=================
-
+API reference
+=============
 
 Code organization
-------------------
+-----------------
 
 - ``Plate.py``, ``Well.py`` and ``Picklist.py`` implement the central objects
- ``Plate``, ``Well``, and ``Picklist``.
+  ``Plate``, ``Well``, and ``Picklist``.
+
 - The ``containers`` folder contains specific classes of ``Plate`` and ``Well``
- will predefined dimensions, capacity, dead volume, etc.
+  with predefined dimensions, capacity, dead volume, etc.
+
 - The ``parsers`` folder contains all methods to generate Plates or Picklists
- from machine files and data.
-- The ``exporters`` folder contains all methods to export plates in picklists
- in human- or machine-readable format.
+  from machine files and data.
+
+- The ``exporters`` folder contains all methods to export plates and picklists
+  in human- or machine-readable format.
 
 
 Plates
--------
+------
 
-.. automodule:: plateo.Plate
+.. automodule:: plateo.containers.Plate
    :members:
 
-.. automodule:: plateo.Well
+.. automodule:: plateo.containers.Well
    :members:
 
 
@@ -38,14 +39,10 @@ From tables
 
 
 From Fragment analyzer data
-````````````````````````````
+```````````````````````````
+
 .. autofunction:: plateo.parsers.plate_from_aati_fragment_analyzer_peaktable
 .. autofunction:: plateo.parsers.plate_from_aati_fragment_analyzer_zip
-
-
-Miscellaneous
-`````````````
-.. autofunction:: plateo.parsers.plate_from_nanodrop_xml_file
 
 
 Plate Exporters
@@ -53,8 +50,9 @@ Plate Exporters
 
 .. autofunction:: plateo.exporters.plate_to_bokeh_plot
 .. autofunction:: plateo.exporters.plate_to_genesift_sequencing_order_spreadsheet
-.. autofunction:: plateo.exporters.plate_to_dataframe
+.. autofunction:: plateo.exporters.plate_to_pandas_dataframe
 .. autofunction:: plateo.exporters.plate_to_platemap_spreadsheet
+
 
 Plotters
 `````````
@@ -64,31 +62,29 @@ Plotters
 .. autofunction:: plateo.exporters.PlateGraphsPlotter
 
 
-.. autofunction:: plateo.parsers.plate_from_roche_lightcycler_qPCR
-
 Container classes
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
-.. automodule:: plateo.containers.plates
+.. automodule:: plateo.containers.builtin_containers
    :members:
 
 
 Picklists
---------------------------------------------------------------------------
+---------
 
 .. automodule:: plateo.PickList
    :members:
+
 
 Picklist Parsers
 ~~~~~~~~~~~~~~~~
 
 .. autofunction:: plateo.parsers.picklist_from_labcyte_echo_logfile
 .. autofunction:: plateo.parsers.picklist_from_tecan_evo_picklist_file
-   :members:
 
 
 Tools
--------------------------------------------------
+-----
 
 .. automodule:: plateo.tools
    :members:

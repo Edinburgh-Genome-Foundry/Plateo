@@ -1,9 +1,9 @@
-Plateo Documentation
-==========================
-
 .. image:: _static/images/title.png
    :width: 400px
    :align: center
+
+Plateo documentation
+====================
 
 Plateo (pronounced *Plato*, like the planet) is a Python library to assist in the
 planning, running and checking of laboratory experiments involving microplates.
@@ -27,13 +27,13 @@ simulator work together
    :align: center
 
 
-Work in progress - contribute !
--------------------------------
+Work in progress - contribute!
+------------------------------
 
 Plateo is an open-source software originally written at the `Edinburgh Genome Foundry
 <http://www.genomefoundry.io>`_ (an academic platform) by `Zulko <https://github.com/Zulko>`_
 and `released on Github <https://github.com/Edinburgh-Genome-Foundry/plateo>`_
-under the MIT licence (¢ Edinburgh Genome Foundry).
+under the MIT licence (Copyright 2017 Edinburgh Genome Foundry, University of Edinburgh).
 
 It was released in the hope that it will be as useful for other automated labs as it is for use,
 but keep in mind that it is still under development, the features and docs will get better.
@@ -41,7 +41,7 @@ but keep in mind that it is still under development, the features and docs will 
 Plateo aims at collecting parsers and export routines to speak to any kind of
 automated equipment. If you have written parsers that don't appear in Plateo,
 we are happy to hear about it. If you need help writing parsers for your favorite
-robot, we may be able to help too !
+robot, we may be able to help too!
 
 
 Installation
@@ -77,8 +77,3 @@ Plateo can be installed from the Python Package Index with this command ::
     :maxdepth: 3
 
     ref
-
-
-.. _Zulko: https://github.com/Zulko/
-.. _Github: https://github.com/EdinburghGenomeFoundry/bandwitch
-.. _PYPI: https://pypi.python.org/pypi/bandwitch

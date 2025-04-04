@@ -22,9 +22,8 @@ def plate_to_genesift_sequencing_order_spreadsheet(
     well_filter
       A function  f(well) => True/false
 
-    Example:
+    Examples
     --------
-
     >>> plate_to_genesift_sequencing_order_spreadsheet(
             plate,
             output_file="genesift.xls",

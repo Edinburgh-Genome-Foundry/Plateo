@@ -53,7 +53,6 @@ class PicklistAnimator:
 
     Examples
     --------
-
     >>> animator = PicklistAnimator(
     >>>     plate_plotters={
     >>>         'Source_1': success_plotter,

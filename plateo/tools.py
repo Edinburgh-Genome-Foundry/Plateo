@@ -9,9 +9,9 @@ from fuzzywuzzy import process
 
 
 def round_at(value, rounding=None):
-    """Round value at the nearest rounding.
+    """Round value to the nearest rounding.
 
-    :param value: the value to round
+    :param value: the value to round.
     """
     if rounding is None:
         return value
