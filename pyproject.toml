@@ -1,6 +1,6 @@
 [project]
 name = "plateo"
-version = "0.2.8"
+version = "0.3.0"
 license = "MIT"
 authors = [{ name = "Zulko" }]
 description = "Read/write microplate and picklist data for lab automation"
