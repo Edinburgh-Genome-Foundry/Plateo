@@ -12,6 +12,7 @@ data_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), os.path.join("data", "exporters")
 )
 
+
 # Will be refactored with Dioscuri:
 def test_picklist_to_tecan_evo_picklist_file():
     picklist_to_tecan_evo_picklist_file
