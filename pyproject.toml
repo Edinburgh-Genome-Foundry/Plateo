@@ -27,8 +27,8 @@ Homepage = "https://github.com/Edinburgh-Genome-Foundry/Plateo"
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-include-package-data = true
-
 [tool.setuptools.packages.find]
-exclude = ["docs"]
+exclude = ["docs*", "examples*", "tests*"]
+
+[tool.setuptools.package-data]
+plateo = ["applications/reports/templates/*", "applications/reports/templates/imgs/*"]
