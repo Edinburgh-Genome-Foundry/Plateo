@@ -41,7 +41,7 @@ def plate_from_aati_fragment_analyzer_peaktable(filename):
     if "% (Conc.) (ng/uL)" in df.columns:
         df = df.rename(columns={"% (Conc.) (ng/uL)": "% (Conc.)"})
     wells = {
-        name: {
+        name[0]: {
             "bands": {
                 peak_id: row.to_dict()
                 for peak_id, row in d.set_index("Peak ID").iterrows()
