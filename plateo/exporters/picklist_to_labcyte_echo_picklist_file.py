@@ -7,10 +7,10 @@ def picklist_to_labcyte_echo_picklist_file(
 ):
     """Write a CSV file for cherrypicking in the ECHO.
 
-    Note that transfer volumes may have to be rounded to 2.5nl to be valid.
+    Note that transfer volumes may have to be rounded to 2.5 nL to be valid.
 
     Parameters
-    -----------
+    ----------
 
     picklist
       The PickList object to be written in a file.
