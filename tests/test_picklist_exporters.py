@@ -21,7 +21,8 @@ def test_picklist_to_tecan_evo_picklist_file():
 
 def test_picklist_to_labcyte_echo_picklist_file(tmpdir):
     # From examples:
-    source_plate = Plate96(name="Source")
+    source_plate_name = "Source"
+    source_plate = Plate96(name=source_plate_name)
     destination_plate = Plate96(name="Destination")
     picklist = PickList()
 
@@ -43,6 +44,11 @@ def test_picklist_to_labcyte_echo_picklist_file(tmpdir):
     picklist_to_labcyte_echo_picklist_file(
         picklist, os.path.join(tmpdir, "my_picklist.csv")
     )
+    assert filecmp.cmp(
+        os.path.join(tmpdir, "my_picklist_" + source_plate_name + ".csv"),
+        os.path.join(data_dir, "my_picklist_" + source_plate_name + ".csv"),
+    )
+
     assert filecmp.cmp(
         os.path.join(tmpdir, "my_picklist.csv"),
         os.path.join(data_dir, "my_picklist.csv"),
