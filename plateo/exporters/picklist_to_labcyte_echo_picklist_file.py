@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from ..containers.helper_functions import wellname_to_index
 
@@ -30,6 +32,13 @@ def picklist_to_labcyte_echo_picklist_file(
     """
 
     columns = ["Source Well", "Destination Well", "Transfer Volume"]
+    extended_columns = [
+        "Source Plate",
+        "Source Well",
+        "Destination Plate",
+        "Destination Well",
+        "Transfer Volume",
+    ]
     picklist = picklist.enforce_maximum_dispense_volume(max_dispense_volume)
 
     def format_well(well_name, num_wells):
@@ -53,3 +62,24 @@ def picklist_to_labcyte_echo_picklist_file(
     ]
     df = pd.DataFrame.from_records(rows, columns=columns)
     df.to_csv(filename, sep=",", header=True, index=False)
+
+    rows_ext = [
+        {
+            "Source Plate": "",
+            "Source Well": format_well(
+                transfer.source_well.name, transfer.source_well.plate.num_wells
+            ),
+            "Destination Plate": "",
+            "Destination Well": format_well(
+                transfer.destination_well.name,
+                transfer.destination_well.plate.num_wells,
+            ),
+            "Transfer Volume": "%.01f" % (transfer.volume / 1e-9),
+        }
+        for transfer in picklist.transfers_list
+    ]
+    df_ext = pd.DataFrame.from_records(rows_ext, columns=extended_columns)
+
+    name, ext = os.path.splitext(filename)
+    new_filename = f"{name}_ext{ext}"
+    df_ext.to_csv(new_filename, sep=",", header=True, index=False)
