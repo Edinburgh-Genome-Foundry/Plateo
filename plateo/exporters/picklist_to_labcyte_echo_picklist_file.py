@@ -47,29 +47,42 @@ def picklist_to_labcyte_echo_picklist_file(
         else:
             return wellname_to_index(well_name, num_wells, direction="column")
 
-    rows = [
-        {
-            "Source Well": format_well(
-                transfer.source_well.name, transfer.source_well.plate.num_wells
-            ),
-            "Destination Well": format_well(
-                transfer.destination_well.name,
-                transfer.destination_well.plate.num_wells,
-            ),
-            "Transfer Volume": "%.01f" % (transfer.volume / 1e-9),
-        }
+    all_plates_name = set(
+        plate.name
         for transfer in picklist.transfers_list
-    ]
-    df = pd.DataFrame.from_records(rows, columns=columns)
-    df.to_csv(filename, sep=",", header=True, index=False)
+        for plate in [transfer.source_well.plate]
+    )
+
+    all_plates_name_dict = {name: [] for name in all_plates_name}
+    print(all_plates_name_dict)
+
+    for transfer in picklist.transfers_list:
+        all_plates_name_dict[transfer.source_well.plate.name].append(
+            {
+                "Source Well": format_well(
+                    transfer.source_well.name, transfer.source_well.plate.num_wells
+                ),
+                "Destination Well": format_well(
+                    transfer.destination_well.name,
+                    transfer.destination_well.plate.num_wells,
+                ),
+                "Transfer Volume": "%.01f" % (transfer.volume / 1e-9),
+            }
+        )
+    name, ext = os.path.splitext(filename)
+    for platename, rows in all_plates_name_dict.items():
+        picklist_filename = f"{name}_{platename}{ext}"
+
+        df = pd.DataFrame.from_records(rows, columns=columns)
+        df.to_csv(picklist_filename, sep=",", header=True, index=False)
 
     rows_ext = [
         {
-            "Source Plate": "",
+            "Source Plate": transfer.source_well.plate.name,
             "Source Well": format_well(
                 transfer.source_well.name, transfer.source_well.plate.num_wells
             ),
-            "Destination Plate": "",
+            "Destination Plate": transfer.destination_well.plate.name,
             "Destination Well": format_well(
                 transfer.destination_well.name,
                 transfer.destination_well.plate.num_wells,
@@ -80,6 +93,4 @@ def picklist_to_labcyte_echo_picklist_file(
     ]
     df_ext = pd.DataFrame.from_records(rows_ext, columns=extended_columns)
 
-    name, ext = os.path.splitext(filename)
-    new_filename = f"{name}_ext{ext}"
-    df_ext.to_csv(new_filename, sep=",", header=True, index=False)
+    df_ext.to_csv(filename, sep=",", header=True, index=False)
