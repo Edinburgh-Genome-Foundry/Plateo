@@ -1,6 +1,8 @@
 import filecmp
 import os
+import pathlib
 import pytest
+
 
 import matplotlib
 
@@ -74,6 +76,10 @@ def test_assembly_report(tmpdir):
         picklist, os.path.join(tmpdir, "ECHO_picklist.csv")
     )
     assert filecmp.cmp(
+        os.path.join(tmpdir, "ECHO_picklist_" + source_plate.name + ".csv"),
+        os.path.join(data_path, "ECHO_picklist_" + source_plate.name + ".csv"),
+    )
+    assert filecmp.cmp(
         os.path.join(tmpdir, "ECHO_picklist.csv"),
         os.path.join(data_path, "ECHO_picklist.csv"),
     )
@@ -101,9 +107,20 @@ def test_assembly_report(tmpdir):
     )
 
     assembly_plan.write_report(ziproot._file("assembly_plan_summary.pdf").open("wb"))
+
+    # Flametree expects one file, so we implement a workaround:
+    tmp_path = pathlib.Path(str(tmpdir))
+    output_dir = tmp_path / "generated_picklists"
+    output_dir.mkdir()
     picklist_to_labcyte_echo_picklist_file(
-        picklist, ziproot._file("ECHO_picklist.csv").open("w")
+        picklist,
+        os.path.join(output_dir, "ECHO_picklist_.csv"),
     )
+    for item in output_dir.rglob("*"):
+        if item.is_file():
+            rel_path = item.relative_to(output_dir)
+            ziproot._file(f"{rel_path}").write(item.read_bytes())
+
     ziproot._close()
 
     # test too many assemblies
